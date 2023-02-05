@@ -1,6 +1,6 @@
 import './App.css'
 import React, { useState, useEffect } from "react";
-import ProtectedRoutes from "./component/ProtectedRoutes";
+import ProtectedRoutes from "./component/ProtectedRoutes/ProtectedRoutes";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import { LoginContext } from "./context/context";

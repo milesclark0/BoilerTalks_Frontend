@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
-// import logo from "../component/Images/logo.png";
+import logo from "../component/Images/logo.png";
 import { useNavigate } from "react-router-dom";
-// import Register from "../component/Register";
+import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 
@@ -23,7 +23,7 @@ const Login = ({ setAuth, setUserName }) => {
       setError(true);
       setLoading(false);
     } else {
-      
+      // check if password matches in database
     }
     event.preventDefault();
   };
@@ -60,7 +60,7 @@ const Login = ({ setAuth, setUserName }) => {
         autoComplete="off"
         onSubmit={logIn}
       >
-        {/* <img src={logo} height={80} alt="logo" /> */}
+        <img src={logo} height={100} alt="logo" />
         <TextField
           label="Username"
           // type="email"
@@ -93,7 +93,7 @@ const Login = ({ setAuth, setUserName }) => {
           Sign Up
         </Button>
       </Box>
-      {/* <Register open={open} setOpen={setOpen} setAuth={setAuth} setUserName={setUserName} /> */}
+      <Register open={open} setOpen={setOpen} setAuth={setAuth} setUserName={setUserName} />
     </Box>
   );
 };

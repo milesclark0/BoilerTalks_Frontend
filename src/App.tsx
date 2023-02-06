@@ -15,9 +15,10 @@ function App() {
     <LoginContext.Provider value={{ user, setUser }}>
       <div className="appDisplay">
         <Routes>
-          <Route path="/" element={<Login setAuth={setAuth} setUserName={setUserName} />} />
+          <Route path="/" element={<Login setAuth={setAuth} />} />
           <Route element={<ProtectedRoutes auth={auth} />}>
-            <Route path="/*" element={<Login setAuth={setAuth} setUserName={setUserName} />} />
+            {/* <Route path="/*" element={<Login setAuth={setAuth}/>} /> */}
+            {/* element={<MainPage username={username} setAuth={setAuth} />} */}
           </Route>
         </Routes>
       </div>

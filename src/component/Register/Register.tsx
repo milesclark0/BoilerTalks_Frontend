@@ -1,74 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment } from "@mui/material";
+import { Button, Stepper, Step, StepLabel, Box, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Information from "./Information";
+import JoinThreads from "./JoinThreads";
 
-const Register = ({ open, setOpen, setAuth, setUserName }) => {
+const Register = ({ open, setOpen, setAuth }) => {
   const navigate = useNavigate();
-  const [passwordError, setPasswordError] = useState(false);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [lastName, setLastName] = useState("");
-  const [lastNameError, setLastNameError] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState(false);
+  const steps = ["Enter Information", "Choose threads to join"];
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const createAccount = () => {
-    console.log(password);
-    console.log(confirmPassword);
-    setLoading(true);
-    let missing = false;
-    if (firstName === "") {
-      setFirstNameError(true);
-      missing = true;
+  useEffect(() => {
+    if (open) {
+      setActiveStep(0);
     }
-    if (lastName === "") {
-      setLastNameError(true);
-      missing = true;
-    }
-    console.log(email.split("@")[1]);
-    if (email === "" || email.split("@")[1] !== "purdue.edu" || email.split("@")[1] === undefined) {
-      setEmailError(true);
-      missing = true;
-    }
-    if (password !== confirmPassword || password === "" || confirmPassword === "") {
-      setPasswordError(true);
-      missing = true;
-    }
+  }, [open]);
 
-    if (!missing) {
-      setOpen(false);
-      var puid = email.split("@")[0];
-      setUserName(puid);
-      var jsonData = {
-        firstName: firstName,
-        lastName: lastName,
-        puid: puid,
-        password: password,
-      };
-    //   jsonData = '"' + JSON.stringify(jsonData).replaceAll('"', '\\"') + '"';
-    } else {
-      setLoading(false);
-    }
-  };
-
-  const handleClose = () => {
+  const handleExit = () => {
     setOpen(false);
   };
 
+  const createAccount = () => {};
+
+  const isStepOptional = (step: number) => {
+    return step === 1;
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>
-        Sign Up
-        <IconButton sx={{ float: "right" }} onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+    <Dialog open={open} onClose={handleExit}>
+      <DialogTitle>{"Sign Up"}</DialogTitle>
       <DialogContent
         sx={{
           "& .MuiFormHelperText-root": {
@@ -76,87 +40,36 @@ const Register = ({ open, setOpen, setAuth, setUserName }) => {
           },
         }}
       >
-        <TextField
-          autoFocus
-          margin="dense"
-          label="First Name"
-          fullWidth
-          required
-          inputProps={{ maxLength: 15 }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
-          }}
-          error={firstNameError}
-          helperText={firstNameError ? "Please enter a first name." : ""}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Last Name"
-          fullWidth
-          required
-          inputProps={{ maxLength: 15 }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
-          }}
-          error={lastNameError}
-          helperText={lastNameError ? "Please enter a last name." : ""}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Username"
-          fullWidth
-          required
-          error={emailError}
-          helperText={emailError ? "Please a username." : ""}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
-          }}
-          id="email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Password"
-          type="password"
-          inputProps={{ maxLength: 30 }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
-          }}
-          fullWidth
-          required
-          error={passwordError}
-          helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Confirm Password"
-          type="password"
-          fullWidth
-          inputProps={{ maxLength: 30 }}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
-          }}
-          required
-          error={passwordError}
-          helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
+        <Stepper activeStep={activeStep}>
+          {steps.map((label, index) => {
+            const labelProps: {
+              optional?: React.ReactNode;
+            } = {};
+            if (isStepOptional(index)) {
+              labelProps.optional = <Typography variant="caption">Optional</Typography>;
+            }
+            return (
+              <Step key={label}>
+                <StepLabel {...labelProps}>{label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+        {activeStep === steps.length ? (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1, textAlign: "center" }}>All steps completed - you&apos;re finished</Typography>
+            <Box sx={{ display: "flex",justifyContent:"center", alignItems:"center" }}>
+              <LoadingButton variant="contained" loading={loading} disabled={loading} onClick={createAccount} color="success">
+                Create New Account
+              </LoadingButton>
+            </Box>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            {activeStep === 0 ? <Information setOpen={setOpen} setActiveStep={setActiveStep} /> : <JoinThreads setActiveStep={setActiveStep} />}
+          </React.Fragment>
+        )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "center" }}>
-        <LoadingButton
-          variant="contained"
-          loading={loading}
-          disabled={loading}
-          onClick={createAccount}
-          color="success"
-          // sx={{ backgroundColor: "green", color: "white" }}
-        >
-          Create New Account
-        </LoadingButton>
-      </DialogActions>
     </Dialog>
   );
 };

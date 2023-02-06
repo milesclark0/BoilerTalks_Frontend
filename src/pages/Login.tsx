@@ -6,7 +6,7 @@ import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-const Login = ({ setAuth, setUserName }) => {
+const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -24,6 +24,7 @@ const Login = ({ setAuth, setUserName }) => {
       setLoading(false);
     } else {
       // check if password matches in database
+      // if it matches, navigate to home page
     }
     event.preventDefault();
   };
@@ -82,8 +83,6 @@ const Login = ({ setAuth, setUserName }) => {
           variant="contained"
           onClick={register}
           sx={{
-            // backgroundColor: "green",
-            // color: "white",
             width: "40%",
             textTransform: "none",
             fontSize: 16,
@@ -93,7 +92,7 @@ const Login = ({ setAuth, setUserName }) => {
           Sign Up
         </Button>
       </Box>
-      <Register open={open} setOpen={setOpen} setAuth={setAuth} setUserName={setUserName} />
+      <Register open={open} setOpen={setOpen} setAuth={setAuth} />
     </Box>
   );
 };

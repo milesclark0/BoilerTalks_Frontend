@@ -22,9 +22,14 @@ const Register = ({ open, setOpen, setAuth }) => {
 
   const handleExit = () => {
     setOpen(false);
+    navigate("/auth/login")
   };
 
-  const createAccount = () => {};
+  const createAccount = () => {
+    setAuth(true);
+    navigate("/home")
+    setOpen(false);
+  };
 
   const isStepOptional = (step: number) => {
     return step === 1;

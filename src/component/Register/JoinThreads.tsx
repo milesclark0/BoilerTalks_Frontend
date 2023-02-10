@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAdornment } from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import WarningIcon from "@mui/icons-material/Warning";
 
 const JoinThreads = ({ setActiveStep }) => {
   const courses = ["CS180", "CS182", "CS240", "CS250", "CS251", "CS252", "CS307", "CS348", "CS407", "CS408", "CS381", "CS448"];

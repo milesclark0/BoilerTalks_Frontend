@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
 import logo from "../component/Images/logo.png";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate, useLocation } from "react-router-dom";
 import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 
+// const Login = ({ setAuth, setOpen }) => {
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  setAuth(false);
+  // const navigate = useNavigate();
+  // const location = useLocation();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // setAuth(false);
 
   const logIn = (event) => {
     console.log(username);
@@ -31,6 +33,7 @@ const Login = ({ setAuth }) => {
 
   const register = () => {
     setOpen(true);
+    window.history.replaceState(null, null, "/auth/register");
   };
 
   return (

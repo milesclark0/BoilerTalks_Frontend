@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, TextField, InputAdornment, Button } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { useNavigate } from "react-router-dom";
 
 const Information = ({ setOpen, setActiveStep }) => {
   const [passwordError, setPasswordError] = useState(false);
@@ -13,6 +14,7 @@ const Information = ({ setOpen, setActiveStep }) => {
   const [lastNameError, setLastNameError] = useState(false);
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState(false);
+  const navigate = useNavigate();
 
   const handleNext = () => {
     // console.log(password);
@@ -49,6 +51,7 @@ const Information = ({ setOpen, setActiveStep }) => {
 
   const handleExit = () => {
     setOpen(false);
+    navigate("/auth/login")
   };
 
   return (

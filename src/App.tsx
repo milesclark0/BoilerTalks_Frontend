@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import ProtectedRoutes from "./component/ProtectedRoutes/ProtectedRoutes";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import Register from "./component/Register/Register";
+// import Register from "./component/Register/Register";
 import { LoginContext } from "./context/context";
 import { User } from "./types/types";
 

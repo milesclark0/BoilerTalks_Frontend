@@ -6,7 +6,6 @@ import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-// const Login = ({ setAuth, setOpen }) => {
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

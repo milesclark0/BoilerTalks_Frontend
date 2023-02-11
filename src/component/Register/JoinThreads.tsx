@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAdornment } from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 
 const JoinThreads = ({ setActiveStep }) => {
+  // const [courses, setCourses] = useState([]);
   const courses = ["CS180", "CS182", "CS240", "CS250", "CS251", "CS252", "CS307", "CS348", "CS407", "CS408", "CS381", "CS448"];
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    // get list of courses from database
+  }, []);
 
   const handleBack = () => {
     setActiveStep((prevActiveStep: number) => prevActiveStep - 1);

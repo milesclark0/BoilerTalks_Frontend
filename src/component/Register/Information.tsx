@@ -14,11 +14,13 @@ const Information = ({ setOpen, setActiveStep }) => {
   const [lastNameError, setLastNameError] = useState(false);
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleNext = () => {
     console.log(password);
     console.log(confirmPassword);
+    setLoading(true);
     let missing = false;
     if (firstName === "") {
       setFirstNameError(true);
@@ -50,19 +52,21 @@ const Information = ({ setOpen, setActiveStep }) => {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        //make sure to serialize your JSON body
         body: JSON.stringify(jsonData),
-      }).then((response) => {
-        console.log(response);
-      });
-      // setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // convert data to json
+          console.log(data);
+        });
+      setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     }
-    // setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+    setLoading(false);
   };
 
   const handleExit = () => {
     setOpen(false);
-    navigate("/auth/login")
+    navigate("/auth/login");
   };
 
   return (
@@ -143,9 +147,9 @@ const Information = ({ setOpen, setActiveStep }) => {
           Cancel
         </Button>
         <Box sx={{ flex: "1 1 auto" }} />
-        <Button onClick={handleNext} variant="contained">
+        <LoadingButton onClick={handleNext} variant="contained" loading={loading} disabled={loading}>
           Next
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

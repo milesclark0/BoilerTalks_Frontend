@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
 import logo from "../component/Images/logo.png";
-// import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -13,6 +13,7 @@ const Login = ({ setAuth }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   // setAuth(false);
+  const navigate = useNavigate();
 
   const logIn = (event) => {
     console.log(username);
@@ -20,21 +21,29 @@ const Login = ({ setAuth }) => {
     setLoading(true);
     if (username === "" || password === "") {
       setError(true);
-      setLoading(false);
     } else {
       // check if password matches in database
       // if it matches, navigate to home page
-      fetch("http://127.0.0.1:5000/auth/login")
-        .then((res) => {
-          return res.json();
-        })
+      let jsonData = { username: username, password: password };
+      fetch("http://127.0.0.1:5000/auth/login", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        //make sure to serialize your JSON body
+        body: JSON.stringify(jsonData),
+      })
+        .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err)
+          // convert data to json
+          console.log(data.data);
+          if (data.data === "Success") {
+            // navigate("/home")
+          }
         });
     }
+    setLoading(false);
     event.preventDefault();
   };
 

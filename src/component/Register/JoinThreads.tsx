@@ -4,19 +4,21 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 
 const JoinThreads = ({ setActiveStep }) => {
-  // const [courses, setCourses] = useState([]);
-  const courses = ["CS180", "CS182", "CS240", "CS250", "CS251", "CS252", "CS307", "CS348", "CS407", "CS408", "CS381", "CS448"];
+  const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     // get list of courses from database
-    fetch("http://127.0.0.1:5000/auth/login")
+    fetch("http://127.0.0.1:5000/auth/register", {
+      method: "GET",
+    })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
         console.log(data);
+        setCourses(data.data)
       })
       .catch((err) => {
         console.log(err);
@@ -47,10 +49,11 @@ const JoinThreads = ({ setActiveStep }) => {
           id="selectCourses"
           options={courses}
           disableCloseOnSelect
+          getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
               <Checkbox icon={<CheckBoxOutlineBlankIcon />} checkedIcon={<CheckBoxIcon />} style={{ marginRight: 8 }} checked={selected} />
-              {option}
+              {option.name}
             </li>
           )}
           onChange={(event, value) => setSelectedCourses(value)}

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment } from "@mui/material";
-import { Button, Stepper, Step, StepLabel, Box, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Stepper, Step, StepLabel, Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Information from "./Information";
 import JoinThreads from "./JoinThreads";
@@ -27,8 +25,23 @@ const Register = ({ open, setOpen, setAuth }) => {
 
   const createAccount = () => {
     setAuth(true);
-    navigate("/home")
-    setOpen(false);
+    setLoading(true);
+    // update database with new user
+    fetch("http://127.0.0.1:5000/auth/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      // body: JSON.stringify(jsonData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        navigate("/home");
+        setOpen(false);
+        setLoading(false);
+      });
   };
 
   const isStepOptional = (step: number) => {

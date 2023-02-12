@@ -35,6 +35,7 @@ const JoinThreads = ({ setActiveStep }) => {
 
   const handleNext = () => {
     if (selectedCourses.length !== 0) {
+      // get the courses and return back to register.tsx
       setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     } else {
       setError(true);

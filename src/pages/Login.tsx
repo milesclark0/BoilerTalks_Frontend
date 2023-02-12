@@ -10,8 +10,6 @@ const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  // const navigate = useNavigate();
-  // const location = useLocation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   // setAuth(false);
@@ -26,6 +24,16 @@ const Login = ({ setAuth }) => {
     } else {
       // check if password matches in database
       // if it matches, navigate to home page
+      fetch("http://127.0.0.1:5000/auth/login")
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err)
+        });
     }
     event.preventDefault();
   };

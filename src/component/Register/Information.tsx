@@ -17,36 +17,47 @@ const Information = ({ setOpen, setActiveStep }) => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    // console.log(password);
-    // console.log(confirmPassword);
-    // let missing = false;
-    // if (firstName === "") {
-    //   setFirstNameError(true);
-    //   missing = true;
-    // }
-    // if (lastName === "") {
-    //   setLastNameError(true);
-    //   missing = true;
-    // }
-    // if (username === "") {
-    //   setUsernameError(true);
-    //   missing = true;
-    // }
-    // if (password !== confirmPassword || password === "" || confirmPassword === "") {
-    //   setPasswordError(true);
-    //   missing = true;
-    // }
+    console.log(password);
+    console.log(confirmPassword);
+    let missing = false;
+    if (firstName === "") {
+      setFirstNameError(true);
+      missing = true;
+    }
+    if (lastName === "") {
+      setLastNameError(true);
+      missing = true;
+    }
+    if (username === "") {
+      setUsernameError(true);
+      missing = true;
+    }
+    if (password !== confirmPassword || password === "" || confirmPassword === "") {
+      setPasswordError(true);
+      missing = true;
+    }
 
-    // if (!missing) {
-    //   var jsonData = {
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     username: username,
-    //     password: password,
-    //   };
-    //   setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
-    // }
-    setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+    if (!missing) {
+      var jsonData = {
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        password: password,
+      };
+      fetch("http://127.0.0.1:5000/auth/register", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        //make sure to serialize your JSON body
+        body: JSON.stringify(jsonData),
+      }).then((response) => {
+        console.log(response);
+      });
+      // setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+    }
+    // setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
   };
 
   const handleExit = () => {

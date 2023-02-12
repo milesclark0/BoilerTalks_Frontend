@@ -11,6 +11,16 @@ const JoinThreads = ({ setActiveStep }) => {
 
   useEffect(() => {
     // get list of courses from database
+    fetch("http://127.0.0.1:5000/auth/login")
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleBack = () => {

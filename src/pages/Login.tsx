@@ -12,7 +12,7 @@ const Login = ({ setAuth }) => {
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  // setAuth(false);
+  setAuth(false);
   const navigate = useNavigate();
 
   const logIn = (event) => {
@@ -36,7 +36,6 @@ const Login = ({ setAuth }) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          // convert data to json
           console.log(data.data);
           if (data.data === "Success") {
             // set login context

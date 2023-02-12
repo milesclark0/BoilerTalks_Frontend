@@ -11,6 +11,8 @@ const Register = ({ open, setOpen, setAuth }) => {
   const steps = ["Enter Information", "Choose threads to join"];
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [userCourses, setUserCourses] = useState(null);
 
   useEffect(() => {
     if (open) {
@@ -26,6 +28,7 @@ const Register = ({ open, setOpen, setAuth }) => {
   const createAccount = () => {
     setAuth(true);
     setLoading(true);
+    const jsonData = {info: userInfo, courses: userCourses}
     // update database with new user
     fetch("http://127.0.0.1:5000/auth/register", {
       method: "POST",
@@ -33,11 +36,12 @@ const Register = ({ open, setOpen, setAuth }) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      // body: JSON.stringify(jsonData),
+      body: JSON.stringify(jsonData),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        // set login context
         navigate("/home");
         setOpen(false);
         setLoading(false);

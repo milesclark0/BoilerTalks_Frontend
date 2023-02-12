@@ -39,6 +39,7 @@ const Login = ({ setAuth }) => {
           // convert data to json
           console.log(data.data);
           if (data.data === "Success") {
+            // set login context
             // navigate("/home")
           }
         });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAdornment } from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import { RegisterCourse } from "../../API/RegisterAPI";
 
 const JoinThreads = ({ setActiveStep }) => {
   const [courses, setCourses] = useState([]);
@@ -10,9 +11,7 @@ const JoinThreads = ({ setActiveStep }) => {
 
   useEffect(() => {
     // get list of courses from database
-    fetch("http://127.0.0.1:5000/auth/register", {
-      method: "GET",
-    })
+    RegisterCourse()
       .then((res) => {
         return res.json();
       })
@@ -20,9 +19,6 @@ const JoinThreads = ({ setActiveStep }) => {
         console.log(data);
         setCourses(data.data)
       })
-      .catch((err) => {
-        console.log(err);
-      });
   }, []);
 
   const handleBack = () => {

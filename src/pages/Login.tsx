@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Register from "../component/Register/Register";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { LoginAPI }  from "../API/LoginAPI";
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
@@ -24,24 +25,15 @@ const Login = ({ setAuth }) => {
     } else {
       // check if password matches in database
       // if it matches, navigate to home page
-      let jsonData = { username: username, password: password };
-      fetch("http://127.0.0.1:5000/auth/login", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        //make sure to serialize your JSON body
-        body: JSON.stringify(jsonData),
-      })
-        .then((res) => res.json())
+      LoginAPI(username, password)
+      .then((res) => res.json())
         .then((data) => {
-          console.log(data.data);
-          if (data.data === "Success") {
+          console.log(data);
+          if (data.statusCode === 200) {
             // set login context
             // navigate("/home")
           }
-        });
+        })
     }
     setLoading(false);
     event.preventDefault();

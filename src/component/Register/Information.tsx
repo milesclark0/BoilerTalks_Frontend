@@ -3,6 +3,7 @@ import { Box, TextField, InputAdornment, Button } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useNavigate } from "react-router-dom";
+import { RegisterInfo } from "../../API/RegisterAPI";
 
 const Information = ({ setOpen, setActiveStep }) => {
   const [passwordError, setPasswordError] = useState(false);
@@ -40,24 +41,13 @@ const Information = ({ setOpen, setActiveStep }) => {
     }
 
     if (!missing) {
-      var jsonData = {
-        firstName: firstName,
-        lastName: lastName,
-        username: username,
-        password: password,
-      };
-      fetch("http://127.0.0.1:5000/auth/register", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(jsonData),
-      })
+      RegisterInfo(firstName, lastName, username, password)
         .then((res) => res.json())
         .then((data) => {
           // convert data to json
           console.log(data);
+        }).catch((err) => {
+          console.log(err)
         });
       setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     }

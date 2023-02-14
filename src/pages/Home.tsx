@@ -15,7 +15,7 @@ const Home = () => {
 
   const onClick = async () => {
     try {
-      const response = await axiosPrivate.post("/auth/register");
+      const response = await axiosPrivate.get("/auth/register");
       console.log(response);
     } catch (error) {
       console.log(error);

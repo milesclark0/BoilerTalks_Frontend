@@ -100,8 +100,11 @@ const Login = () => {
           sx={{ width: "60%" }}
           helperText={error || ""}
           InputProps={{
-            endAdornment: <InputAdornment position="end">{showPassword ? <VisibilityOff /> : <Visibility />}</InputAdornment>,
-            onClick: () => setShowPassword((prev) => !prev),
+            endAdornment: (
+              <InputAdornment position="end">
+                <div onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</div>
+              </InputAdornment>
+            ),
             style: { cursor: "pointer" },
           }}
           onChange={(e) => {

@@ -14,7 +14,7 @@ const Register = ({ open, setOpen }) => {
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [userCourses, setUserCourses] = useState(null);
-  const { setUser, setIsLoggedIn } = useAuth()
+  const { signIn } = useAuth();
 
   useEffect(() => {
     if (open) {
@@ -43,10 +43,10 @@ const Register = ({ open, setOpen }) => {
       .then((data) => {
         console.log(data);
         // set login context
-        setUser({ username: userInfo.username});
-        navigate("/home");
+
         setOpen(false);
         setLoading(false);
+        signIn(data.username);
       });
   };
 

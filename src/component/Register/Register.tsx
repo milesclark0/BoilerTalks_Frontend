@@ -5,14 +5,16 @@ import { useNavigate } from "react-router-dom";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Information from "./Information";
 import JoinThreads from "./JoinThreads";
+import { useAuth } from "../../context/context";
 
-const Register = ({ open, setOpen, setAuth }) => {
+const Register = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const steps = ["Enter Information", "Choose threads to join"];
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [userCourses, setUserCourses] = useState(null);
+  const { setUser, setIsLoggedIn } = useAuth()
 
   useEffect(() => {
     if (open) {
@@ -22,11 +24,10 @@ const Register = ({ open, setOpen, setAuth }) => {
 
   const handleExit = () => {
     setOpen(false);
-    navigate("/auth/login")
+    navigate("/login")
   };
 
   const createAccount = () => {
-    setAuth(true);
     setLoading(true);
     const jsonData = {info: userInfo, courses: userCourses}
     // update database with new user
@@ -42,6 +43,7 @@ const Register = ({ open, setOpen, setAuth }) => {
       .then((data) => {
         console.log(data);
         // set login context
+        setUser({ username: userInfo.username});
         navigate("/home");
         setOpen(false);
         setLoading(false);

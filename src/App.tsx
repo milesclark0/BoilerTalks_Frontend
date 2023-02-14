@@ -1,42 +1,32 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import ProtectedRoutes from "./component/ProtectedRoutes/ProtectedRoutes";
+import ProtectedRoutes from "./component/ProtectedRoutes";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import { LoginContext } from "./context/context";
+import Home from "./pages/Home";
 import { User } from "./types/types";
+import MissingRoute from "./component/MissingRoute";
+import PersistLogin from "./component/PersistLogin";
 
 function App() {
-  const [auth, setAuth] = useState(false);
-  const [user, setUser] = useState<User | undefined>(undefined);
-
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("user");
-    if (loggedInUser) {
-      setAuth(true);
-      if (location.pathname === "/") {
-        navigate("/home");
-      } else {
-        navigate(location.pathname);
-      }
-    } else {
-      navigate("auth/login");
-    }
-  }, []);
-
   return (
-    <LoginContext.Provider value={{ user, setUser }}>
-      <div className="appDisplay">
-        <Routes>
-          <Route path="auth/login" element={<Login setAuth={setAuth} />} />
-          <Route path="auth/register" element={<Navigate to="/auth/login" replace />} />
-          <Route element={<ProtectedRoutes auth={auth} />}>{/* <Route path="/*" element={<MainPage username={username} setAuth={setAuth} /> */}</Route>
-        </Routes>
-      </div>
-    </LoginContext.Provider>
+    <div className="appDisplay">
+      <Routes>
+        {/* public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
+
+        {/* protected routes */}
+        <Route element={<PersistLogin />}>
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/home" element={<Home />} />
+          </Route>
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<MissingRoute />} />
+      </Routes>
+    </div>
   );
 }
 

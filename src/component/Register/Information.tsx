@@ -46,8 +46,9 @@ const Information = ({ setOpen, setActiveStep }) => {
         .then((data) => {
           // convert data to json
           console.log(data);
-        }).catch((err) => {
-          console.log(err)
+        })
+        .catch((err) => {
+          console.log(err);
         });
       setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     }
@@ -56,7 +57,7 @@ const Information = ({ setOpen, setActiveStep }) => {
 
   const handleExit = () => {
     setOpen(false);
-    navigate("/auth/login");
+    navigate("/login");
   };
 
   return (

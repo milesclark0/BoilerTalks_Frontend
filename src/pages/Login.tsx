@@ -1,39 +1,45 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
-import logo from "../component/Images/logo.png";
+import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import Register from "../component/Register/Register";
-import WarningIcon from "@mui/icons-material/Warning";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { LoginAPI }  from "../API/LoginAPI";
+import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
 
-const Login = ({ setAuth }) => {
+import LoadingButton from "@mui/lab/LoadingButton";
+import { LoginAPI } from "../API/AuthAPI";
+import { useAuth } from "../context/context";
+import { useLocation } from "react-router-dom";
+
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  setAuth(false);
-  const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const logIn = (event) => {
-    console.log(username);
-    console.log(password);
     setLoading(true);
     if (username === "" || password === "") {
-      setError(true);
+      setError("Please enter all fields");
     } else {
       // check if password matches in database
       // if it matches, navigate to home page
       LoginAPI(username, password)
-      .then((res) => res.json())
+        .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log(data.message);
           if (data.statusCode === 200) {
-            // set login context
-            // navigate("/home")
+            // set login context and navigate to home page
+            signIn({ username: username });
+          } else {
+            setError(data.message);
           }
         })
+        .catch((error) => {
+          console.log(error.message);
+        });
     }
     setLoading(false);
     event.preventDefault();
@@ -41,7 +47,7 @@ const Login = ({ setAuth }) => {
 
   const register = () => {
     setOpen(true);
-    window.history.replaceState(null, null, "/auth/register");
+    window.history.replaceState(null, null, "/register");
   };
 
   return (
@@ -75,17 +81,41 @@ const Login = ({ setAuth }) => {
         <img src={logo} height={100} alt="logo" />
         <TextField
           label="Username"
-          // type="email"
+          autoComplete="username"
           sx={{ width: "60%" }}
-          error={error}
-          helperText={error ? "Email Address or Password incorrect. Please try again." : ""}
-          InputProps={{
-            endAdornment: <InputAdornment position="end">{error ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
+          error={error ? true : false}
+          // InputProps={{
+          //   endAdornment: <InputAdornment position="end">{error ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
+          // }}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setError("");
           }}
-          onChange={(e) => setUsername(e.target.value)}
         />
-        <TextField label="Password" type="password" sx={{ width: "60%" }} onChange={(e) => setPassword(e.target.value)} />
-        <LoadingButton variant="contained" loading={loading} disabled={loading} sx={{ width: "60%", textTransform: "none", fontSize: 16 }} type="submit">
+        <TextField
+          label="Password"
+          autoComplete="current-password"
+          type={showPassword ? "text" : "password"}
+          error={error ? true : false}
+          sx={{ width: "60%" }}
+          helperText={error || ""}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">{showPassword ? <VisibilityOff /> : <Visibility />}</InputAdornment>,
+            onClick: () => setShowPassword((prev) => !prev),
+            style: { cursor: "pointer" },
+          }}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError("");
+          }}
+        />
+        <LoadingButton
+          variant="contained"
+          loading={loading}
+          disabled={loading}
+          sx={{ width: "60%", textTransform: "none", fontSize: 16 }}
+          type="submit"
+        >
           Log In
         </LoadingButton>
         <Divider sx={{ width: "80%" }} />
@@ -103,7 +133,7 @@ const Login = ({ setAuth }) => {
           Sign Up
         </Button>
       </Box>
-      <Register open={open} setOpen={setOpen} setAuth={setAuth} />
+      <Register open={open} setOpen={setOpen} />
     </Box>
   );
 };

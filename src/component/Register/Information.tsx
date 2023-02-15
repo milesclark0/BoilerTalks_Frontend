@@ -3,9 +3,8 @@ import { Box, TextField, InputAdornment, Button } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useNavigate } from "react-router-dom";
-import { RegisterInfo } from "../../API/RegisterAPI";
 
-const Information = ({ setOpen, setActiveStep }) => {
+const Information = ({ setOpen, setActiveStep, setUserInfo }) => {
   const [passwordError, setPasswordError] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,13 +14,9 @@ const Information = ({ setOpen, setActiveStep }) => {
   const [lastNameError, setLastNameError] = useState(false);
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleNext = () => {
-    console.log(password);
-    console.log(confirmPassword);
-    setLoading(true);
     let missing = false;
     if (firstName === "") {
       setFirstNameError(true);
@@ -41,18 +36,9 @@ const Information = ({ setOpen, setActiveStep }) => {
     }
 
     if (!missing) {
-      RegisterInfo(firstName, lastName, username, password)
-        .then((res) => res.json())
-        .then((data) => {
-          // convert data to json
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      setUserInfo({username, password, firstName, lastName});
       setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
     }
-    setLoading(false);
   };
 
   const handleExit = () => {
@@ -138,9 +124,9 @@ const Information = ({ setOpen, setActiveStep }) => {
           Cancel
         </Button>
         <Box sx={{ flex: "1 1 auto" }} />
-        <LoadingButton onClick={handleNext} variant="contained" loading={loading} disabled={loading}>
+        <Button onClick={handleNext} variant="contained">
           Next
-        </LoadingButton>
+        </Button>
       </Box>
     </Box>
   );

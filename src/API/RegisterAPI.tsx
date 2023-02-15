@@ -1,36 +1,8 @@
-export async function RegisterInfo(firstName: string, lastName: string, username: string, password: string) {
-  var auth = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  };
-  var jsonData = {
-    firstName: firstName,
-    lastName: lastName,
-    username: username,
-    password: password,
-  };
-  const res = await fetch("http://127.0.0.1:5000/auth/register", {
-    method: "POST",
-    headers: auth,
-    body: JSON.stringify(jsonData),
-  });
+import axios from "./axios";
+
+export async function RegisterAccountAPI(firstName: string, lastName: string, username: string, password: string) {
+  const data = { firstName, lastName, username, password };
+  const res = await axios.post("/auth/register", data); 
   return res;
 }
 
-export async function RegisterCourse() {
-  const res = await fetch("http://127.0.0.1:5000/auth/register", {
-    method: "GET",
-  });
-  return res;
-}
-
-export async function RegisterAccount(userInfo: { [key: string]: string }, userCourses: string[]) {
-  var auth = { Accept: "application/json", "Content-Type": "application/json" };
-  const jsonData = { info: userInfo, courses: userCourses };
-  const res = await fetch("http://127.0.0.1:5000/auth/register", {
-    method: "POST",
-    headers: auth,
-    body: JSON.stringify(jsonData),
-  });
-  return res;
-}

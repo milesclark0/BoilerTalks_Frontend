@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
-import { Stepper, Step, StepLabel, Box, Typography } from "@mui/material";
+import { Stepper, Step, StepLabel, Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Information from "./Information";
 import JoinThreads from "./JoinThreads";
 import { useAuth } from "../../context/context";
+import { RegisterAccountAPI } from "../../API/RegisterAPI";
+import { LoginAPI } from "../../API/AuthAPI";
+
 
 const Register = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const steps = ["Enter Information", "Choose threads to join"];
   const [activeStep, setActiveStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string, username: string, password: string}>(null);
   const [userCourses, setUserCourses] = useState(null);
+  const [error, setError] = useState("");
   const { signIn } = useAuth();
 
   useEffect(() => {
@@ -27,32 +30,32 @@ const Register = ({ open, setOpen }) => {
     navigate("/login")
   };
 
-  const createAccount = () => {
-    setLoading(true);
-    const jsonData = {info: userInfo, courses: userCourses}
-    // update database with new user
-    fetch("http://127.0.0.1:5000/auth/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(jsonData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        // set login context
-
-        setOpen(false);
-        setLoading(false);
-        signIn(data.username);
-      });
+  const finishAccount = async () => {
+    //call api to create account and login then sign in
+    try {
+      const res = await RegisterAccountAPI(userInfo?.username, userInfo?.password, userInfo?.lastName, userInfo?.firstName);
+      if (res.data.statusCode === 200) {
+          console.log(res);
+          // set login context and navigate to home page
+          const loginResponse = await LoginAPI(userInfo?.username, userInfo?.password);
+          if (loginResponse.data.statusCode === 200) {
+            signIn({ username: userInfo?.username });
+          } else {
+            setError(loginResponse.data.message);
+          }
+        } else {
+          setError(res.data.message);
+        }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
 
   const isStepOptional = (step: number) => {
     return step === 1;
   };
+
 
   return (
     <Dialog open={open} onClose={handleExit}>
@@ -83,14 +86,14 @@ const Register = ({ open, setOpen }) => {
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1, textAlign: "center" }}>All steps completed - you&apos;re finished</Typography>
             <Box sx={{ display: "flex",justifyContent:"center", alignItems:"center" }}>
-              <LoadingButton variant="contained" loading={loading} disabled={loading} onClick={createAccount} color="success">
+              <Button variant="contained" onClick={finishAccount} color="success">
                 Create New Account
-              </LoadingButton>
+              </Button>
             </Box>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            {activeStep === 0 ? <Information setOpen={setOpen} setActiveStep={setActiveStep} /> : <JoinThreads setActiveStep={setActiveStep} />}
+            {activeStep === 0 ? <Information setOpen={setOpen} setActiveStep={setActiveStep} setUserInfo={setUserInfo} /> : <JoinThreads setActiveStep={setActiveStep} setUserCourses={setUserCourses} />}
           </React.Fragment>
         )}
       </DialogContent>

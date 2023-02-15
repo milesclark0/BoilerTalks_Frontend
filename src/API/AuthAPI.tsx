@@ -8,7 +8,7 @@ export const LoginAPI = async (username: string, password: string) => {
     credentials: "include",
     body: JSON.stringify({ username: username, password: password }),
   })
-  return res;
+  return await res.json();
 };
 
 export const LogoutAPI = async () => {

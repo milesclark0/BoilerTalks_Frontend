@@ -7,6 +7,8 @@ import Home from "./pages/Home";
 import { User } from "./types/types";
 import MissingRoute from "./component/MissingRoute";
 import PersistLogin from "./component/PersistLogin";
+import Register from "./pages/Register";
+import ChooseThreads from "./component/Register/ChooseThreads";
 
 function App() {
   return (
@@ -14,7 +16,9 @@ function App() {
       <Routes>
         {/* public routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/chooseThreads" element={<ChooseThreads />} />
 
         {/* protected routes */}
         <Route element={<PersistLogin />}>

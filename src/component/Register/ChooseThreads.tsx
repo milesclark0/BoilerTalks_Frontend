@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAdornment } from "@mui/material";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import useAxiosPrivate from './../../hooks/useAxiosPrivate';
+import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
 
-const JoinThreads = ({ setActiveStep , setUserCourses}) => {
+const ChooseThreads = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState(false);
-  const axiosPrivate = useAxiosPrivate()
+  const axiosPrivate = useAxiosPrivate();
 
   // get list of courses from database
   const getCourses = async () => {
@@ -24,20 +24,20 @@ const JoinThreads = ({ setActiveStep , setUserCourses}) => {
     getCourses();
   }, []);
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep: number) => prevActiveStep - 1);
-  };
+  const handleSkip = () => {};
 
-  const handleSkip = () => {
-    setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
-  };
-
-  const handleNext = () => {
-      setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
-  };
+  const handleNext = () => {};
 
   return (
-    <Box>
+    <Box
+      sx={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Box sx={{ mt: 3 }}>
         <Autocomplete
           multiple
@@ -51,7 +51,7 @@ const JoinThreads = ({ setActiveStep , setUserCourses}) => {
               {option.name + " - " + option.semester}
             </li>
           )}
-          onChange={(event, value) => setUserCourses(value)}
+          onChange={(event, value) => setCourses(value)}
           style={{ width: 500 }}
           renderInput={(params) => <TextField {...params} label="Select Courses" placeholder="Courses" />}
         />
@@ -60,9 +60,6 @@ const JoinThreads = ({ setActiveStep , setUserCourses}) => {
         </FormHelperText>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-        <Button color="inherit" sx={{ mr: 1 }} onClick={handleBack}>
-          Back
-        </Button>
         <Box sx={{ flex: "1 1 auto" }} />
         <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
           Skip
@@ -75,4 +72,4 @@ const JoinThreads = ({ setActiveStep , setUserCourses}) => {
   );
 };
 
-export default JoinThreads;
+export default ChooseThreads;

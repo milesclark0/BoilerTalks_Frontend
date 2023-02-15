@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import Register from "../component/Register/Register";
+// import Register from "../component/Register/Register";
 import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -18,6 +18,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const logIn = (event) => {
     setLoading(true);
@@ -46,8 +47,9 @@ const Login = () => {
   };
 
   const register = () => {
-    setOpen(true);
-    window.history.replaceState(null, null, "/register");
+    // setOpen(true);
+    // window.history.replaceState(null, null, "/register");
+    navigate("/register")
   };
 
   return (
@@ -136,7 +138,7 @@ const Login = () => {
           Sign Up
         </Button>
       </Box>
-      <Register open={open} setOpen={setOpen} />
+      {/* <Register open={open} setOpen={setOpen} /> */}
     </Box>
   );
 };

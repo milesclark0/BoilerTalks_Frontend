@@ -5,7 +5,7 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { User } from "./types/types";
-import MissingRoute from "./component/MissingRoute";
+import MissingRoute from "./pages/MissingRoute";
 import PersistLogin from "./component/PersistLogin";
 import Register from "./pages/Register";
 import ChooseThreads from "./component/Register/ChooseThreads";

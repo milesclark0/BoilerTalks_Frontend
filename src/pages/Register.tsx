@@ -27,11 +27,12 @@ const Register = () => {
   const { signIn } = useAuth();
   const [error, setError] = useState("");
   
-  const logIn = () => {
+  const navigateToLogin = () => {
     navigate("/login");
   };
 
-  const createAccount = async () => {
+  const createAccount = async (e) => {
+    e.preventDefault();
     //call api to create account and login then sign in
     setLoading(true);
     try {
@@ -179,7 +180,7 @@ const Register = () => {
           <Typography variant="body1">Already have an account?</Typography>
           <Button
             variant="contained"
-            onClick={logIn}
+            onClick={navigateToLogin}
             sx={{
               width: "40%",
               textTransform: "none",

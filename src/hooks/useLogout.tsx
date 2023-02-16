@@ -7,10 +7,12 @@ const useLogout = () => {
   const logout = async () => {
     signOut();
     try {
-      console.log("logging out");
-
       const response = await LogoutAPI();
-      console.log(response);
+      if (response.data.statusCode === 200) {
+        console.log("logged out");
+      } else {
+        console.log(response.data.message);
+      }
     } catch (error) {
       console.log(error);
     }

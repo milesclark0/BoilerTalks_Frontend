@@ -3,16 +3,17 @@ import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAd
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import useAxiosPrivate from './../../hooks/useAxiosPrivate';
+import { getAllCoursesURL } from "../../API/CoursesAPI";
 
 const JoinThreads = ({ setActiveStep , setUserCourses}) => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState(false);
-  const axiosPrivate = useAxiosPrivate()
+  const api = useAxiosPrivate()
 
   // get list of courses from database
   const getCourses = async () => {
     try {
-      const res = await axiosPrivate.get("/courses/getAllCourses");
+      const res = await api.get(getAllCoursesURL);
       console.log(res.data);
       setCourses(res.data.data);
     } catch (error) {

@@ -1,18 +1,21 @@
-import axios from "axios";
+import axios from "../API/axios";
 import { useAuth } from "../context/context";
+import useLogout from "./useLogout";
 
 const useRefreshToken = () => {
-  const { setIsLoggedIn } = useAuth();
+  const { setIsLoggedIn, signIn,  } = useAuth();
+  const logout = useLogout();
 
   const refreshToken = async () => {
-    const response = await axios.get("http://127.0.0.1:5000/auth/refresh", {
+    const response = await axios.get("auth/refresh", {
       withCredentials: true,
     });
-    if (response.status === 200) {
-        //cookies should be set with new access token
-      setIsLoggedIn(true);
+    if (response.data.statusCode === 200) {
+      //token refreshed
+      signIn({ username: response.data.data.username });
     } else {
-      setIsLoggedIn(false);
+      //token expired
+      logout();
     }
     return response.data.accessToken;
   };

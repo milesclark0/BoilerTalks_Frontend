@@ -27,16 +27,19 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const from = location.state?.from || "/home";
   const [user, setUser] = useState<User>({ username: Cookies.get("user") });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const signOut = () => {
     setUser(undefined);
     setIsLoggedIn(false);
     Cookies.remove("user");
     navigate("/login", { state: { from: location }, replace: true });
   };
+
   const signIn = (user: User) => {
     setUser(user);
     setIsLoggedIn(true);
     Cookies.set("user", user?.username);
+    console.log("signed in: navigate to", from.pathname);
     navigate(from, { replace: true });
   };
 

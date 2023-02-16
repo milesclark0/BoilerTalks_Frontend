@@ -19,37 +19,31 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
-
-  const logIn = (event) => {
+  
+  const handleLogin = async (event) => {
+    event.preventDefault();
     setLoading(true);
+    console.log(username, password);
     if (username === "" || password === "") {
       setError("Please enter all fields");
-    } else {
-      // check if password matches in database
-      // if it matches, navigate to home page
-      LoginAPI(username, password)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data.message);
-          if (data.statusCode === 200) {
-            // set login context and navigate to home page
-            signIn({ username: username });
-          } else {
-            setError(data.message);
-          }
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
+      return;
+    }
+    //call api to login and sign in
+    try {
+      const res = await LoginAPI(username, password);
+      console.log(res);
+      if (res.data.statusCode === 200) {
+        // sign in (and navigate to home page)
+        signIn({ username: username });
+      }
+    } catch (error) {
+      console.log(error);
     }
     setLoading(false);
-    event.preventDefault();
   };
 
-  const register = () => {
-    // setOpen(true);
-    // window.history.replaceState(null, null, "/register");
-    navigate("/register")
+  const navigateToRegister = () => {
+    navigate("/register");
   };
 
   return (
@@ -78,7 +72,7 @@ const Login = () => {
         component="form"
         noValidate
         autoComplete="off"
-        onSubmit={logIn}
+        onSubmit={handleLogin}
       >
         <img src={logo} height={100} alt="logo" />
         <TextField
@@ -127,7 +121,7 @@ const Login = () => {
         <Typography variant="body1">Don't have an account?</Typography>
         <Button
           variant="contained"
-          onClick={register}
+          onClick={navigateToRegister}
           sx={{
             width: "40%",
             textTransform: "none",
@@ -138,7 +132,6 @@ const Login = () => {
           Sign Up
         </Button>
       </Box>
-      {/* <Register open={open} setOpen={setOpen} /> */}
     </Box>
   );
 };

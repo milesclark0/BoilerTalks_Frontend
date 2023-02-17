@@ -82,8 +82,8 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
     setUserCourses(newCourses);
   };
 
-  const filterCourses = (index: number) => {
-    if (courseFilters[index] === "" || courseFilters[index] === null) {
+  const filterCourses = (index: number) => {    
+    if (!courseFilters[index]) {
       return courses;
     }
     return courses.filter((course) => course.department === courseFilters[index] || course.department === "");
@@ -108,7 +108,6 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
         //console.log(response);
         if (response.status === 200) {
           setCourses([structuredClone(emptyCourse), ...response.data.data]);
-          setUserFilteredCourses([structuredClone(emptyCourse), ...response.data.data]);
         }
       } catch (error) {
         console.log(error);

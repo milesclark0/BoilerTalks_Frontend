@@ -10,3 +10,13 @@ body {
 .MuiFormHelperText-root {
   margin-left: 0 !important;
 }
+
+/* scrollbar css */
+.scrollBar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollBar::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #c2c9d2;
+}

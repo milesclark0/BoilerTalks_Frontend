@@ -3,16 +3,19 @@ import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, InputAd
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
+import { getAllCoursesURL } from "../../API/CoursesAPI";
 
 const ChooseThreads = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const api = useAxiosPrivate();
+  const navigate = useNavigate();
 
   // get list of courses from database
   const getCourses = async () => {
     try {
-      const res = await axiosPrivate.get("/courses/getAllCourses");
+      const res = await api.get(getAllCoursesURL);
       console.log(res.data);
       setCourses(res.data.data);
     } catch (error) {
@@ -24,9 +27,14 @@ const ChooseThreads = () => {
     getCourses();
   }, []);
 
-  const handleSkip = () => {};
+  const navigateHome = () => {
+    navigate("/home")
+  };
 
-  const handleNext = () => {};
+  const handleNext = () => {
+    // check if anything is selected
+    // if nothing is selected, display error
+  };
 
   return (
     <Box
@@ -51,7 +59,7 @@ const ChooseThreads = () => {
               {option.name + " - " + option.semester}
             </li>
           )}
-          onChange={(event, value) => setCourses(value)}
+          onChange={(e, value) => setCourses(value)}
           style={{ width: 500 }}
           renderInput={(params) => <TextField {...params} label="Select Courses" placeholder="Courses" />}
         />
@@ -61,7 +69,7 @@ const ChooseThreads = () => {
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Box sx={{ flex: "1 1 auto" }} />
-        <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+        <Button color="inherit" onClick={navigateHome} sx={{ mr: 1 }}>
           Skip
         </Button>
         <Button onClick={handleNext} variant="contained">

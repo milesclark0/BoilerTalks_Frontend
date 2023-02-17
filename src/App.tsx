@@ -18,11 +18,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/chooseThreads" element={<ChooseThreads />} />
 
         {/* protected routes */}
         <Route element={<PersistLogin />}>
           <Route element={<ProtectedRoutes />}>
+            <Route path="/chooseThreads" element={<ChooseThreads />} />
             <Route path="/home" element={<Home />} />
           </Route>
         </Route>

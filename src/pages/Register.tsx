@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
+import { Box, Button, Typography, TextField, Divider, InputAdornment, FormHelperText } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
-
 import LoadingButton from "@mui/lab/LoadingButton";
 import { LoginAPI } from "../API/AuthAPI";
 import { useLocation } from "react-router-dom";
@@ -26,7 +25,7 @@ const Register = () => {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [error, setError] = useState("");
-  
+
   const navigateToLogin = () => {
     navigate("/login");
   };
@@ -35,23 +34,50 @@ const Register = () => {
     e.preventDefault();
     //call api to create account and login then sign in
     setLoading(true);
-    try {
-      const res = await RegisterAccountAPI(username, password, lastName, firstName, email);
-      if (res.data.statusCode === 200) {
+    let missing = false;
+    if (firstName === "") {
+      setFirstNameError(true);
+      missing = true;
+    }
+    if (lastName === "") {
+      setLastNameError(true);
+      missing = true;
+    }
+    if (username === "") {
+      setUsernameError(true);
+      missing = true;
+    }
+    if (email === "") {
+      setEmailError(true);
+      missing = true;
+    }
+    if (password !== confirmPassword || password === "" || confirmPassword === "") {
+      setPasswordError(true);
+      missing = true;
+    }
+    if (password == confirmPassword) {
+      setPasswordError(false)
+    }
+
+    if (!missing) {
+      try {
+        const res = await RegisterAccountAPI(firstName, lastName, username, password, email);
         console.log(res);
-        // set login context and navigate to home page
-        navigate("/chooseThreads");
-        // const loginResponse = await LoginAPI(username, password);
-        // if (loginResponse.data.statusCode === 200) {
-        //   signIn({ username: username });
-        // } else {
-        //   setError(loginResponse.data.message);
-        // }
-      } else {
-        setError(res.data.message);
+        if (res.data.statusCode === 200) {
+          // set login context and navigate to home page
+          navigate("/chooseThreads");
+          // const loginResponse = await LoginAPI(username, password);
+          // if (loginResponse.data.statusCode === 200) {
+          //   signIn({ username: username });
+          // } else {
+          //   setError(loginResponse.data.message);
+          // }
+        } else {
+          setError(res.data.data.join(", "));
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
     setLoading(false);
   };
@@ -77,20 +103,35 @@ const Register = () => {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          "& > :not(style)": { m: 1 },
+          // "& > :not(style)": { m: 1 },
         }}
         component="form"
         noValidate
         autoComplete="off"
         onSubmit={createAccount}
       >
-        <Typography variant="h4">Sign up now!</Typography>
-        <Box sx={{ width: "70%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+        <Box sx={{ height: "10%", display: "flex", alignItems: "flex-end" }}>
+          <Typography sx={{ fontSize: 40 }}>Sign up now!</Typography>
+        </Box>
+        <Box
+          sx={{
+            height: "62%",
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "column",
+            overflowY: "auto",
+          }}
+          className="scrollBar"
+        >
+          <FormHelperText sx={{ fontSize: "14px", width: "70%", mb: 2 }} error>
+            {error || ""}
+          </FormHelperText>
           <TextField
             autoFocus
             margin="dense"
             label="First Name"
-            fullWidth
             required
             inputProps={{ maxLength: 15 }}
             InputProps={{
@@ -98,13 +139,15 @@ const Register = () => {
             }}
             error={firstNameError}
             helperText={firstNameError ? "Please enter a first name." : ""}
-            onChange={(e) => setFirstName(e.target.value)}
-            sx={{ mt: 3 }}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              setFirstNameError(false);
+            }}
+            sx={{ width: "70%" }}
           />
           <TextField
             margin="dense"
             label="Last Name"
-            fullWidth
             required
             inputProps={{ maxLength: 15 }}
             InputProps={{
@@ -112,31 +155,41 @@ const Register = () => {
             }}
             error={lastNameError}
             helperText={lastNameError ? "Please enter a last name." : ""}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={(e) => {
+              setLastName(e.target.value);
+              setLastNameError(false);
+            }}
+            sx={{ width: "70%" }}
           />
           <TextField
             margin="dense"
             label="Email"
-            fullWidth
             required
             error={emailError}
             helperText={emailError ? "Please enter an email." : ""}
             InputProps={{
               endAdornment: <InputAdornment position="end">{emailError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
             }}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError(false);
+            }}
+            sx={{ width: "70%" }}
           />
           <TextField
             margin="dense"
             label="Username"
-            fullWidth
             required
             error={usernameError}
             helperText={usernameError ? "Please enter a username." : ""}
             InputProps={{
               endAdornment: <InputAdornment position="end">{usernameError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
             }}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setUsernameError(false);
+            }}
+            sx={{ width: "70%" }}
           />
           <TextField
             margin="dense"
@@ -146,17 +199,16 @@ const Register = () => {
             InputProps={{
               endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
             }}
-            fullWidth
             required
             error={passwordError}
             helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{ width: "70%" }}
           />
           <TextField
             margin="dense"
             label="Confirm Password"
             type="password"
-            fullWidth
             inputProps={{ maxLength: 30 }}
             InputProps={{
               endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
@@ -165,7 +217,10 @@ const Register = () => {
             error={passwordError}
             helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            sx={{ width: "70%" }}
           />
+        </Box>
+        <Box sx={{ height: "27%", width: "70%", display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "column" }}>
           <LoadingButton
             variant="contained"
             loading={loading}
@@ -185,7 +240,7 @@ const Register = () => {
               width: "40%",
               textTransform: "none",
               fontSize: 16,
-              mt: 2
+              mt: 2,
             }}
           >
             Back to Log In

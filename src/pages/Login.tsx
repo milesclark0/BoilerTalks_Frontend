@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-// import Register from "../component/Register/Register";
-import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import { LoginAPI } from "../API/AuthAPI";
@@ -14,14 +13,13 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
-  
-  const handleLogin = async (event) => {
-    event.preventDefault();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
     console.log(username, password);
     if (username === "" || password === "") {
@@ -43,7 +41,7 @@ const Login = () => {
     }
     setLoading(false);
   };
-
+  
   const navigateToRegister = () => {
     navigate("/register");
   };
@@ -62,8 +60,8 @@ const Login = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: 8,
-          height: "70%",
-          width: "50%",
+          height: "75%",
+          width: "55%",
           borderRadius: 5,
           display: "flex",
           justifyContent: "center",

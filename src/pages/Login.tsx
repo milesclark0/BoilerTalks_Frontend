@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-// import Register from "../component/Register/Register";
-import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 import { LoginAPI } from "../API/AuthAPI";
@@ -14,18 +13,18 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
   
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
     console.log(username, password);
     if (username === "" || password === "") {
       setError("Please enter all fields");
+      setLoading(false);
       return;
     }
     //call api to login and sign in
@@ -35,6 +34,8 @@ const Login = () => {
       if (res.data.statusCode === 200) {
         // sign in (and navigate to home page)
         signIn({ username: username });
+      } else {
+        setError("Username or password is incorrect.")
       }
     } catch (error) {
       console.log(error);

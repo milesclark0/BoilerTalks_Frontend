@@ -14,7 +14,7 @@ const Register = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const steps = ["Enter Information", "Choose threads to join"];
   const [activeStep, setActiveStep] = useState(0);
-  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string, username: string, password: string}>(null);
+  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string, username: string, password: string, email: string}>(null);
   const [userCourses, setUserCourses] = useState(null);
   const [error, setError] = useState("");
   const { signIn } = useAuth();
@@ -33,13 +33,13 @@ const Register = ({ open, setOpen }) => {
   const finishAccount = async () => {
     //call api to create account and login then sign in
     try {
-      const res = await RegisterAccountAPI(userInfo?.username, userInfo?.password, userInfo?.lastName, userInfo?.firstName);
+      const res = await RegisterAccountAPI(userInfo?.username, userInfo?.password, userInfo?.lastName, userInfo?.firstName, userInfo?.email);
       if (res.data.statusCode === 200) {
           console.log(res);
           // set login context and navigate to home page
           const loginResponse = await LoginAPI(userInfo?.username, userInfo?.password);
           if (loginResponse.data.statusCode === 200) {
-            signIn({ username: userInfo?.username });
+            signIn(res.data.data.user);
           } else {
             setError(loginResponse.data.message);
           }

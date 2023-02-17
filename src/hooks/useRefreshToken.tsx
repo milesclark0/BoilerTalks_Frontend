@@ -12,7 +12,9 @@ const useRefreshToken = () => {
     });
     if (response.data.statusCode === 200) {
       //token refreshed
-      signIn({ username: response.data.data.username });
+      console.log(response);
+      
+      signIn(response.data.data.user);
     } else {
       //token expired
       logout();

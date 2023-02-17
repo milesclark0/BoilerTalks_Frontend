@@ -34,7 +34,9 @@ const Login = () => {
       console.log(res);
       if (res.data.statusCode === 200) {
         // sign in (and navigate to home page)
-        signIn({ username: username });
+        signIn(res.data.data.user);
+      } else {
+        setError(res.data.message);
       }
     } catch (error) {
       console.log(error);

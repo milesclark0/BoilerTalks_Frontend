@@ -55,6 +55,9 @@ const Register = () => {
       setPasswordError(true);
       missing = true;
     }
+    if (password == confirmPassword) {
+      setPasswordError(false)
+    }
 
     if (!missing) {
       try {

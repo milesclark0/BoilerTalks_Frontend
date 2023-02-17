@@ -58,7 +58,7 @@ const Register = () => {
 
     if (!missing) {
       try {
-        const res = await RegisterAccountAPI(username, password, lastName, firstName, email);
+        const res = await RegisterAccountAPI(firstName, lastName, username, password, email);
         console.log(res);
         if (res.data.statusCode === 200) {
           // set login context and navigate to home page

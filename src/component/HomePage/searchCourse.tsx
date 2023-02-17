@@ -1,12 +1,13 @@
-import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete } from "@mui/material";
+import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { getAllCoursesURL } from "./../../API/CoursesAPI";
-import CloseIcon from "@mui/icons-material/Close";
+import { getAllCoursesURL, subscribeToCourseURL } from "./../../API/CoursesAPI";
 import { Course } from "../../types/types";
 import { useAuth } from "../../context/context";
 import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type Props = {
   showCourses: boolean;
@@ -37,7 +38,7 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
   // tracks the current courses the user added
   const [userCourses, setUserCourses] = useState<Course[]>([emptyCourse]);
   // tracks the current courses the user is in
-  const currentCourses = new Map();
+  const currentCourses = new Map<string, boolean>();
   // tracks the unique departments in course list
   const departments = new Set<string>();
 
@@ -57,6 +58,9 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
     }
     const newCourses = [...userCourses];
     newCourses.splice(index, 1);
+    const newFilters = [...courseFilters];
+    newFilters.splice(index, 1);
+    setUserFilteredCourses(newFilters);
     setUserCourses(newCourses);
   };
 
@@ -78,11 +82,16 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
     const newCourses = structuredClone(userCourses);
     //save the course name to the added course list and set the corresponding department
     newCourses[index].name = value;
-    newCourses[index].department = value.split(" ")[0];
     setUserCourses(newCourses);
+
+    newCourses[index].department = value.split(" ")[0];
+    //update the filter for the changed course
+    const courseFilter = courseFilters;
+    courseFilter[index] = value.split(" ")[0];
+    setUserFilteredCourses(courseFilter);
   };
 
-  const filterCourses = (index: number) => {    
+  const filterCourses = (index: number) => {
     if (!courseFilters[index]) {
       return courses;
     }
@@ -116,25 +125,39 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
     getCourses();
   }, []);
 
-
   // save the current courses the user is in in a map for easy access
-  useEffect(() => {
-    const saveCurrentCourses = () => {
-      if (user) {
-        user.courses.forEach((userCourse) => {
-          courses.forEach((course) => {
-            if (course.name === userCourse) {
-              currentCourses.set(course, true);
-            }
-          });
-        });
+  const cacheCurrentCourses = () => {
+    if (user) {
+      user.courses.forEach((userCourse) => {
+        currentCourses.set(userCourse, true);
+      });
+    }
+  };
+  cacheCurrentCourses();
+
+  const subscribeToCourses = async () => {
+    try {
+      const courseNames = userCourses
+        .map((course) => course.name)
+        .filter((course) => course !== "")
+        .filter((course) => !currentCourses.has(course));
+      const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
+      if (response.data.statusCode === 200) {
+        setShowCourses(false);
+        //update the user context
+        user.courses.push(...courseNames);
+      } else {
+        console.log(response.data.message);
+        //TODO: handle error
       }
-    };
-    saveCurrentCourses();
-  }, [courses]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const courseEntry = (course: Course, index: number) => {
     let departmentFilter = "";
+    cacheCurrentCourses();
     return (
       <Box key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction={"row"} spacing={2} sx={{ width: "600px" }}>
@@ -172,9 +195,33 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
             }}
             renderInput={(params) => <TextField {...params} label="" placeholder="Course Name / Number" />}
           />
-          <IconButton disabled={currentCourses.get(course)} onClick={() => handleCourseIconClick(index)}>
-            {currentCourses.get(course) ? <CheckIcon /> : <CloseIcon />}
-          </IconButton>
+          <Stack spacing={2} direction="row">
+            <IconButton
+              disableRipple
+              sx={{
+                pointerEvents: currentCourses.get(course.name) ? "auto" : "none",
+              }}
+            >
+              <Tooltip title={currentCourses.get(course.name) ? "Subscribed" : "Delete"}>
+                <CheckCircleOutlineIcon
+                  color={currentCourses.get(course.name) ? "success" : "disabled"}
+                />
+              </Tooltip>
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                handleCourseIconClick(index);
+              }}
+              disabled={userCourses.length === 1}
+              sx={{
+                pointerEvents: userCourses.length === 1 ? "none" : "auto",
+              }}
+            >
+              <Tooltip title={userCourses.length === 1 ? "" : "Delete"}>
+                <DeleteIcon />
+              </Tooltip>
+            </IconButton>
+          </Stack>
         </Stack>
       </Box>
     );
@@ -185,55 +232,83 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
       <Box
         sx={{
           position: "absolute",
-          top: "20%",
+          top: "50%",
           left: "50%",
           width: 600,
           transform: "translate(-50%, -50%)",
           bgcolor: "white",
           borderRadius: "10px",
           boxShadow: 24,
-          p: 4,
+          p: 2,
+          paddingRight: 4,
           display: "flex",
+          maxHeight: 450,
         }}
       >
+        <IconButton
+          onClick={() => setShowCourses(false)}
+          sx={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
         <Stack direction={"column"}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "left",
-              mb: "10px",
+              paddingBottom: 2,
             }}
           >
             <Typography variant="h4">Add Courses</Typography>
-          </Box>{" "}
-          {/* <Stack direction={"row"} spacing={8}>
-            <Typography variant="body1">Department</Typography>
-            <Typography variant="body1">Course Name/Course Number</Typography>
-          </Stack> */}
-          <IconButton
-            onClick={() => setShowCourses(false)}
+          </Box>
+          <Box
             sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
+              overflow: "hidden",
+              overflowY: "auto",
             }}
           >
-            <CloseIcon />
-          </IconButton>
-          {userCourses.map((course, index) => {
-            return courseEntry(course, index);
-          })}
-          <IconButton
-            onClick={addEmptyCourse}
+            {userCourses.map((course, index) => {
+              return courseEntry(course, index);
+            })}
+          </Box>
+          <Stack
             sx={{
-              position: "absolute",
-              bottom: 0,
-              right: "50%",
+              justifyContent: "space-between",
+              paddingTop: 2,
+              display: "flex",
             }}
           >
-            <AddIcon />
-          </IconButton>
+            <Box
+              sx={{
+                justifyContent: "center",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <IconButton
+                onClick={addEmptyCourse}
+                sx={{
+                  width: "40px",
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
+            <Stack direction={"row"} spacing={2}>
+              <Box flexGrow={1}></Box>
+              <Button variant="contained" onClick={subscribeToCourses}>
+                Subscribe
+              </Button>
+              <Button variant="outlined"  onClick={() => setShowCourses(false)}>
+                Cancel
+              </Button>
+            </Stack>
+          </Stack>
         </Stack>
       </Box>
     </Modal>

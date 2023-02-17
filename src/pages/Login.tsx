@@ -24,21 +24,20 @@ const Login = () => {
     console.log(username, password);
     if (username === "" || password === "") {
       setError("Please enter all fields");
-      setLoading(false);
-      return;
-    }
-    //call api to login and sign in
-    try {
-      const res = await LoginAPI(username, password);
-      console.log(res);
-      if (res.data.statusCode === 200) {
-        // sign in (and navigate to home page)
-        signIn({ username: username });
-      } else {
-        setError("Username or password is incorrect.")
+    } else {
+      //call api to login and sign in
+      try {
+        const res = await LoginAPI(username, password);
+        console.log(res);
+        if (res.data.statusCode === 200) {
+          // sign in (and navigate to home page)
+          signIn({ username: username });
+        } else {
+          setError("Username or password is incorrect.");
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
     setLoading(false);
   };
@@ -61,8 +60,8 @@ const Login = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: 8,
-          height: "70%",
-          width: "50%",
+          height: "75%",
+          width: "55%",
           borderRadius: 5,
           display: "flex",
           justifyContent: "center",

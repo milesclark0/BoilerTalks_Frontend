@@ -61,7 +61,6 @@ const Register = () => {
         const res = await RegisterAccountAPI(username, password, lastName, firstName, email);
         console.log(res);
         if (res.data.statusCode === 200) {
-          console.log(res);
           // set login context and navigate to home page
           navigate("/chooseThreads");
           // const loginResponse = await LoginAPI(username, password);

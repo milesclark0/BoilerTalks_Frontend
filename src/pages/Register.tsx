@@ -64,14 +64,12 @@ const Register = () => {
         const res = await RegisterAccountAPI(firstName, lastName, username, password, email);
         console.log(res);
         if (res.data.statusCode === 200) {
-          // set login context and navigate to home page
-          navigate("/chooseThreads");
-          // const loginResponse = await LoginAPI(username, password);
-          // if (loginResponse.data.statusCode === 200) {
-          //   signIn({ username: username });
-          // } else {
-          //   setError(loginResponse.data.message);
-          // }
+          // set login context
+          const loginResponse = await LoginAPI(username, password);
+          if (loginResponse.data.statusCode === 200) {
+            signIn({ username: username });
+            navigate("/chooseThreads");
+          }
         } else {
           setError(res.data.data.join(", "));
         }

@@ -4,35 +4,36 @@ import { useState } from "react";
 import useLogout from "../hooks/useLogout";
 import SearchCourse from "../component/HomePage/searchCourse";
 import SideBar from "../component/HomePage/sideBar";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { Course } from "../types/types";
 
 const Home = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const logout = useLogout();
   const [showCourses, setShowCourses] = useState(false);
-  
-  const onSignOut = () => {
-    logout();
+  const [activeIcon, setActiveIcon] = useState<{ course: String; isActiveCourse: boolean }>({ course: "", isActiveCourse: false });
+
+  const sideBarProps = {
+    user,
+    activeIcon,
+    setActiveIcon,
+    drawerWidth: 300,
+    innerDrawerWidth: 85,
   };
 
-
-
-  const onClick = async () => {
-    try {
-      const response = await axiosPrivate.post("/auth/register");
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-      //logout();
-    }
+  const searchCourseProps = {
+    user,
+    showCourses,
+    setShowCourses,
   };
+
   return (
     <Box sx={{ display: "flex" }}>
-      <SideBar user={user}/>
-      <button onClick={() => onSignOut()}>Sign Out</button>
-      <button onClick={() => setShowCourses(true)}>Add Courses</button>
-      <SearchCourse showCourses={showCourses} setShowCourses={setShowCourses} />
+      <SideBar {...sideBarProps} />
+      <SearchCourse {...searchCourseProps} />
+      <Box sx={{ marginLeft: `${sideBarProps.drawerWidth}px`}}>
+        <Button onClick={() => setShowCourses(true)}>Add Courses</Button>
+      </Box>
     </Box>
   );
 };

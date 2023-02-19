@@ -2,14 +2,14 @@ import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, Ico
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { getAllCoursesURL, subscribeToCourseURL } from "./../../API/CoursesAPI";
-import { Course } from "../../types/types";
-import { useAuth } from "../../context/context";
+import { Course, User } from "../../types/types";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 type Props = {
+  user: User;
   showCourses: boolean;
   setShowCourses: (value: boolean) => void;
 };
@@ -28,9 +28,8 @@ const emptyCourse: Course = {
   department: "",
 };
 
-const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
+const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
   const api = useAxiosPrivate();
-  const { user } = useAuth();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
   // tracks the current filter for each course

@@ -6,7 +6,7 @@ body {
   margin: 0;
 }
 
-/* moves helpertext to the very left */
+/* moves helper text to the very left */
 .MuiFormHelperText-root {
   margin-left: 0 !important;
 }

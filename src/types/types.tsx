@@ -7,6 +7,7 @@ export type User = {
   _id: {$oid: string};
   profilePicture: string;
   courses: string[];
+  activeCourses: string[];
   blockedUsers: string[];
   creationDate: {$date: string};
 };

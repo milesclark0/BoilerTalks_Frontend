@@ -1,20 +1,21 @@
-import React from "react";
 import { useAuth } from "../context/context";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useLogout from "../hooks/useLogout";
 import SearchCourse from "../component/HomePage/searchCourse";
-import Modal from "@mui/material/Modal";
+import SideBar from "../component/HomePage/sideBar";
+import { Box } from "@mui/material";
 
 const Home = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const logout = useLogout();
   const [showCourses, setShowCourses] = useState(false);
-
+  
   const onSignOut = () => {
     logout();
   };
+
 
 
   const onClick = async () => {
@@ -27,13 +28,12 @@ const Home = () => {
     }
   };
   return (
-    <React.Fragment>
-      <h3>{user?.username} is logged in</h3>
-      <button onClick={() => onClick()}>Test Private</button>
+    <Box sx={{ display: "flex" }}>
+      <SideBar user={user}/>
       <button onClick={() => onSignOut()}>Sign Out</button>
       <button onClick={() => setShowCourses(true)}>Add Courses</button>
-      <SearchCourse showCourses={showCourses} setShowCourses={setShowCourses}/>
-    </React.Fragment>
+      <SearchCourse showCourses={showCourses} setShowCourses={setShowCourses} />
+    </Box>
   );
 };
 

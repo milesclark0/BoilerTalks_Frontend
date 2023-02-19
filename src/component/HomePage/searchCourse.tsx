@@ -133,14 +133,25 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
       });
     }
   };
-  cacheCurrentCourses();
 
-  const subscribeToCourses = async () => {
-    try {
-      const courseNames = userCourses
+  const getAddedCourses = () => {
+    return userCourses
         .map((course) => course.name)
         .filter((course) => course !== "")
         .filter((course) => !currentCourses.has(course));
+  };
+
+  const subscribeToCourses = async () => {
+    try {
+
+      //filter out empty courses and courses the user is already in
+      const courseNames = getAddedCourses();
+      
+      //if no courses were added, do nothing
+      if (courseNames.length === 0) {
+        setShowCourses(false);
+        return;
+      }
       const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
       if (response.data.statusCode === 200) {
         setShowCourses(false);
@@ -301,7 +312,7 @@ const SearchCourse = ({ showCourses, setShowCourses }: Props) => {
             </Box>
             <Stack direction={"row"} spacing={2}>
               <Box flexGrow={1}></Box>
-              <Button variant="contained" onClick={subscribeToCourses}>
+              <Button variant="contained" onClick={subscribeToCourses} disabled={getAddedCourses().length === 0}>
                 Subscribe
               </Button>
               <Button variant="outlined"  onClick={() => setShowCourses(false)}>

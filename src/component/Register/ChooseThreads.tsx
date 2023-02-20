@@ -6,6 +6,7 @@ import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
 import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
+import { Course } from "../../types/types";
 
 const ChooseThreads = () => {
   // courses is used for all courses
@@ -41,7 +42,12 @@ const ChooseThreads = () => {
     // if nothing is selected, display error
     if (selectedCourses.length != 0) {
       // add courses to user courses database
-      const res = await api.post(subscribeToCourseURL, { courses: selectedCourses, username: user?.username });
+      let courseNames = []
+      // retrieve course names from selected courses
+      selectedCourses.forEach(function (value: Course) {
+        courseNames.push(value.name)
+      });
+      const res = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
       if (res.data.statusCode === 200) {
         //update the user context
         user.courses.push(...selectedCourses);
@@ -78,7 +84,11 @@ const ChooseThreads = () => {
               {option.name + " - " + option.semester}
             </li>
           )}
-          onChange={(e, value) => setSelectedCourses(value)}
+          // onChange={(e, value) => {
+          //   console.log(e)
+          //   console.log(value)
+          //   setSelectedCourses(value)
+          // }}
           style={{ width: 500 }}
           renderInput={(params) => <TextField {...params} label="Select Courses" placeholder="Courses" />}
         />

@@ -5,6 +5,9 @@ import React from "react";
 import { useState } from "react";
 import { Settings } from "@mui/icons-material";
 import useLogout from "./../../hooks/useLogout";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { setCourseActiveURL } from "../../API/CoursesAPI";
+import { useAuth } from "../../context/context";
 
 type Props = {
   user: User;
@@ -17,6 +20,8 @@ type Props = {
 };
 
 const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth, currentCourse, getDistinctCoursesByDepartment }: Props) => {
+  const api = useAxiosPrivate();
+  const { setUser } = useAuth();
   const appBarHeight = 64;
   const AvatarSize = { width: 50, height: 50 };
   const selectedIconColor = "#7e7e7e";
@@ -95,6 +100,26 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     );
   };
 
+  const activeCourseSwitch = async (course: Course) => {
+    try {
+      const res = await api.post(setCourseActiveURL, {courseName: course?.name, username: user?.username});
+      console.log(res);
+
+      if (res.data.statusCode == 200) {
+        if (res.data.data == 'removing') {
+          setUser({...user, activeCourses:[...user.activeCourses.filter(courseName => course?.name != courseName)]});
+        } else {
+          setUser({...user, activeCourses:[...user.activeCourses, course?.name]});
+        }      
+        
+      } else {
+        alert('Error'); 
+      }
+    } catch(error) {
+      console.log(error);
+    }
+  };
+
   const SettingsMenu = () => {
     return (
       <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
@@ -110,13 +135,13 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     const iconColor = isActiveCourse ? "lightblue" : "";
     const outLineColor = activeIcon.course === labelText ? selectedIconColor : "";
     const outlineStyle = activeIcon.course === labelText ? "solid" : "";
-    const department = labelText.split(" ")[0];
-
+    const [department, courseNumber] = labelText.split(" ");
+    const label = isActiveCourse ? department + " " + courseNumber : department
     return (
       <ListItem>
         <IconButton onClick={() => handleIconClick(labelText, isActiveCourse)}>
           <Avatar sx={{ ...AvatarSize, bgcolor: iconColor, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography>{department}</Typography>
+            <Typography color="black" variant="body2">{label}</Typography>
           </Avatar>
         </IconButton>
       </ListItem>
@@ -134,6 +159,20 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
         <StyledDivider />
         <ListItem>
           <List>
+
+            <Button
+              sx={{
+                width: "100%",
+              }}
+              onClick={() => activeCourseSwitch(course)}
+            >
+              <ListItem>
+                <Typography variant="body2" component="div">
+                  Favorite This Course
+                </Typography>
+              </ListItem>
+            </Button>
+
             <Button
               sx={{
                 width: "100%",

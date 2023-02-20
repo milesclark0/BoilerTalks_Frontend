@@ -7,6 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useAuth } from "../../context/context";
 
 type Props = {
   user: User;
@@ -30,6 +31,7 @@ const emptyCourse: Course = {
 
 const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
   const api = useAxiosPrivate();
+  const {setUser} = useAuth();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
   // tracks the current filter for each course
@@ -165,8 +167,8 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
       const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
       if (response.data.statusCode === 200) {
         setShowCourses(false);
-        //update the user context
-        user.courses.push(...courseNames);
+        //update the user context       
+        setUser({...user, courses:[...user.courses, ...courseNames]});
       } else {
         console.log(response.data.message);
         //TODO: handle error

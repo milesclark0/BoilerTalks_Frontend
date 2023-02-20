@@ -8,6 +8,7 @@ import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
+import PushPinIcon from '@mui/icons-material/PushPin';
 
 type Props = {
   user: User;
@@ -148,6 +149,18 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     );
   };
 
+  const PinIcon = ({course} : {course: Course}) => {
+    const isActiveCourse = user.activeCourses?.includes(course?.name);
+    return (
+      <IconButton onClick={() => activeCourseSwitch(course)}
+      sx={{transform: "rotate(45deg)"}}>
+      {/* {user.activeCourses?.includes(course?.name) && <PushPinIcon />} */}
+        {isActiveCourse && <PushPinIcon color="primary" />}
+        {!isActiveCourse && <PushPinIcon />}
+      </IconButton>
+    );
+  }
+
   const CourseNavigation = ({ course }: { course: Course }) => {
     return (
       <List>
@@ -155,23 +168,12 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
           <Typography variant="body1" noWrap component="div">
             {course?.name}
           </Typography>
+          <PinIcon course={course} />
         </ListItem>
         <StyledDivider />
         <ListItem>
           <List>
 
-            <Button
-              sx={{
-                width: "100%",
-              }}
-              onClick={() => activeCourseSwitch(course)}
-            >
-              <ListItem>
-                <Typography variant="body2" component="div">
-                  Favorite This Course
-                </Typography>
-              </ListItem>
-            </Button>
 
             <Button
               sx={{

@@ -13,6 +13,8 @@ type Props = {
   user: User;
   showCourses: boolean;
   setShowCourses: (value: boolean) => void;
+  userCourses: Course[];
+  setUserCourses: (value: Course[]) => void;
 };
 const emptyCourse: Course = {
   _id: { $oid: "" },
@@ -29,15 +31,15 @@ const emptyCourse: Course = {
   department: "",
 };
 
-const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
+const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, userCourses }: Props) => {
   const api = useAxiosPrivate();
-  const {setUser} = useAuth();
+  const { setUser } = useAuth();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
   // tracks the current filter for each course
   const [courseFilters, setUserFilteredCourses] = useState<string[]>([]);
   // tracks the current courses the user added
-  const [userCourses, setUserCourses] = useState<Course[]>([emptyCourse]);
+  const [userAddedCourses, setuserAddedCourses] = useState<Course[]>([emptyCourse]);
   // tracks the current courses the user is in
   const currentCourses = new Map<string, boolean>();
   // tracks the unique departments in course list
@@ -55,24 +57,24 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
   // handles added course removal
   const handleCourseIconClick = (index: number) => {
     // if only one course, do nothing
-    if (userCourses.length === 1) {
+    if (userAddedCourses.length === 1) {
       return;
     }
-    const newCourses = [...userCourses];
+    const newCourses = [...userAddedCourses];
     newCourses.splice(index, 1);
     const newFilters = [...courseFilters];
     newFilters.splice(index, 1);
     setUserFilteredCourses(newFilters);
-    setUserCourses(newCourses);
+    setuserAddedCourses(newCourses);
   };
 
   const handleCourseDepartmentChange = (index: number, value: string) => {
-    const newCourses = structuredClone(userCourses);
+    const newCourses = structuredClone(userAddedCourses);
     //save the department to the added course list
     newCourses[index].department = value;
     //clear the course name field
     newCourses[index].name = "";
-    setUserCourses(newCourses);
+    setuserAddedCourses(newCourses);
 
     //update the filter for the changed course
     const courseFilter = courseFilters;
@@ -81,10 +83,10 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
   };
 
   const handleCourseNameChange = (index: number, value: string) => {
-    const newCourses = structuredClone(userCourses);
+    const newCourses = structuredClone(userAddedCourses);
     //save the course name to the added course list and set the corresponding department
     newCourses[index].name = value;
-    setUserCourses(newCourses);
+    setuserAddedCourses(newCourses);
 
     newCourses[index].department = value.split(" ")[0];
     //update the filter for the changed course
@@ -120,7 +122,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
 
   const addEmptyCourse = () => {
     const structEmptyCourse = structuredClone(emptyCourse);
-    setUserCourses([...userCourses, structEmptyCourse]);
+    setuserAddedCourses([...userAddedCourses, structEmptyCourse]);
   };
 
   useEffect(() => {
@@ -148,7 +150,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
   };
 
   const getAddedCourses = () => {
-    return userCourses
+    return userAddedCourses
       .map((course) => course.name)
       .filter((course) => course !== "")
       .filter((course) => !currentCourses.has(course));
@@ -167,8 +169,11 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
       const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
       if (response.data.statusCode === 200) {
         setShowCourses(false);
-        //update the user context       
-        setUser({...user, courses:[...user.courses, ...courseNames]});
+        //update the user context
+        setUser({ ...user, courses: [...user.courses, ...courseNames] });
+        //returns all the courses the user is in
+        const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
+        setUserCourses([...userCourses, ...matchingCourses]);
       } else {
         console.log(response.data.message);
         //TODO: handle error
@@ -188,7 +193,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
             id="selectCourseDepartment"
             options={getUniqueDepartments()}
             getOptionLabel={(option) => option}
-            value={userCourses[index].department}
+            value={userAddedCourses[index].department}
             renderOption={(props, option) => <li {...props}>{option}</li>}
             onChange={(event, value) => {
               handleCourseDepartmentChange(index, value);
@@ -204,7 +209,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
             id="selectCourseName"
             isOptionEqualToValue={(option, value) => option.name === value.name}
             options={filterCourses(index)}
-            value={userCourses[index]}
+            value={userAddedCourses[index]}
             getOptionLabel={(option) => option.name}
             renderOption={(props, option) => <li {...props}>{option.name}</li>}
             onChange={(event, value) => {
@@ -233,12 +238,12 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
               onClick={() => {
                 handleCourseIconClick(index);
               }}
-              disabled={userCourses.length === 1}
+              disabled={userAddedCourses.length === 1}
               sx={{
-                pointerEvents: userCourses.length === 1 ? "none" : "auto",
+                pointerEvents: userAddedCourses.length === 1 ? "none" : "auto",
               }}
             >
-              <Tooltip title={userCourses.length === 1 ? "" : "Delete"}>
+              <Tooltip title={userAddedCourses.length === 1 ? "" : "Delete"}>
                 <DeleteIcon />
               </Tooltip>
             </IconButton>
@@ -293,7 +298,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
               overflowY: "auto",
             }}
           >
-            {userCourses.map((course, index) => {
+            {userAddedCourses.map((course, index) => {
               return courseEntry(course, index);
             })}
           </Box>

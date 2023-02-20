@@ -103,6 +103,8 @@ const Home = () => {
     user,
     showCourses,
     setShowCourses,
+    setUserCourses,
+    userCourses,
   };
 
   const SemesterSelector = () => {

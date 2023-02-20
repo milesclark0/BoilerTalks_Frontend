@@ -11,6 +11,7 @@ type AuthProviderType = {
   isLoggedIn: boolean;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   signOut: () => void;
+  setUser: (user: User) => void;
 };
 
 const AuthContext = createContext<AuthProviderType>({
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthProviderType>({
   isLoggedIn: false,
   setIsLoggedIn: (isLoggedIn: boolean) => {},
   signOut: () => {},
+  setUser: (user: User) => {},
 });
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     _id: { $oid: "" },
     profilePicture: "",
     courses: [],
+    activeCourses: [],
     blockedUsers: [],
     creationDate: { $date: "" },
   });
@@ -54,7 +57,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     navigate(from, { replace: true });
   };
 
-  return <AuthContext.Provider value={{ user, signIn, isLoggedIn, setIsLoggedIn, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, signIn, isLoggedIn, setIsLoggedIn, signOut, setUser }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

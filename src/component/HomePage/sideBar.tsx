@@ -1,20 +1,22 @@
 import styled from "@emotion/styled";
-import { Divider, Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar, Menu, MenuItem } from "@mui/material";
-import { User } from "../../types/types";
+import { Divider, Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar, Menu, MenuItem, Button } from "@mui/material";
+import { Course, User } from "../../types/types";
 import React from "react";
 import { useState } from "react";
 import { Settings } from "@mui/icons-material";
-import useLogout from './../../hooks/useLogout';
+import useLogout from "./../../hooks/useLogout";
 
 type Props = {
   user: User;
-  activeIcon: { course: String; isActiveCourse: boolean };
+  activeIcon: { course: string; isActiveCourse: boolean };
   setActiveIcon: React.Dispatch<React.SetStateAction<{ course: String; isActiveCourse: boolean }>>;
   drawerWidth: number;
   innerDrawerWidth: number;
+  currentCourse: Course | null;
+  getDistinctCoursesByDepartment: (department: string) => Course[];
 };
 
-const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth }: Props) => {
+const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth, currentCourse, getDistinctCoursesByDepartment }: Props) => {
   const appBarHeight = 64;
   const AvatarSize = { width: 50, height: 50 };
   const selectedIconColor = "#7e7e7e";
@@ -45,8 +47,8 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
       boxSizing: "border-box",
       overflow: "hidden",
       borderColor: "rgba(7, 7, 7, 0.199)",
-      overflowY: "auto",
-      marginTop: `${appBarHeight}px`,
+      overflowY: "scroll",
+      paddingTop: `${appBarHeight}px`,
       "&::-webkit-scrollbar": {
         display: "none",
       },
@@ -95,12 +97,8 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
 
   const SettingsMenu = () => {
     return (
-      <Menu
-        open={settingsOpen}
-        anchorEl={anchorEl}
-        onClose={handleSettingsClose}
-      >
-        <MenuItem sx={{ pointerEvents: "none", justifyContent: "center"}}>{user?.username}</MenuItem>
+      <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
+        <MenuItem sx={{ pointerEvents: "none", justifyContent: "center" }}>{user?.username}</MenuItem>
         <StyledDivider />
         <MenuItem>Settings</MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
@@ -125,6 +123,89 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     );
   };
 
+  const CourseNavigation = ({ course }: { course: Course }) => {
+    return (
+      <List>
+        <ListItem>
+          <Typography variant="body1" noWrap component="div">
+            {course?.name}
+          </Typography>
+        </ListItem>
+        <StyledDivider />
+        <ListItem>
+          <List>
+            <Button
+              sx={{
+                width: "100%",
+              }}
+            >
+              <ListItem>
+                <Typography variant="body2" noWrap component="div">
+                  General Chat
+                </Typography>
+              </ListItem>
+            </Button>
+            {/* <ListItem>
+                <Typography variant="body1" noWrap component="div">
+                  Mod Chat
+                </Typography>
+              </ListItem> */}
+            <Button
+              sx={{
+                width: "100%",
+              }}
+            >
+              <ListItem>
+                <Typography variant="body2" noWrap component="div">
+                  Thread
+                </Typography>
+              </ListItem>
+            </Button>
+          </List>
+        </ListItem>
+      </List>
+    );
+  };
+
+  const CourseView = () => {
+    // if no course is selected, show boilertracks home
+    if (activeIcon.course === "") {
+      return (
+        <List>
+          <ListItem>
+            <Typography variant="h6" noWrap component="div">
+              BoilerTracks Home
+            </Typography>
+          </ListItem>
+          <StyledDivider />
+        </List>
+      );
+    }
+    // if a course is selected, show course navigation
+    if (activeIcon.isActiveCourse) {
+      return <CourseNavigation course={currentCourse} />;
+    }
+    // if a department is selected, show course list
+    return (
+      <List>
+        <ListItem>
+          <Typography variant="h6" noWrap component="div">
+            {activeIcon.course} Courses
+          </Typography>
+        </ListItem>
+        <StyledDivider />
+        <ListItem>
+          {getDistinctCoursesByDepartment(activeIcon.course).map((course) => (
+            <React.Fragment key={course.name + course.semester}>
+              <CourseNavigation course={course} />
+            </React.Fragment>
+          ))}
+          <StyledDivider />
+        </ListItem>
+      </List>
+    );
+  };
+
   return (
     <Box>
       <AppBar position="fixed" sx={{ width: drawerWidth, left: 0, height: appBarHeight }}>
@@ -139,6 +220,15 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
         </Toolbar>
       </AppBar>
       <Drawer sx={OuterDrawerStyles} variant="permanent" anchor="left">
+        <Box
+          sx={{
+            display: "flex",
+            paddingLeft: `${innerDrawerWidth}px`,
+            paddingTop: `${appBarHeight}px`,
+          }}
+        >
+          <CourseView />
+        </Box>
         <Drawer sx={InnerDrawerStyles} variant="permanent" anchor="left">
           <List>
             <BoilerTracksIcon />

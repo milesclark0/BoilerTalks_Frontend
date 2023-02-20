@@ -8,7 +8,10 @@ export const addCourseURL = "/courses/addCourse";
 
 export const deleteCourseURL = "/courses/deleteCourse";
 
-export const getCourseURL = "/courses/getCourse";
+export const getCourseURL = "/courses/getCourse/";
+
+export const getUserCoursesURL = "/courses/getUserCourses/";
 
 export const subscribeToCourseURL = "/courses/subscribeToCourses";
+
 

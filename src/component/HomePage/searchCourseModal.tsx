@@ -1,7 +1,7 @@
 import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { getAllCoursesURL, subscribeToCourseURL } from "./../../API/CoursesAPI";
+import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
 import { Course, User } from "../../types/types";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,7 +28,7 @@ const emptyCourse: Course = {
   department: "",
 };
 
-const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
+const SearchCourseModal = ({ user, showCourses, setShowCourses }: Props) => {
   const api = useAxiosPrivate();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
@@ -40,6 +40,7 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
   const currentCourses = new Map<string, boolean>();
   // tracks the unique departments in course list
   const departments = new Set<string>();
+  const distinctCourses = new Map<string, Course[]>();
 
   // handles modal close
   const handleClose = (event: Event, reason: string) => {
@@ -92,9 +93,9 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
 
   const filterCourses = (index: number) => {
     if (!courseFilters[index]) {
-      return courses;
+      return getDistinctCourses();
     }
-    return courses.filter((course) => course.department === courseFilters[index] || course.department === "");
+    return getDistinctCourses().filter((course) => course.department === courseFilters[index] || course.department === "");
   };
 
   const getUniqueDepartments = () => {
@@ -102,6 +103,17 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
       departments.add(course.department);
     });
     return Array.from(departments);
+  };
+
+  const getDistinctCourses = () => {
+    courses.forEach((course) => {
+      if (!distinctCourses.has(course.name)) {
+        distinctCourses.set(course.name, [course]);
+      } else {
+        distinctCourses.get(course.name)?.push(course);
+      }
+    });
+    return Array.from(distinctCourses.values()).map((course) => course[0]);
   };
 
   const addEmptyCourse = () => {
@@ -135,17 +147,16 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
 
   const getAddedCourses = () => {
     return userCourses
-        .map((course) => course.name)
-        .filter((course) => course !== "")
-        .filter((course) => !currentCourses.has(course));
+      .map((course) => course.name)
+      .filter((course) => course !== "")
+      .filter((course) => !currentCourses.has(course));
   };
 
   const subscribeToCourses = async () => {
     try {
-
       //filter out empty courses and courses the user is already in
       const courseNames = getAddedCourses();
-      
+
       //if no courses were added, do nothing
       if (courseNames.length === 0) {
         setShowCourses(false);
@@ -213,9 +224,7 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
               }}
             >
               <Tooltip title={currentCourses.get(course.name) ? "Subscribed" : "Delete"}>
-                <CheckCircleOutlineIcon
-                  color={currentCourses.get(course.name) ? "success" : "disabled"}
-                />
+                <CheckCircleOutlineIcon color={currentCourses.get(course.name) ? "success" : "disabled"} />
               </Tooltip>
             </IconButton>
             <IconButton
@@ -314,7 +323,7 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
               <Button variant="contained" onClick={subscribeToCourses} disabled={getAddedCourses().length === 0}>
                 Subscribe
               </Button>
-              <Button variant="outlined"  onClick={() => setShowCourses(false)}>
+              <Button variant="outlined" onClick={() => setShowCourses(false)}>
                 Cancel
               </Button>
             </Stack>
@@ -324,4 +333,4 @@ const SearchCourse = ({ user, showCourses, setShowCourses }: Props) => {
     </Modal>
   );
 };
-export default SearchCourse;
+export default SearchCourseModal;

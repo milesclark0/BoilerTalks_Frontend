@@ -7,6 +7,7 @@ import MissingRoute from "./pages/MissingRoute";
 import PersistLogin from "./component/PersistLogin";
 import Register from "./pages/Register";
 import ChooseThreads from "./component/Register/ChooseThreads";
+import Policies from "./pages/Policies";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         {/* public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/policies" element={<Policies />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
 
         {/* protected routes */}

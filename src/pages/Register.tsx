@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment, FormHelperText } from "@mui/material";
+import { Box, Button, Typography, TextField, Divider, InputAdornment, FormHelperText, Checkbox, FormControlLabel, Link, FormControl } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
@@ -21,10 +21,16 @@ const Register = () => {
   const [usernameError, setUsernameError] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
+  const [policyError, setPolicyError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [error, setError] = useState("");
+
+  const [checked, setChecked] = React.useState(false);
+  const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
 
   const navigateToLogin = () => {
     navigate("/login");
@@ -57,6 +63,12 @@ const Register = () => {
     }
     if (password == confirmPassword) {
       setPasswordError(false)
+    }
+
+    if (checked === false)
+    {
+      missing = true;
+      setPolicyError(true)
     }
 
     if (!missing) {
@@ -217,6 +229,18 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             sx={{ width: "70%" }}
           />
+          <div>
+          <FormControl 
+          required
+          error={policyError}
+          
+          >
+            <FormControlLabel 
+              control={
+                <Checkbox checked={checked} onChange={handleChecked} />} 
+              label="By signing up you Agree to our" /><Link href="/policies" target="_blank">Terms of Service</Link>
+            </FormControl>
+          </div>
         </Box>
         <Box sx={{ height: "27%", width: "70%", display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "column" }}>
           <LoadingButton

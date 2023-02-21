@@ -242,7 +242,7 @@ const Register = () => {
           />
           <FormControl required error={policyError} fullWidth>
             <FormControlLabel
-              sx={{display: "flex", justifyContent: "center", alignItems: "center"}}
+              sx={{display: "flex", justifyContent: "center"}}
               control={<Checkbox checked={checked} onChange={handleChecked} />}
               label={
                 <Typography>

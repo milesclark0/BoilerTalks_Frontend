@@ -9,6 +9,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
 import PushPinIcon from '@mui/icons-material/PushPin';
+import HomeIcon from '@mui/icons-material/Home';
 
 type Props = {
   user: User;
@@ -84,7 +85,7 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
       <ListItem>
         <IconButton onClick={() => handleIconClick("", false)}>
           <Avatar sx={{ ...AvatarSize, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography>BT</Typography>
+            <Typography sx={{marginTop: '5px'}}><HomeIcon /></Typography>
           </Avatar>
         </IconButton>
       </ListItem>

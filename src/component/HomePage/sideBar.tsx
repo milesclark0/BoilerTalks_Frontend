@@ -17,14 +17,14 @@ type Props = {
   setActiveIcon: React.Dispatch<React.SetStateAction<{ course: String; isActiveCourse: boolean }>>;
   drawerWidth: number;
   innerDrawerWidth: number;
+  appBarHeight: number;
   currentCourse: Course | null;
   getDistinctCoursesByDepartment: (department: string) => Course[];
 };
 
-const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth, currentCourse, getDistinctCoursesByDepartment }: Props) => {
+const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth, currentCourse, getDistinctCoursesByDepartment, appBarHeight }: Props) => {
   const api = useAxiosPrivate();
   const { setUser } = useAuth();
-  const appBarHeight = 64;
   const AvatarSize = { width: 50, height: 50 };
   const selectedIconColor = "#7e7e7e";
 
@@ -174,8 +174,6 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
         <StyledDivider />
         <ListItem>
           <List>
-
-
             <Button
               sx={{
                 width: "100%",
@@ -236,14 +234,12 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
           </Typography>
         </ListItem>
         <StyledDivider />
-        <ListItem>
           {getDistinctCoursesByDepartment(activeIcon.course).map((course) => (
             <React.Fragment key={course.name + course.semester}>
               <CourseNavigation course={course} />
+              <StyledDivider />
             </React.Fragment>
           ))}
-          <StyledDivider />
-        </ListItem>
       </List>
     );
   };

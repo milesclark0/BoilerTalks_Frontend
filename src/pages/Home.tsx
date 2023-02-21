@@ -6,7 +6,7 @@ import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import { getUserCoursesURL, getCourseURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
+import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Course } from "../types/types";
 
 const Home = () => {
@@ -21,6 +21,9 @@ const Home = () => {
   const [fetchError, setFetchError] = useState("");
 
   const defaultPadding = 4;
+  const drawerWidth = 300;
+  const innerDrawerWidth = 85;
+  const appBarHeight = 64;
 
   useEffect(() => {
     userCourses.forEach((course) => {
@@ -55,19 +58,18 @@ const Home = () => {
     return [...distinctCourses.values()];
   };
 
-  const getCoursesByDepartment = (department: string) => {
-    const courses = userCourses?.filter((course) => course.name.split(" ")[0] === department);
+  const getCoursesByName = (courseName: string) => {
+    const courses = userCourses?.filter((course) => course.name === courseName);
     return courses;
   };
 
-  const isDepartmentSelected = () => {
-    return activeIcon.course !== "" && !activeIcon.isActiveCourse;
+  const isCourseSelected = () => {
+    return activeIcon.course !== "" && activeIcon.isActiveCourse;
   };
 
   // returns the most recent semester for a given course
   const getMostRecentSemester = (courses: Course[]) => {
-    // activeIcon.course is the department name if this code is reached
-    courses = courses.filter((course) => course.name.split(" ")[0] === activeIcon.course);
+    courses = courses.filter((course) => course.name === activeIcon.course);
 
     //sort courses by semester ex Winter 2021 < Spring 2021 < Summer 2021  < Fall 2021
     const sortedCourses = [...courses].sort((a, b) => {
@@ -86,6 +88,7 @@ const Home = () => {
         } else return 1;
       }
     });
+
     return sortedCourses[0]?.semester;
   };
 
@@ -93,8 +96,9 @@ const Home = () => {
     user,
     activeIcon,
     setActiveIcon,
-    drawerWidth: 300,
-    innerDrawerWidth: 85,
+    drawerWidth,
+    innerDrawerWidth,
+    appBarHeight,
     currentCourse,
     getDistinctCoursesByDepartment,
   };
@@ -109,13 +113,19 @@ const Home = () => {
 
   const SemesterSelector = () => {
     // if the active icon is a department
-    if (isDepartmentSelected()) {
+    if (isCourseSelected()) {
       return (
-        <Select value={currentSemester || getMostRecentSemester(userCourses)} onChange={(e) => setCurrentSemester(e.target.value)}>
+        <Select size="small" value={currentSemester || getMostRecentSemester(userCourses)} onChange={(e) => {
+          setCurrentSemester(e.target.value as string);
+          const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+          if (course) setCurrentCourse(course);
+          console.log(course);
+          
+        }}>
           <MenuItem disabled value="">
             Select Semester
           </MenuItem>
-          {getCoursesByDepartment(activeIcon.course).map((course) => (
+          {getCoursesByName(activeIcon.course).map((course) => (
             <MenuItem key={course.semester} value={course.semester}>
               {course.semester}
             </MenuItem>
@@ -132,13 +142,17 @@ const Home = () => {
       <SearchCourseModal {...searchCourseProps} />
 
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ padding: defaultPadding, paddingLeft: `${sideBarProps.drawerWidth + 4 * defaultPadding}px` }}>
-          <Typography variant="h4">{activeIcon.course || "Select a course or Department"}</Typography>
-          <Button sx={{ paddingLeft: 0 }} onClick={() => setShowCourses(true)}>
+        <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
+          <Toolbar>
+          <Typography variant="h5" sx={{p:4}}>{activeIcon.course || "Select a course or Department"}</Typography>
+          <Button variant="outlined" onClick={() => setShowCourses(true) }sx={{
+            color: "white",
+          }}>
             Add Courses
           </Button>
           <SemesterSelector />
-        </Box>
+          </Toolbar>
+        </AppBar>
       ) : (
         <Box sx={{ padding: defaultPadding, paddingLeft: `${sideBarProps.drawerWidth + 4 * defaultPadding}px` }}>
           {isLoading ? <Typography variant="h4">Loading...</Typography> : null}

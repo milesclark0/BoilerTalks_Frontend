@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../../context/context";
+import React from "react";
 
 type Props = {
   user: User;
@@ -36,6 +37,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   const { setUser } = useAuth();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(false);
   // tracks the current filter for each course
   const [courseFilters, setUserFilteredCourses] = useState<string[]>([]);
   // tracks the current courses the user added
@@ -126,18 +128,24 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   };
 
   useEffect(() => {
+    console.log("useEffect", loading);
+    setLoading(true);
+    
     const getCourses = async () => {
       try {
         const response = await api.get(getAllCoursesURL);
         //console.log(response);
-        if (response.status === 200) {
+        if (response.data.statusCode === 200) {
           setCourses([structuredClone(emptyCourse), ...response.data.data]);
+          setLoading(false);
+          console.log("useEffect end");
+          
         }
       } catch (error) {
         console.log(error);
       }
     };
-    getCourses();
+    getCourses();    
   }, []);
 
   // save the current courses the user is in in a map for easy access
@@ -253,6 +261,78 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
     );
   };
 
+  const CourseSelection = () => {
+    return (
+                <React.Fragment>
+            <IconButton
+              onClick={() => setShowCourses(false)}
+              sx={{
+                position: "absolute",
+                top: 4,
+                right: 4,
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Stack direction={"column"}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "left",
+                  paddingBottom: 2,
+                }}
+              >
+                <Typography variant="h4">Add Courses</Typography>
+              </Box>
+              <Box
+                sx={{
+                  overflow: "hidden",
+                  overflowY: "auto",
+                }}
+              >
+                {userAddedCourses.map((course, index) => {
+                  return courseEntry(course, index);
+                })}
+              </Box>
+              <Stack
+                sx={{
+                  justifyContent: "space-between",
+                  paddingTop: 2,
+                  display: "flex",
+                }}
+              >
+                <Box
+                  sx={{
+                    justifyContent: "center",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <IconButton
+                    onClick={addEmptyCourse}
+                    sx={{
+                      width: "40px",
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+                <Stack direction={"row"} spacing={2}>
+                  <Box flexGrow={1}></Box>
+                  <Button variant="contained" onClick={subscribeToCourses} disabled={getAddedCourses().length === 0}>
+                    Subscribe
+                  </Button>
+                  <Button variant="outlined" onClick={() => setShowCourses(false)}>
+                    Cancel
+                  </Button>
+                </Stack>
+              </Stack>
+            </Stack>
+          </React.Fragment>
+    )
+  }
+
   return (
     <Modal open={showCourses} onClose={handleClose}>
       <Box
@@ -271,71 +351,11 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
           maxHeight: 450,
         }}
       >
-        <IconButton
-          onClick={() => setShowCourses(false)}
-          sx={{
-            position: "absolute",
-            top: 4,
-            right: 4,
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <Stack direction={"column"}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "left",
-              paddingBottom: 2,
-            }}
-          >
-            <Typography variant="h4">Add Courses</Typography>
-          </Box>
-          <Box
-            sx={{
-              overflow: "hidden",
-              overflowY: "auto",
-            }}
-          >
-            {userAddedCourses.map((course, index) => {
-              return courseEntry(course, index);
-            })}
-          </Box>
-          <Stack
-            sx={{
-              justifyContent: "space-between",
-              paddingTop: 2,
-              display: "flex",
-            }}
-          >
-            <Box
-              sx={{
-                justifyContent: "center",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <IconButton
-                onClick={addEmptyCourse}
-                sx={{
-                  width: "40px",
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </Box>
-            <Stack direction={"row"} spacing={2}>
-              <Box flexGrow={1}></Box>
-              <Button variant="contained" onClick={subscribeToCourses} disabled={getAddedCourses().length === 0}>
-                Subscribe
-              </Button>
-              <Button variant="outlined" onClick={() => setShowCourses(false)}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        </Stack>
+        {!loading ? (
+          <CourseSelection />
+        ) : (
+          <Typography variant="h4">Loading Courses...</Typography>
+        )}
       </Box>
     </Modal>
   );

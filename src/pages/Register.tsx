@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment, FormHelperText, Checkbox, FormControlLabel, Link, FormControl } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Divider,
+  InputAdornment,
+  FormHelperText,
+  Checkbox,
+  FormControlLabel,
+  Link,
+  FormControl,
+} from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
@@ -62,11 +74,11 @@ const Register = () => {
       missing = true;
     }
     if (password == confirmPassword) {
-      setPasswordError(false)
+      setPasswordError(false);
     }
 
     if (checked === false) {
-      setPolicyError(true)
+      setPolicyError(true);
       missing = true;
     }
 
@@ -130,7 +142,7 @@ const Register = () => {
             justifyContent: "space-between",
             alignItems: "center",
             flexDirection: "column",
-            overflowY: "auto",
+            overflowY: "hidden",
           }}
           className="scrollBar"
         >
@@ -228,24 +240,20 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             sx={{ width: "70%" }}
           />
-          <div>
-          <FormControl 
-          required
-          error={policyError}
-          sx={{display: "inline"}}
-          >
-            <FormControlLabel 
-              sx={{marginRight: "5px", display: "inline"}}
-              control={
-                <Checkbox sx={{display: "inline"}} checked={checked} onChange={handleChecked} />
-              } 
-              label="By signing up you Agree to our"
-              />
-              <Typography sx={{display: "inline"}}>
-                <Link href="/policies" target="_blank">Terms of Service</Link>
-              </Typography>
-            </FormControl>
-          </div>
+          <FormControl required error={policyError} fullWidth>
+            <FormControlLabel
+              sx={{display: "flex", justifyContent: "center", alignItems: "center"}}
+              control={<Checkbox checked={checked} onChange={handleChecked} />}
+              label={
+                <Typography>
+                  By signing up you agree to our{" "}
+                  <Link href="/policies" target="_blank">
+                    Terms of Service
+                  </Link>
+                </Typography>
+              }
+            />
+          </FormControl>
         </Box>
         <Box sx={{ height: "27%", width: "70%", display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "column" }}>
           <LoadingButton

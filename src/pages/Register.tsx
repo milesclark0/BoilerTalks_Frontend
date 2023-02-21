@@ -65,10 +65,9 @@ const Register = () => {
       setPasswordError(false)
     }
 
-    if (checked === false)
-    {
-      missing = true;
+    if (checked === false) {
       setPolicyError(true)
+      missing = true;
     }
 
     if (!missing) {
@@ -106,7 +105,7 @@ const Register = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: 8,
-          height: "75%",
+          height: "90%",
           width: "55%",
           borderRadius: 5,
           display: "flex",
@@ -233,12 +232,18 @@ const Register = () => {
           <FormControl 
           required
           error={policyError}
-          
+          sx={{display: "inline"}}
           >
             <FormControlLabel 
+              sx={{marginRight: "5px", display: "inline"}}
               control={
-                <Checkbox checked={checked} onChange={handleChecked} />} 
-              label="By signing up you Agree to our" /><Link href="/policies" target="_blank">Terms of Service</Link>
+                <Checkbox sx={{display: "inline"}} checked={checked} onChange={handleChecked} />
+              } 
+              label="By signing up you Agree to our"
+              />
+              <Typography sx={{display: "inline"}}>
+                <Link href="/policies" target="_blank">Terms of Service</Link>
+              </Typography>
             </FormControl>
           </div>
         </Box>

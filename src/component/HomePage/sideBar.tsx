@@ -11,6 +11,12 @@ import { useAuth } from "../../context/context";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from "react-router-dom";
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 type Props = {
   user: User;
@@ -33,6 +39,9 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
 
+  const [newThreadOpen, setnewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
+  const [newThreadValue, setnewThreadValue] = React.useState("");//What the new thread name string is 
+  
   // get distinct departments from course list
   const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
 
@@ -206,12 +215,54 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
                 </Typography>
               </ListItem>
             </Button>
+            <Button variant="outlined" onClick={handleClickNewThread}>
+              New thread
+            </Button>
+            <Dialog open={newThreadOpen} onClose={handleCloseNewThread}>
+              <DialogTitle>Create a new thread</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  To create a new thread for this course, please enter the thread name here.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="newThreadName"
+                  label="New Thread Name"
+                  type="text"
+                  variant="outlined"
+                  value={newThreadValue}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setnewThreadValue(event.target.value);//sets the variable with every change to the string but it has a visual bug
+                  }}
+                  fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseNewThread}>Cancel</Button>
+                <Button variant="outlined" onClick={handleCreateNewThread}>Create</Button>
+              </DialogActions>
+            </Dialog>
           </List>
         </ListItem>
       </List>
     );
   };
+  const handleClickNewThread = () => {
+    setnewThreadOpen(true);
+  };
 
+  const handleCloseNewThread = () => {
+    setnewThreadOpen(false);
+    setnewThreadValue("");//wipe the text field
+  };
+
+  const handleCreateNewThread = () => {
+      setnewThreadOpen(false);
+      alert(newThreadValue);
+      setnewThreadValue("");//wipe the text field
+  };
+  
   const CourseView = () => {
     // if no course is selected, show boilertracks home
     if (activeIcon.course === "") {
@@ -248,6 +299,10 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
       </List>
     );
   };
+
+
+
+  
 
   return (
     <Box>

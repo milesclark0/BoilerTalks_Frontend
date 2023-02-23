@@ -9,6 +9,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
@@ -17,6 +18,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { axiosPrivate } from "../../API/axios";
+import { unsubscribeFromCourseURL } from "./../../API/CoursesAPI";
 
 type Props = {
   user: User;
@@ -27,6 +30,8 @@ type Props = {
   appBarHeight: number;
   currentCourse: Course | null;
   getDistinctCoursesByDepartment: (department: string) => Course[];
+  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
+  userCourses: Course[];
 };
 
 const SideBar = ({
@@ -37,6 +42,8 @@ const SideBar = ({
   innerDrawerWidth,
   currentCourse,
   getDistinctCoursesByDepartment,
+  setUserCourses,
+  userCourses,
   appBarHeight,
 }: Props) => {
   const api = useAxiosPrivate();
@@ -178,12 +185,60 @@ const SideBar = ({
 
   const PinIcon = ({ course }: { course: Course }) => {
     const isActiveCourse = user.activeCourses?.includes(course?.name);
+    const color = isActiveCourse ? "primary" : "disabled";
     return (
       <IconButton onClick={() => activeCourseSwitch(course)} sx={{ transform: "rotate(45deg)" }}>
-        {/* {user.activeCourses?.includes(course?.name) && <PushPinIcon />} */}
-        {isActiveCourse && <PushPinIcon color="primary" />}
-        {!isActiveCourse && <PushPinIcon />}
+        <PushPinIcon color={color} />
       </IconButton>
+    );
+  };
+
+  const MoreIcon = ({ course }: { course: Course }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const handleLeaveServer = async () => {
+      const ret = await api.post(unsubscribeFromCourseURL, { courseName: course.name, username: user.username });
+      if (ret.data.statusCode == 200) {
+        setUser({ ...user, courses: user.courses.filter((c) => c != course.name) });
+        setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
+      } else {
+        alert("Error leaving server");
+      }
+      handleClose();
+    };
+
+    return (
+      <React.Fragment>
+        <IconButton onClick={handleClick}>
+          <MoreHorizIcon />
+        </IconButton>
+        <Menu
+          id="long-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            sx: {
+              width: "20ch",
+              maxHeight: 48 * 4.5,
+              bgcolor: "background.paper",
+            },
+          }}
+        >
+          <MenuItem onClick={handleLeaveServer}>Leave Server</MenuItem>
+          {/* {add more options for mods and what not} */}
+        </Menu>
+      </React.Fragment>
     );
   };
 
@@ -195,6 +250,7 @@ const SideBar = ({
             {course?.name}
           </Typography>
           <PinIcon course={course} />
+          <MoreIcon course={course} />
         </ListItem>
         <StyledDivider />
         <ListItem>
@@ -212,15 +268,15 @@ const SideBar = ({
             </Button>
             {course?.rooms?.map((room) => {
               return (
-                <React.Fragment key={room?.name}>
+                <React.Fragment key={`${course.name}: ${room?.name}`}>
                   <Button
                     sx={{
                       width: "100%",
                     }}
                   >
                     <ListItem>
-                      <Typography variant="body2" noWrap component="div">
-                        {room?.name.replace(course?.name, "")}
+                      <Typography variant="body2" noWrap>
+                        {room?.name?.replace(course?.name, "")}
                       </Typography>
                     </ListItem>
                   </Button>
@@ -233,7 +289,9 @@ const SideBar = ({
                 </Typography>
               </ListItem> */}
             <Button variant="outlined" onClick={handleClickNewThread}>
-              New thread
+              <ListItem>
+                <Typography variant="body2">New thread</Typography>
+              </ListItem>
             </Button>
             <Dialog open={newThreadOpen} onClose={handleCloseNewThread}>
               <DialogTitle>Create a new thread</DialogTitle>

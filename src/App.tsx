@@ -3,6 +3,7 @@ import ProtectedRoutes from "./component/ProtectedRoutes";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Settings from "./pages/Settings"
 import MissingRoute from "./pages/MissingRoute";
 import PersistLogin from "./component/PersistLogin";
 import Register from "./pages/Register";
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/policies" element={<Policies />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
 
         {/* protected routes */}

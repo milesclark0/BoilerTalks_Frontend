@@ -8,6 +8,7 @@ import PersistLogin from "./component/PersistLogin";
 import Register from "./pages/Register";
 import ChooseThreads from "./component/Register/ChooseThreads";
 import Policies from "./pages/Policies";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/policies" element={<Policies />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
 
         {/* protected routes */}

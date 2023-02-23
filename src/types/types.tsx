@@ -27,3 +27,10 @@ export type Course = {
   semester: string;
 }
 
+export type Profile = {
+  username: string;
+  _id: {$oid: string};
+  bio: string;
+  modThreads: string[];
+}
+

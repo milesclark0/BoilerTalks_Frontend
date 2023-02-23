@@ -10,6 +10,7 @@ import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import HomeIcon from '@mui/icons-material/Home';
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   user: User;
@@ -31,6 +32,7 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
+  const navigate = useNavigate();
 
   // get distinct departments from course list
   const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
@@ -122,10 +124,14 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     }
   };
 
+  const navigateToProfile = () => {
+    navigate("/profile");
+  };
+
   const SettingsMenu = () => {
     return (
       <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
-        <MenuItem sx={{ pointerEvents: "none", justifyContent: "center" }}>{user?.username}</MenuItem>
+        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>{user?.username}</MenuItem>
         <StyledDivider />
         <MenuItem>Settings</MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>

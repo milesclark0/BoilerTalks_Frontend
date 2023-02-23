@@ -10,6 +10,7 @@ import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import HomeIcon from '@mui/icons-material/Home';
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   user: User;
@@ -27,7 +28,7 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
   const { setUser } = useAuth();
   const AvatarSize = { width: 50, height: 50 };
   const selectedIconColor = "#7e7e7e";
-
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
@@ -78,6 +79,10 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     setAnchorEl(null);
   };
 
+  const navigateToSettings = () => {
+    navigate("/settings")
+  }
+
   const BoilerTracksIcon = () => {
     const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
     const outlineStyle = activeIcon.course === "" ? "solid" : "";
@@ -127,7 +132,7 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
       <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
         <MenuItem sx={{ pointerEvents: "none", justifyContent: "center" }}>{user?.username}</MenuItem>
         <StyledDivider />
-        <MenuItem>Settings</MenuItem>
+        <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     );

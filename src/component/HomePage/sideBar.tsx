@@ -210,6 +210,10 @@ const SideBar = ({
       if (ret.data.statusCode == 200) {
         setUser({ ...user, courses: user.courses.filter((c) => c != course.name) });
         setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
+        if (course.name == activeIcon.course) {
+          setActiveIcon({ course: "", isActiveCourse: false });
+          setUser({ ...user, activeCourses: user.activeCourses.filter((c) => c != course.name) });
+        }
       } else {
         alert("Error leaving server");
       }

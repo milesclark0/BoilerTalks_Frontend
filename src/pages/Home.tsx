@@ -8,6 +8,9 @@ import { getUserCoursesURL, getCourseURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Course } from "../types/types";
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import React from "react";
 
 const Home = () => {
   const { user } = useAuth();
@@ -135,7 +138,20 @@ const Home = () => {
     }
     return null;
   };
-
+  const filter = createFilterOptions<UserOptionType>(); 
+  const [value, setValue] = React.useState<UserOptionType | null>(null);
+  interface UserOptionType {
+    inputValue?: string;
+    userName: string;
+  }
+  const userlist: readonly UserOptionType[] = [
+    { userName: 'anna2213'},
+    { userName: 'antonio2'},
+    { userName: 'gera9'},
+    { userName: 'koe'},
+    { userName: 'hello there'},
+    { userName: 'master'},
+  ];
   return (
     <Box sx={{ display: "flex" }}>
       <SideBar {...sideBarProps} />
@@ -151,6 +167,58 @@ const Home = () => {
             Add Courses
           </Button>
           <SemesterSelector />
+            <Box
+              sx={{
+                marginLeft: "60%",
+                color: "white",
+              }}
+            >
+                <Autocomplete
+                    value={value}
+                    onChange={(event, newValue) => {
+                      if (typeof newValue === 'string') {
+                        setValue({
+                          userName: newValue,
+                        });
+                      } else if (newValue && newValue.inputValue) {
+                        // Create a new value from the user input
+                        setValue({
+                          userName: newValue.inputValue,
+                        });
+                      } else {
+                        setValue(newValue);
+                      }
+                    }}
+                    filterOptions={(options, params) => {
+                      const filtered = filter(options, params);
+                      return filtered;
+                    }}
+                    disablePortal
+                    selectOnFocus
+                    clearOnBlur
+                    handleHomeEndKeys
+                    id="searchUser"
+                    options={userlist}
+                    getOptionLabel={(option) => {
+                      // Value selected with enter, right from the input
+                      if (typeof option === 'string') {
+                        return option;
+                      }
+                      // Add "xxx" option created dynamically
+                      if (option.inputValue) {
+                        return option.inputValue;
+                      }
+                      // Regular option
+                      return option.userName;
+                    }}
+                    renderOption={(props, option) => <li {...props}>{option.userName}</li>}
+                    sx={{ width: 300 }}
+                    freeSolo
+                    renderInput={(params) => (
+                      <TextField {...params} variant="outlined" color="info" label="Search users..." />
+                    )}
+                  />
+                </Box>
           </Toolbar>
         </AppBar>
       ) : (

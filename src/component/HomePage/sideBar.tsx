@@ -8,8 +8,8 @@ import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
-import PushPinIcon from '@mui/icons-material/PushPin';
-import HomeIcon from '@mui/icons-material/Home';
+import PushPinIcon from "@mui/icons-material/PushPin";
+import HomeIcon from "@mui/icons-material/Home";
 
 type Props = {
   user: User;
@@ -22,7 +22,16 @@ type Props = {
   getDistinctCoursesByDepartment: (department: string) => Course[];
 };
 
-const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidth, currentCourse, getDistinctCoursesByDepartment, appBarHeight }: Props) => {
+const SideBar = ({
+  user,
+  activeIcon,
+  setActiveIcon,
+  drawerWidth,
+  innerDrawerWidth,
+  currentCourse,
+  getDistinctCoursesByDepartment,
+  appBarHeight,
+}: Props) => {
   const api = useAxiosPrivate();
   const { setUser } = useAuth();
   const AvatarSize = { width: 50, height: 50 };
@@ -85,7 +94,9 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
       <ListItem>
         <IconButton onClick={() => handleIconClick("", false)}>
           <Avatar sx={{ ...AvatarSize, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography sx={{marginTop: '5px'}}><HomeIcon /></Typography>
+            <Typography sx={{ marginTop: "5px" }}>
+              <HomeIcon />
+            </Typography>
           </Avatar>
         </IconButton>
       </ListItem>
@@ -104,20 +115,19 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
 
   const activeCourseSwitch = async (course: Course) => {
     try {
-      const res = await api.post(setCourseActiveURL, {courseName: course?.name, username: user?.username});
+      const res = await api.post(setCourseActiveURL, { courseName: course?.name, username: user?.username });
       console.log(res);
 
       if (res.data.statusCode == 200) {
-        if (res.data.data == 'removing') {
-          setUser({...user, activeCourses:[...user.activeCourses.filter(courseName => course?.name != courseName)]});
+        if (res.data.data == "removing") {
+          setUser({ ...user, activeCourses: [...user.activeCourses.filter((courseName) => course?.name != courseName)] });
         } else {
-          setUser({...user, activeCourses:[...user.activeCourses, course?.name]});
-        }      
-        
+          setUser({ ...user, activeCourses: [...user.activeCourses, course?.name] });
+        }
       } else {
-        alert('Error'); 
+        alert("Error");
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -138,29 +148,30 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
     const outLineColor = activeIcon.course === labelText ? selectedIconColor : "";
     const outlineStyle = activeIcon.course === labelText ? "solid" : "";
     const [department, courseNumber] = labelText.split(" ");
-    const label = isActiveCourse ? department + " " + courseNumber : department
+    const label = isActiveCourse ? department + " " + courseNumber : department;
     return (
       <ListItem>
         <IconButton onClick={() => handleIconClick(labelText, isActiveCourse)}>
           <Avatar sx={{ ...AvatarSize, bgcolor: iconColor, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography color="black" variant="body2">{label}</Typography>
+            <Typography color="black" variant="body2">
+              {label}
+            </Typography>
           </Avatar>
         </IconButton>
       </ListItem>
     );
   };
 
-  const PinIcon = ({course} : {course: Course}) => {
+  const PinIcon = ({ course }: { course: Course }) => {
     const isActiveCourse = user.activeCourses?.includes(course?.name);
     return (
-      <IconButton onClick={() => activeCourseSwitch(course)}
-      sx={{transform: "rotate(45deg)"}}>
-      {/* {user.activeCourses?.includes(course?.name) && <PushPinIcon />} */}
+      <IconButton onClick={() => activeCourseSwitch(course)} sx={{ transform: "rotate(45deg)" }}>
+        {/* {user.activeCourses?.includes(course?.name) && <PushPinIcon />} */}
         {isActiveCourse && <PushPinIcon color="primary" />}
         {!isActiveCourse && <PushPinIcon />}
       </IconButton>
     );
-  }
+  };
 
   const CourseNavigation = ({ course }: { course: Course }) => {
     return (
@@ -174,17 +185,23 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
         <StyledDivider />
         <ListItem>
           <List>
-            <Button
-              sx={{
-                width: "100%",
-              }}
-            >
-              <ListItem>
-                <Typography variant="body2" noWrap component="div">
-                  General Chat
-                </Typography>
-              </ListItem>
-            </Button>
+            {course?.rooms?.map((room) => {
+              return (
+                <React.Fragment key={room?.name}>
+                <Button
+                  sx={{
+                    width: "100%",
+                  }}
+                >
+                  <ListItem>
+                    <Typography variant="body2" noWrap component="div">
+                      {room?.name.replace(course?.name, "")}
+                    </Typography>
+                  </ListItem>
+                </Button>
+                </React.Fragment>
+              );
+            })}
             {/* <ListItem>
                 <Typography variant="body1" noWrap component="div">
                   Mod Chat
@@ -234,12 +251,12 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
           </Typography>
         </ListItem>
         <StyledDivider />
-          {getDistinctCoursesByDepartment(activeIcon.course).map((course) => (
-            <React.Fragment key={course.name + course.semester}>
-              <CourseNavigation course={course} />
-              <StyledDivider />
-            </React.Fragment>
-          ))}
+        {getDistinctCoursesByDepartment(activeIcon.course).map((course) => (
+          <React.Fragment key={course.name + course.semester}>
+            <CourseNavigation course={course} />
+            <StyledDivider />
+          </React.Fragment>
+        ))}
       </List>
     );
   };

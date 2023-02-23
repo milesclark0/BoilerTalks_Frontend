@@ -15,7 +15,7 @@ const PasswordReset = (e) => {
   const [passwordError, setPasswordError] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resetSuccessful, setResetStatus] = useState<string>("");
+  const [resetSuccessful, setResetStatus] = useState(false);
 
   const tryResetPassword = async (e) => {
     //call api to create account and login then sign in
@@ -34,28 +34,27 @@ const PasswordReset = (e) => {
         const res = await ChangePasswordAPI(user?.username, password);
         console.log(res);
         if (res.data.statusCode === 200) {     
-          setResetStatus("Success");
+          setResetStatus(true);
+          setPassword('');
+          setConfirmPassword('');
         } 
       } catch (error) {
         console.log(error);
       }
     }
     setLoading(false);
-    if(resetSuccessful == "Success") {
-      return (
-        <Box>
-        <Alert severity="success">Successful Password Reset!</Alert></Box>
-      );
-    }
   };
 
   return (
       <Box>
+      {resetSuccessful == true && (<Alert onClose={ () =>{setResetStatus(false)}} severity="success">Successful Password Reset!</Alert>)}
       <Typography variant="h5">Password Reset</Typography>
+      <Typography variant="body2">Passwords must contain one uppercase letter, one special character, and one numerical value.</Typography>
       <Box sx={{display: 'inline-flex', paddingTop: '10px'}} onSubmit={tryResetPassword} component="form">
       <TextField
           label="Password"
           type="password"
+          id="password"
           value={password}
           inputProps={{ maxLength: 30 }}
           InputProps={{
@@ -71,7 +70,7 @@ const PasswordReset = (e) => {
           sx={{ width: "70%" }}
         />
         <TextField
-          
+          id="confpassword"
           label="Confirm Password"
           type="password"
           value={confirmPassword}
@@ -159,7 +158,7 @@ return (
             </Stack>
         </Drawer>
         <Box sx={{marginTop:`${appBarHeight}px` , marginLeft: `${drawerWidth}px`, paddingTop: '40px', paddingLeft: '40px'}}>
-            <PasswordReset />
+            <PasswordReset />  
         </Box>
         
     </Box>

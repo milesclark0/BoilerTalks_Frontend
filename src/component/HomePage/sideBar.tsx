@@ -8,15 +8,15 @@ import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
-import PushPinIcon from '@mui/icons-material/PushPin';
-import HomeIcon from '@mui/icons-material/Home';
+import PushPinIcon from "@mui/icons-material/PushPin";
+import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 type Props = {
   user: User;
@@ -49,8 +49,8 @@ const SideBar = ({
   const logout = useLogout();
 
   const [newThreadOpen, setnewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
-  const [newThreadValue, setnewThreadValue] = React.useState("");//What the new thread name string is 
-  
+  const [newThreadValue, setnewThreadValue] = React.useState(""); //What the new thread name string is
+
   // get distinct departments from course list
   const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
 
@@ -98,8 +98,8 @@ const SideBar = ({
   };
 
   const navigateToSettings = () => {
-    navigate("/settings")
-  }
+    navigate("/settings");
+  };
 
   const BoilerTracksIcon = () => {
     const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
@@ -199,20 +199,31 @@ const SideBar = ({
         <StyledDivider />
         <ListItem>
           <List>
+            <Button
+              sx={{
+                width: "100%",
+              }}
+            >
+              <ListItem>
+                <Typography variant="body2" noWrap component="div">
+                  Q&A
+                </Typography>
+              </ListItem>
+            </Button>
             {course?.rooms?.map((room) => {
               return (
                 <React.Fragment key={room?.name}>
-                <Button
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <ListItem>
-                    <Typography variant="body2" noWrap component="div">
-                      {room?.name.replace(course?.name, "")}
-                    </Typography>
-                  </ListItem>
-                </Button>
+                  <Button
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <ListItem>
+                      <Typography variant="body2" noWrap component="div">
+                        {room?.name.replace(course?.name, "")}
+                      </Typography>
+                    </ListItem>
+                  </Button>
                 </React.Fragment>
               );
             })}
@@ -221,26 +232,13 @@ const SideBar = ({
                   Mod Chat
                 </Typography>
               </ListItem> */}
-            <Button
-              sx={{
-                width: "100%",
-              }}
-            >
-              <ListItem>
-                <Typography variant="body2" noWrap component="div">
-                  Thread
-                </Typography>
-              </ListItem>
-            </Button>
             <Button variant="outlined" onClick={handleClickNewThread}>
               New thread
             </Button>
             <Dialog open={newThreadOpen} onClose={handleCloseNewThread}>
               <DialogTitle>Create a new thread</DialogTitle>
               <DialogContent>
-                <DialogContentText>
-                  To create a new thread for this course, please enter the thread name here.
-                </DialogContentText>
+                <DialogContentText>To create a new thread for this course, please enter the thread name here.</DialogContentText>
                 <TextField
                   autoFocus
                   margin="dense"
@@ -250,14 +248,16 @@ const SideBar = ({
                   variant="outlined"
                   value={newThreadValue}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setnewThreadValue(event.target.value);//sets the variable with every change to the string but it has a visual bug
+                    setnewThreadValue(event.target.value); //sets the variable with every change to the string but it has a visual bug
                   }}
                   fullWidth
                 />
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseNewThread}>Cancel</Button>
-                <Button variant="outlined" onClick={handleCreateNewThread}>Create</Button>
+                <Button variant="outlined" onClick={handleCreateNewThread}>
+                  Create
+                </Button>
               </DialogActions>
             </Dialog>
           </List>
@@ -271,15 +271,15 @@ const SideBar = ({
 
   const handleCloseNewThread = () => {
     setnewThreadOpen(false);
-    setnewThreadValue("");//wipe the text field
+    setnewThreadValue(""); //wipe the text field
   };
 
   const handleCreateNewThread = () => {
-      setnewThreadOpen(false);
-      alert(newThreadValue);
-      setnewThreadValue("");//wipe the text field
+    setnewThreadOpen(false);
+    alert(newThreadValue);
+    setnewThreadValue(""); //wipe the text field
   };
-  
+
   const CourseView = () => {
     // if no course is selected, show boilertracks home
     if (activeIcon.course === "") {
@@ -316,10 +316,6 @@ const SideBar = ({
       </List>
     );
   };
-
-
-
-  
 
   return (
     <Box>

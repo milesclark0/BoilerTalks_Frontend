@@ -21,11 +21,13 @@ const Home = () => {
   //this value will hold the actual course data (all semesters included) for each user course
   const [userCourses, setUserCourses] = useState<Course[]>([]);
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
+  const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useState<Course[]>([]);
+  const [distinctDepartments, setDistinctDepartments] = React.useState<string[]>([]); //What the new thread name string is
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
   const navigate = useNavigate();
-  
+
   const defaultPadding = 4;
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
@@ -35,20 +37,22 @@ const Home = () => {
     userCourses.forEach((course) => {
       if (activeIcon.isActiveCourse) {
         if (course.name === activeIcon.course) setCurrentCourse(course);
+      } else {
+        setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
       }
     });
   }, [activeIcon]);
-//userlist
+  //userlist
 
   useEffect(() => {
     const fetchCourseUsers = async () => {
       const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
-      if(res.data.statusCode == 200) {
+      if (res.data.statusCode == 200) {
         console.log(res.data.data);
         setCourseUsers(res.data.data);
       }
     };
-    if(isCourseSelected()){
+    if (isCourseSelected()) {
       fetchCourseUsers();
     }
   }, [activeIcon]);
@@ -57,14 +61,25 @@ const Home = () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
 
-  
-
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
     staleTime: 1000 * 60, //1 minute
     refetchOnMount: "always",
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
+        const courses: Course[] = data.data.data;
+        courses.forEach((course) => {
+          courses.forEach((course2) => {
+            if (course !== course2) {
+              if (course._id.$oid === course2._id.$oid) {
+                // if the id matches but the rooms fields are different, join the room fields and delete the duplicate
+                // this handles an unwinded course with multiple rooms
+                course.rooms = [...course.rooms, ...course2.rooms];
+                courses.splice(courses.indexOf(course2), 1);
+              }
+            }
+          });
+        });
         setUserCourses(data.data.data);
       } else setFetchError(data.data.message);
     },
@@ -123,9 +138,12 @@ const Home = () => {
     innerDrawerWidth,
     appBarHeight,
     currentCourse,
-    getDistinctCoursesByDepartment,
+    distinctCoursesByDepartment,
     setUserCourses,
     userCourses,
+    setCurrentCourse,
+    distinctDepartments,
+    setDistinctDepartments,
   };
 
   const searchCourseProps = {
@@ -134,6 +152,10 @@ const Home = () => {
     setShowCourses,
     setUserCourses,
     userCourses,
+    setActiveIcon,
+    activeIcon,
+    distinctDepartments,
+    setDistinctDepartments,
   };
 
   const SemesterSelector = () => {
@@ -164,40 +186,39 @@ const Home = () => {
     return null;
   };
 
-  const handleEnter = (e) => { if (e.keyCode === 13 && value != null) { 
-    console.log(value["username"]); 
-    navigateToProfile(value["username"]);
-  } };
+  const handleEnter = (e) => {
+    if (e.keyCode === 13 && value != null) {
+      console.log(value["username"]);
+      navigateToProfile(value["username"]);
+    }
+  };
 
   const navigateToProfile = (username: string) => {
-    navigate("/profile/"+username);
-  }
+    navigate("/profile/" + username);
+  };
 
   const SearchUserField = () => {
-    if(isCourseSelected() === false) return null;
-    return(
+    if (isCourseSelected() === false) return null;
+    return (
       <Autocomplete
-      value={value}
-      onChange={(event, value) => {
-        setValue(value);
-      }}
-      id="user-search-bar"
-      options={courseUsers}
-      getOptionLabel={(option) => {
-          if(option?.username === undefined)
-          {
+        value={value}
+        onChange={(event, value) => {
+          setValue(value);
+        }}
+        id="user-search-bar"
+        options={courseUsers}
+        getOptionLabel={(option) => {
+          if (option?.username === undefined) {
             return "";
-          }
-          else
-          {
+          } else {
             return option?.username;
           }
-      }}
-      sx={{ width: 300 }}  
-      renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
-    />
+        }}
+        sx={{ width: 300 }}
+        renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
+      />
     );
-  }
+  };
 
   const [value, setValue] = React.useState<string>("");
   /*const filter = createFilterOptions<UserOptionType>();
@@ -205,7 +226,7 @@ const Home = () => {
   interface UserOptionType {
     username: string;
   }*/
-  
+
   return (
     <Box sx={{ display: "flex" }}>
       <SideBar {...sideBarProps} />
@@ -233,7 +254,7 @@ const Home = () => {
               <SemesterSelector />
             </Box>
             <Box>
-              <SearchUserField/>
+              <SearchUserField />
             </Box>
           </Toolbar>
         </AppBar>

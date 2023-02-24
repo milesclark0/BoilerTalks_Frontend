@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Divider, Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar, Menu, MenuItem, Button } from "@mui/material";
 import { Course, Room, User } from "../../types/types";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings } from "@mui/icons-material";
 import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -20,7 +20,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { axiosPrivate } from "../../API/axios";
 import { unsubscribeFromCourseURL } from "./../../API/CoursesAPI";
-import { render } from "react-dom";
+import AddThreadModal from "./addThreadModal";
 
 type Props = {
   user: User;
@@ -30,69 +30,13 @@ type Props = {
   innerDrawerWidth: number;
   appBarHeight: number;
   currentCourse: Course | null;
-  getDistinctCoursesByDepartment: (department: string) => Course[];
+  distinctCoursesByDepartment: Course[];
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   userCourses: Course[];
+  setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
+  distinctDepartments: string[];
+  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
-
-type CreateNewThreadProps = {
-  newThreadValue: string;
-  newThreadOpen: boolean;
-  setnewThreadOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setnewThreadValue: React.Dispatch<React.SetStateAction<string>>;
-  course: Course;
-}
-
-const CreateNewThread = ({newThreadValue, newThreadOpen, setnewThreadOpen, setnewThreadValue, course}:CreateNewThreadProps) => {
-
-  const handleCloseNewThread = () => {
-    setnewThreadOpen(false);
-    setnewThreadValue(""); //wipe the text field
-  };
-
-  const emptyRoom: Room = {
-    _id: { $oid: "" },
-    name: "Hello",
-    courseId: {$oid: ""},
-    connected: [{username: "", sid: ""}],
-    messages: [{username: "", message: "", timeSent: {$date: ""}}],
-  };
-
-  const handleCreateNewThread = ( course: Course ) => {
-    emptyRoom.name = newThreadValue;
-    course?.rooms?.push(emptyRoom);
-    setnewThreadOpen(false);//newThreadValue
-    setnewThreadValue(""); //wipe the text field
-  };
-
-  return (
-      <Dialog open={newThreadOpen} onClose={handleCloseNewThread}>
-        <DialogTitle>Create a new thread</DialogTitle>
-              <DialogContent>
-                <DialogContentText>To create a new thread for this course, please enter the thread name here.</DialogContentText>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="newThreadName"
-                  label="New Thread Name"
-                  type="text"
-                  variant="outlined"
-                  value={newThreadValue}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setnewThreadValue(event.target.value); //sets the variable with every change to the string but it has a visual bug
-                  }}
-                  fullWidth
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseNewThread}>Cancel</Button>
-                <Button variant="outlined" onClick={ () => handleCreateNewThread(course)}>
-                  Create
-                </Button>
-              </DialogActions>
-            </Dialog>        
-    )
-}
 
 const SideBar = ({
   user,
@@ -101,10 +45,13 @@ const SideBar = ({
   drawerWidth,
   innerDrawerWidth,
   currentCourse,
-  getDistinctCoursesByDepartment,
+  distinctCoursesByDepartment,
   setUserCourses,
   userCourses,
   appBarHeight,
+  setCurrentCourse,
+  distinctDepartments,
+  setDistinctDepartments,
 }: Props) => {
   const api = useAxiosPrivate();
   const { setUser } = useAuth();
@@ -115,15 +62,26 @@ const SideBar = ({
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
 
-  const [newThreadOpen, setnewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
-  const [newThreadValue, setnewThreadValue] = React.useState(""); //What the new thread name string is
+  const [newThreadOpen, setNewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
+  const [newThreadValue, setNewThreadValue] = React.useState(""); //What the new thread name string is
 
   const CreateNewThreadProps = {
-    newThreadOpen, newThreadValue, setnewThreadOpen, setnewThreadValue
-  }
+    newThreadOpen,
+    newThreadValue,
+    setNewThreadOpen,
+    setNewThreadValue,
+    currentCourse,
+    setCurrentCourse,
+    setUserCourses,
+    userCourses,
+  };
 
   // get distinct departments from course list
-  const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
+
+  useEffect(() => {
+    const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
+    setDistinctDepartments(distinctDepartments);
+  }, []);
 
   const OuterDrawerStyles = {
     width: drawerWidth,
@@ -174,7 +132,7 @@ const SideBar = ({
 
   const navigateToAbout = () => {
     navigate("/about");
-  }
+  };
 
   const BoilerTalksIcon = () => {
     const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
@@ -228,7 +186,9 @@ const SideBar = ({
   const SettingsMenu = () => {
     return (
       <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
-        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>{user?.username}</MenuItem>
+        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>
+          {user?.username}
+        </MenuItem>
         <StyledDivider />
         <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
         <MenuItem onClick={navigateToAbout}>About</MenuItem>
@@ -281,12 +241,24 @@ const SideBar = ({
     const handleLeaveServer = async () => {
       const ret = await api.post(unsubscribeFromCourseURL, { courseName: course.name, username: user.username });
       if (ret.data.statusCode == 200) {
-        setUser({ ...user, courses: user.courses.filter((c) => c != course.name) });
+        //remove the course from the user's courses states and the user.courses context
+        setUser({ ...user, courses: [...user.courses.filter((c) => c != course.name)] });
         setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
+        console.log([...userCourses.filter((c) => c.name != course.name)]);
+        //if the course is the active course, set the active course to nothing
         if (course.name == activeIcon.course) {
           setActiveIcon({ course: "", isActiveCourse: false });
-          setUser({ ...user, activeCourses: user.activeCourses.filter((c) => c != course.name) });
+        } else if (distinctCoursesByDepartment?.length == 1) {
+          //if the course is the last course in the department, set the active course to nothing
+          setDistinctDepartments([...distinctDepartments.filter((d) => d != course.department)]);
+          setActiveIcon({ course: "", isActiveCourse: false });
+          console.log([...distinctDepartments.filter((d) => d != course.department)]);
+        } else {
+          //trigger a rerender of the course icons
+          setActiveIcon({ course: distinctCoursesByDepartment[0].department, isActiveCourse: false });
         }
+        setUser({ ...user, activeCourses: user?.activeCourses?.filter((c) => c != course.name) });
+        setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
       } else {
         alert("Error leaving server");
       }
@@ -370,15 +342,15 @@ const SideBar = ({
                 <Typography variant="body2">New thread</Typography>
               </ListItem>
             </Button>
-            <CreateNewThread course={course} {...CreateNewThreadProps} />
+            <AddThreadModal course={course} {...CreateNewThreadProps} />
           </List>
         </ListItem>
       </List>
     );
   };
 
-  const handleClickNewThread = () => { 
-    setnewThreadOpen(true);
+  const handleClickNewThread = () => {
+    setNewThreadOpen(true);
   };
 
   const CourseView = () => {
@@ -408,7 +380,7 @@ const SideBar = ({
           </Typography>
         </ListItem>
         <StyledDivider />
-        {getDistinctCoursesByDepartment(activeIcon.course).map((course) => (
+        {distinctCoursesByDepartment?.map((course) => (
           <React.Fragment key={course.name + course.semester}>
             <CourseNavigation course={course} />
             <StyledDivider />
@@ -417,33 +389,6 @@ const SideBar = ({
       </List>
     );
   };
-
-  /*const subscribeToCourses = async () => {
-    try {
-      //filter out empty courses and courses the user is already in
-      const courseNames = getAddedCourses();
-
-      //if no courses were added, do nothing
-      if (courseNames.length === 0) {
-        setShowCourses(false);
-        return;
-      }
-      const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
-      if (response.data.statusCode === 200) {
-        setShowCourses(false);
-        //update the user context
-        setUser({ ...user, courses: [...user.courses, ...courseNames] });
-        //returns all the courses the user is in
-        const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
-        setUserCourses([...userCourses, ...matchingCourses]);
-      } else {
-        console.log(response.data.message);
-        //TODO: handle error
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };*/
 
   return (
     <Box>

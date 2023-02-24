@@ -16,6 +16,10 @@ type Props = {
   setShowCourses: (value: boolean) => void;
   userCourses: Course[];
   setUserCourses: (value: Course[]) => void;
+  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
+  activeIcon: { course: string; isActiveCourse: boolean };
+  distinctDepartments: string[];
+  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 const emptyCourse: Course = {
   _id: { $oid: "" },
@@ -40,7 +44,7 @@ const emptyCourse: Course = {
   department: "",
 };
 
-const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, userCourses }: Props) => {
+const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, userCourses, setActiveIcon, activeIcon, distinctDepartments, setDistinctDepartments }: Props) => {
   const api = useAxiosPrivate();
   const { setUser } = useAuth();
   // tracks all courses from db
@@ -182,10 +186,22 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
       if (response.data.statusCode === 200) {
         setShowCourses(false);
         //update the user context
+        //triggers a re-render of the course icons
         setUser({ ...user, courses: [...user.courses, ...courseNames] });
         //returns all the courses the user is in
         const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
         setUserCourses([...userCourses, ...matchingCourses]);
+        //if course is a new department, add it to the list of distinct departments
+        matchingCourses.forEach((course) => {
+          if(!distinctDepartments.includes(course.department)) {
+            console.log("adding new department");
+            
+            setDistinctDepartments([...distinctDepartments, course.department]);
+          }
+        });
+        //trigger a re-render of the course list
+        setActiveIcon({...activeIcon})
+        setuserAddedCourses([{...emptyCourse}]);
       } else {
         console.log(response.data.message);
         //TODO: handle error
@@ -196,7 +212,6 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   };
 
   const courseEntry = (course: Course, index: number) => {
-    let departmentFilter = "";
     cacheCurrentCourses();
     return (
       <Box key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -209,7 +224,6 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
             renderOption={(props, option) => <li {...props}>{option}</li>}
             onChange={(event, value) => {
               handleCourseDepartmentChange(index, value);
-              departmentFilter = value;
             }}
             sx={{
               width: "30%",
@@ -243,7 +257,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
               }}
             >
               <Tooltip title={currentCourses.get(course.name) ? "Subscribed" : "Delete"}>
-                <CheckCircleOutlineIcon color={currentCourses.get(course.name) ? "success" : "disabled"} />
+                <CheckCircleOutlineIcon color={userCourses.includes(course) ? "success" : "disabled"} />
               </Tooltip>
             </IconButton>
             <IconButton

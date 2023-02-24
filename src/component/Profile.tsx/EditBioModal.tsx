@@ -24,10 +24,11 @@ const EditBioModal = ({ requestUsername, showEditBio, setShowEditBio }: Props) =
   
     // handles modal close
     const handleClose = (event: Event, reason: string) => {
-        if (reason === "backdropClick") {
+        /*if (reason === "backdropClick") {
         return;
-        }
+        }*/
         setShowEditBio(false);
+        
     };
 
     const editBio = async () => {
@@ -38,6 +39,8 @@ const EditBioModal = ({ requestUsername, showEditBio, setShowEditBio }: Props) =
         const res = editBio();
 
         event.preventDefault();
+        handleClose(event.hide, "close");
+        //DOM update needed
     };
 
     const handleChange = (event) => {
@@ -51,23 +54,33 @@ const EditBioModal = ({ requestUsername, showEditBio, setShowEditBio }: Props) =
               position: "absolute",
               top: "50%",
               left: "50%",
-              width: 600,
+              width: 740,
               transform: "translate(-50%, -50%)",
               bgcolor: "white",
               borderRadius: "10px",
               boxShadow: 24,
               p: 2,
               paddingRight: 4,
-              display: "flex",
-              maxHeight: 450,
+              display: "inline",
+              maxHeight: 400,
+              justifyContent: "left",
+              
             }}
           >
             <form onSubmit={handleSubmit}>        
-                <label>
+                <Typography variant="h3">               
                     Edit your bio:
-                    <textarea value={textInput} onChange={handleChange}/>        
-                </label>
-                <input type="submit" value="Submit" />
+                    <br></br>
+                    <TextField  value={textInput} onChange={handleChange}
+                      multiline
+                      margin="dense"
+                      fullWidth
+                      rows={3}
+                      maxRows={8}
+                      />        
+                </Typography> 
+                <br></br>
+                <Button type="submit" variant="outlined">Submit</Button>
             </form>
           </Box>
         </Modal>

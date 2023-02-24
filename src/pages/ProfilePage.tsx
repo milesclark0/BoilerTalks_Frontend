@@ -58,16 +58,40 @@ const ProfilePage = () => {
                 <Box>
                     <AppBar position="fixed" sx={{  ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
                     <Typography variant="h4">{profileInfo?.username}</Typography>
-                    <h2>{profileInfo?.bio}</h2>
+                    <Box sx={{ display: "flex", margin: 5 }}>
+                        <Box
+                            sx={{
+                            
+                            boxShadow: 8,
+                            height: "75%",
+                            width: "55%",
+                            borderRadius: 5,                     
+                            justifyContent: "center",
+                            alignItems: "initial",
+                            flexDirection: "column",
+                            margin: "auto",
+                            padding: "1%",
+                            // "& > :not(style)": { m: 1 },
+                            }}>
+                        <Typography variant="h3" 
+                            sx={{
+                                color: "black",
+                                marginLeft: 5,
+                                display: "table-caption"
+                            }}
+                        >{profileInfo?.bio}</Typography>
+                        </Box>
+                    </Box>
 
                     {user.username == requestUsername ? 
-                        (<Button variant="outlined" onClick={() => setShowEditBio(true) }sx={{
+                        (<Button variant="contained" onClick={() => setShowEditBio(true) }sx={{
                             color: "white",
+                            marginTop: 0,
+                            marginLeft: 90,
+                            marginRight: 90,
                         }}>
                         Edit Bio
                         </Button>) : (<h4></h4>)}
-
-
                     <h2>{profileInfo?.modThreads}</h2>
                     </AppBar>
                 </Box>

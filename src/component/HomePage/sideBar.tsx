@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Divider, Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar, Menu, MenuItem, Button } from "@mui/material";
-import { Course, User } from "../../types/types";
+import { Course, Room, User } from "../../types/types";
 import React from "react";
 import { useState } from "react";
 import { Settings } from "@mui/icons-material";
@@ -20,6 +20,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { axiosPrivate } from "../../API/axios";
 import { unsubscribeFromCourseURL } from "./../../API/CoursesAPI";
+import { render } from "react-dom";
 
 type Props = {
   user: User;
@@ -317,7 +318,7 @@ const SideBar = ({
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseNewThread}>Cancel</Button>
-                <Button variant="outlined" onClick={handleCreateNewThread}>
+                <Button variant="outlined" onClick={ () => handleCreateNewThread(course)}>
                   Create
                 </Button>
               </DialogActions>
@@ -336,9 +337,18 @@ const SideBar = ({
     setnewThreadValue(""); //wipe the text field
   };
 
-  const handleCreateNewThread = () => {
-    setnewThreadOpen(false);
-    alert(newThreadValue);
+  const emptyRoom: Room = {
+    _id: { $oid: "" },
+    name: "Hello",
+    courseId: {$oid: ""},
+    connected: [{username: "", sid: ""}],
+    messages: [{username: "", message: "", timeSent: {$date: ""}}],
+  };
+
+  const handleCreateNewThread = ( course: Course ) => {
+    emptyRoom.name = newThreadValue;
+    course?.rooms?.push(emptyRoom);
+    setnewThreadOpen(false);//newThreadValue
     setnewThreadValue(""); //wipe the text field
   };
 

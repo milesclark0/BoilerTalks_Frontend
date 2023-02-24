@@ -14,10 +14,8 @@ import {
 } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useNavigate } from "react-router-dom";
-import { Visibility, VisibilityOff, Warning } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { LoginAPI } from "../API/AuthAPI";
-import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/context";
 import { RegisterAccountAPI } from "../API/RegisterAPI";
 
@@ -69,12 +67,12 @@ const Register = () => {
       setEmailError(true);
       missing = true;
     }
+    if (password == confirmPassword) {
+      setPasswordError(false);
+    }
     if (password !== confirmPassword || password === "" || confirmPassword === "") {
       setPasswordError(true);
       missing = true;
-    }
-    if (password == confirmPassword) {
-      setPasswordError(false);
     }
 
     if (checked === false) {
@@ -117,8 +115,8 @@ const Register = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: 8,
-          height: "90%",
-          width: "55%",
+          height: "95%",
+          width: "65%",
           borderRadius: 5,
           display: "flex",
           justifyContent: "center",
@@ -142,7 +140,7 @@ const Register = () => {
             justifyContent: "space-between",
             alignItems: "center",
             flexDirection: "column",
-            overflowY: "hidden",
+            // overflowY: "hidden",
           }}
           className="scrollBar"
         >
@@ -240,9 +238,11 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             sx={{ width: "70%" }}
           />
+        </Box>
+        <Box sx={{ height: "27%", width: "70%", display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "column" }}>
           <FormControl required error={policyError} fullWidth>
             <FormControlLabel
-              sx={{display: "flex", justifyContent: "center"}}
+              sx={{ display: "flex", justifyContent: "center" }}
               control={<Checkbox checked={checked} onChange={handleChecked} />}
               label={
                 <Typography>
@@ -254,12 +254,10 @@ const Register = () => {
               }
             />
           </FormControl>
-        </Box>
-        <Box sx={{ height: "27%", width: "70%", display: "flex", justifyContent: "flex-start", alignItems: "center", flexDirection: "column" }}>
           <LoadingButton
             variant="contained"
             loading={loading}
-            disabled={loading}
+            disabled={loading || !checked}
             sx={{ width: "60%", textTransform: "none", fontSize: 16, mt: 2 }}
             type="submit"
             color="success"

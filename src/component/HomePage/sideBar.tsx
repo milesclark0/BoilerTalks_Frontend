@@ -8,6 +8,7 @@ import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
+import { useNavigate } from "react-router-dom";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import HomeIcon from "@mui/icons-material/Home";
@@ -114,6 +115,7 @@ const SideBar = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
+  const navigate = useNavigate();
 
   const [newThreadOpen, setnewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setnewThreadValue] = React.useState(""); //What the new thread name string is
@@ -221,10 +223,14 @@ const SideBar = ({
     }
   };
 
+  const navigateToProfile = () => {
+    navigate("/profile");
+  };
+
   const SettingsMenu = () => {
     return (
       <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
-        <MenuItem sx={{ pointerEvents: "none", justifyContent: "center" }}>{user?.username}</MenuItem>
+        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>{user?.username}</MenuItem>
         <StyledDivider />
         <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
         <MenuItem onClick={navigateToAbout}>About</MenuItem>

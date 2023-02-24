@@ -27,6 +27,14 @@ export type Course = {
   semester: string;
 }
 
+export type Profile = {
+  username: string;
+  _id: {$oid: string};
+  bio: string;
+  modThreads: string[];
+  profilePicture: string;
+}
+
 export type Room = {
   _id: {$oid: string};
   name: string;

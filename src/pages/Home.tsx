@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
-import { getUserCoursesURL, getCourseURL } from "../API/CoursesAPI";
+import { getUserCoursesURL, getCourseURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Course } from "../types/types";
@@ -22,6 +22,7 @@ const Home = () => {
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
+  const [courseUsers, setCourseUsers] = useState([]);
 
   const defaultPadding = 4;
   const drawerWidth = 300;
@@ -35,10 +36,26 @@ const Home = () => {
       }
     });
   }, [activeIcon]);
+//userlist
+
+  useEffect(() => {
+    const fetchCourseUsers = async () => {
+      const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+      if(res.data.statusCode == 200) {
+        console.log(res.data.data);
+        setCourseUsers(res.data.data);
+      }
+    };
+    if(isCourseSelected()){
+      fetchCourseUsers();
+    }
+  }, [activeIcon]);
 
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
+
+  
 
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
@@ -144,20 +161,42 @@ const Home = () => {
     }
     return null;
   };
-  const filter = createFilterOptions<UserOptionType>();
-  const [value, setValue] = React.useState<UserOptionType | null>(null);
-  interface UserOptionType {
-    inputValue?: string;
-    userName: string;
+
+  const SearchUserField = () => {
+    if(isCourseSelected() === false) return null;
+    return(
+      <Autocomplete
+      disablePortal
+      value={value}
+      onChange={(event, value) => {
+        setValue(value);
+      }}
+      id="combo-box-demo"
+      options={courseUsers}
+      freeSolo
+      getOptionLabel={(option) => {
+          if(option?.username === undefined)
+          {
+            return "";
+          }
+          else
+          {
+            return option?.username;
+          }
+      }}
+      sx={{ width: 300 }}  
+      renderInput={(params) => <TextField {...params} variant="outlined" color="info" label="Search users..." />}
+    />
+    );
   }
-  const userlist: readonly UserOptionType[] = [
-    { userName: "anna2213" },
-    { userName: "antonio2" },
-    { userName: "gera9" },
-    { userName: "koe" },
-    { userName: "hello there" },
-    { userName: "master" },
-  ];
+
+  const [value, setValue] = React.useState<string>("");
+  /*const filter = createFilterOptions<UserOptionType>();
+  
+  interface UserOptionType {
+    username: string;
+  }*/
+  
   return (
     <Box sx={{ display: "flex" }}>
       <SideBar {...sideBarProps} />
@@ -185,49 +224,7 @@ const Home = () => {
               <SemesterSelector />
             </Box>
             <Box>
-              <Autocomplete
-                value={value}
-                onChange={(event, newValue) => {
-                  if (typeof newValue === "string") {
-                    setValue({
-                      userName: newValue,
-                    });
-                  } else if (newValue && newValue.inputValue) {
-                    // Create a new value from the user input
-                    setValue({
-                      userName: newValue.inputValue,
-                    });
-                  } else {
-                    setValue(newValue);
-                  }
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
-                  return filtered;
-                }}
-                disablePortal
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                id="searchUser"
-                options={userlist}
-                getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                  if (typeof option === "string") {
-                    return option;
-                  }
-                  // Add "xxx" option created dynamically
-                  if (option.inputValue) {
-                    return option.inputValue;
-                  }
-                  // Regular option
-                  return option.userName;
-                }}
-                renderOption={(props, option) => <li {...props}>{option.userName}</li>}
-                sx={{ width: 300, bgcolor: "white", color: "white" }} size="small"
-                freeSolo
-                renderInput={(params) => <TextField {...params} variant="outlined" color="info" label="Search users..." />}
-              />
+              <SearchUserField/>
             </Box>
           </Toolbar>
         </AppBar>

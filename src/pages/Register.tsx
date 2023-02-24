@@ -144,7 +144,7 @@ const Register = () => {
           }}
           className="scrollBar"
         >
-          <FormHelperText sx={{ fontSize: "14px", width: "70%", mb: 2 }} error>
+          <FormHelperText sx={{ fontSize: "14px", width: "70%" }} error>
             {error || ""}
           </FormHelperText>
           <TextField

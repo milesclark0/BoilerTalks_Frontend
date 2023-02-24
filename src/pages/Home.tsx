@@ -166,14 +166,12 @@ const Home = () => {
     if(isCourseSelected() === false) return null;
     return(
       <Autocomplete
-      disablePortal
       value={value}
       onChange={(event, value) => {
         setValue(value);
       }}
       id="combo-box-demo"
       options={courseUsers}
-      freeSolo
       getOptionLabel={(option) => {
           if(option?.username === undefined)
           {

@@ -24,6 +24,7 @@ const Login = () => {
     console.log(username, password);
     if (username === "" || password === "") {
       setError("Please enter all fields");
+      setLoading(false);
       return;
     }
     //call api to login and sign in

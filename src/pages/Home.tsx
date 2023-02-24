@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
-import { getUserCoursesURL, getCourseURL } from "../API/CoursesAPI";
+import { getUserCoursesURL, getCourseURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Course } from "../types/types";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import React from "react";
 
 const Home = () => {
   const { user } = useAuth();
@@ -19,6 +22,7 @@ const Home = () => {
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
+  const [courseUsers, setCourseUsers] = useState([]);
 
   const defaultPadding = 4;
   const drawerWidth = 300;
@@ -32,14 +36,31 @@ const Home = () => {
       }
     });
   }, [activeIcon]);
+//userlist
+
+  useEffect(() => {
+    const fetchCourseUsers = async () => {
+      const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+      if(res.data.statusCode == 200) {
+        console.log(res.data.data);
+        setCourseUsers(res.data.data);
+      }
+    };
+    if(isCourseSelected()){
+      fetchCourseUsers();
+    }
+  }, [activeIcon]);
 
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
 
+  
+
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
     staleTime: 1000 * 60, //1 minute
+    refetchOnMount: "always",
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
         setUserCourses(data.data.data);
@@ -101,6 +122,8 @@ const Home = () => {
     appBarHeight,
     currentCourse,
     getDistinctCoursesByDepartment,
+    setUserCourses,
+    userCourses,
   };
 
   const searchCourseProps = {
@@ -115,13 +138,16 @@ const Home = () => {
     // if the active icon is a department
     if (isCourseSelected()) {
       return (
-        <Select size="small" value={currentSemester || getMostRecentSemester(userCourses)} onChange={(e) => {
-          setCurrentSemester(e.target.value as string);
-          const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
-          if (course) setCurrentCourse(course);
-          console.log(course);
-          
-        }}>
+        <Select
+          size="small"
+          value={currentSemester || getMostRecentSemester(userCourses)}
+          onChange={(e) => {
+            setCurrentSemester(e.target.value as string);
+            const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+            if (course) setCurrentCourse(course);
+            console.log(course);
+          }}
+        >
           <MenuItem disabled value="">
             Select Semester
           </MenuItem>
@@ -136,21 +162,68 @@ const Home = () => {
     return null;
   };
 
+  const SearchUserField = () => {
+    if(isCourseSelected() === false) return null;
+    return(
+      <Autocomplete
+      value={value}
+      onChange={(event, value) => {
+        setValue(value);
+      }}
+      id="combo-box-demo"
+      options={courseUsers}
+      getOptionLabel={(option) => {
+          if(option?.username === undefined)
+          {
+            return "";
+          }
+          else
+          {
+            return option?.username;
+          }
+      }}
+      sx={{ width: 300 }}  
+      renderInput={(params) => <TextField {...params} variant="outlined" color="info" label="Search users..." />}
+    />
+    );
+  }
+
+  const [value, setValue] = React.useState<string>("");
+  /*const filter = createFilterOptions<UserOptionType>();
+  
+  interface UserOptionType {
+    username: string;
+  }*/
+  
   return (
     <Box sx={{ display: "flex" }}>
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
 
       {!isLoading && !error && !fetchError ? (
-        <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
+        <AppBar
+          position="fixed"
+          sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center" }}
+        >
           <Toolbar>
-          <Typography variant="h5" sx={{p:4}}>{activeIcon.course || "Select a course or Department"}</Typography>
-          <Button variant="outlined" onClick={() => setShowCourses(true) }sx={{
-            color: "white",
-          }}>
-            Add Courses
-          </Button>
-          <SemesterSelector />
+            <Box sx={{ display: "flex", flexGrow: 1, height: appBarHeight }}>
+              <Typography variant="h5" sx={{ p: 2 }}>
+                {activeIcon.course || "Select a course or Department"}
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={() => setShowCourses(true)}
+                sx={{
+                  color: "white",
+                }}
+              >
+                Add Courses
+              </Button>
+              <SemesterSelector />
+            </Box>
+            <Box>
+              <SearchUserField/>
+            </Box>
           </Toolbar>
         </AppBar>
       ) : (

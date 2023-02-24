@@ -12,7 +12,11 @@ export const getCourseURL = "/courses/getCourse/";
 
 export const getUserCoursesURL = "/courses/getUserCourses/";
 
+export const getCourseUsersURL = "/courses/getCourseUsers/";
+
 export const subscribeToCourseURL = "/courses/subscribeToCourses";
+
+export const unsubscribeFromCourseURL = "/courses/unsubscribeFromCourse";
 
 export const setCourseActiveURL = "/courses/setActiveCourse";
 

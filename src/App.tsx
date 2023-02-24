@@ -21,7 +21,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/policies" element={<Policies />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/:requestUsername" element={<ProfilePage />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
 
         {/* protected routes */}

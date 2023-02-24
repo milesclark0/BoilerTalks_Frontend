@@ -125,7 +125,7 @@ const SideBar = ({ user, activeIcon, setActiveIcon, drawerWidth, innerDrawerWidt
   };
 
   const navigateToProfile = () => {
-    navigate("/profile");
+    navigate("/profile/" + user.username);
   };
 
   const SettingsMenu = () => {

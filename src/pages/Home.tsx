@@ -161,6 +161,7 @@ const Home = () => {
     }
     return null;
   };
+  const handleEnter = (e) => { if (e.keyCode === 13) { console.log(value["username"]); } };
 
   const SearchUserField = () => {
     if(isCourseSelected() === false) return null;
@@ -183,7 +184,9 @@ const Home = () => {
           }
       }}
       sx={{ width: 300 }}  
-      renderInput={(params) => <TextField {...params} variant="outlined" color="info" label="Search users..." />}
+      renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
+
+
     />
     );
   }

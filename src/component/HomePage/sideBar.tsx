@@ -172,7 +172,7 @@ const SideBar = ({
     navigate("/settings");
   };
 
-  const BoilerTracksIcon = () => {
+  const BoilerTalksIcon = () => {
     const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
     const outlineStyle = activeIcon.course === "" ? "solid" : "";
     return (
@@ -373,13 +373,13 @@ const SideBar = ({
   };
 
   const CourseView = () => {
-    // if no course is selected, show boilertracks home
+    // if no course is selected, show boilertalks home
     if (activeIcon.course === "") {
       return (
         <List>
           <ListItem>
             <Typography variant="h6" noWrap component="div">
-              BoilerTracks Home
+              BoilerTalks Home
             </Typography>
           </ListItem>
           <StyledDivider />
@@ -461,7 +461,7 @@ const SideBar = ({
         </Box>
         <Drawer sx={InnerDrawerStyles} variant="permanent" anchor="left">
           <List>
-            <BoilerTracksIcon />
+            <BoilerTalksIcon />
             <StyledDivider />
             {user.activeCourses?.map((course: string) => (
               <React.Fragment key={course}>

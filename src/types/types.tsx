@@ -32,5 +32,6 @@ export type Profile = {
   _id: {$oid: string};
   bio: string;
   modThreads: string[];
+  profilePicture: string;
 }
 

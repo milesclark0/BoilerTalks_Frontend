@@ -38,6 +38,62 @@ type Props = {
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
+type RulesProps = {
+  RulesText: string;
+  RulesOpen: boolean;
+  setRulesOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setRulesText: React.Dispatch<React.SetStateAction<string>>;
+  course: Course;
+}
+
+const Rules = ({RulesText, RulesOpen, setRulesText, setRulesOpen, course}:RulesProps) => {
+
+  const handleCloseRules = () => {
+    setRulesOpen(false);
+    setRulesText(""); //wipe the text field
+  };
+
+  const SaveRules = ( course: Course ) => {
+    setRulesOpen(false);//newThreadValue
+    //setRulesText(""); //wipe the text field
+  };
+
+  return (
+      <Dialog open={RulesOpen} onClose={handleCloseRules}>
+        <DialogTitle>Rules</DialogTitle>
+              <DialogContent>
+                <DialogContentText>Rules for this course discussion:</DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="rulesdialog"
+                  label="Rules"
+                  type="text"
+                  variant="outlined"
+                  value={RulesText}
+                  rows={10}
+                  multiline
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setRulesText(event.target.value); //sets the variable with every change to the string but it has a visual bug
+                  }}
+                  fullWidth
+                  sx={{
+                    
+                    width: 500,
+                    display: "flex",
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseRules}>Cancel</Button>
+                <Button variant="outlined" onClick={ () => SaveRules(course)}>
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>        
+    )
+}
+
 const SideBar = ({
   user,
   activeIcon,
@@ -75,6 +131,14 @@ const SideBar = ({
     setUserCourses,
     userCourses,
   };
+
+  const [RulesOpen, setRulesOpen] = React.useState(false); //whether the rules dialogue is open or not
+  const [RulesText, setRulesText] = React.useState(""); //import backend rules text
+
+  const handleClickRules = () => { 
+    setRulesOpen(true);
+  };
+  const RulesProps = {RulesText, RulesOpen, setRulesText, setRulesOpen}
 
   // get distinct departments from course list
 
@@ -337,6 +401,12 @@ const SideBar = ({
                   Mod Chat
                 </Typography>
               </ListItem> */}
+            <Button variant="text" onClick={handleClickRules}>
+              <ListItem>
+                <Typography variant="body2">Rules</Typography>
+              </ListItem>
+            </Button>
+            <Rules course={course} {...RulesProps} />
             <Button variant="outlined" onClick={handleClickNewThread}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>

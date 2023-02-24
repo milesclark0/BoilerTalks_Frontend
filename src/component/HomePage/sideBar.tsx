@@ -172,6 +172,10 @@ const SideBar = ({
     navigate("/settings");
   };
 
+  const navigateToAbout = () => {
+    navigate("/about");
+  }
+
   const BoilerTalksIcon = () => {
     const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
     const outlineStyle = activeIcon.course === "" ? "solid" : "";
@@ -223,6 +227,7 @@ const SideBar = ({
         <MenuItem sx={{ pointerEvents: "none", justifyContent: "center" }}>{user?.username}</MenuItem>
         <StyledDivider />
         <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
+        <MenuItem onClick={navigateToAbout}>About</MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     );

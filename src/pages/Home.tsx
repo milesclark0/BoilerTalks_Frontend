@@ -11,6 +11,7 @@ import { Course } from "../types/types";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { user } = useAuth();
@@ -23,7 +24,8 @@ const Home = () => {
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
-
+  const navigate = useNavigate();
+  
   const defaultPadding = 4;
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
@@ -161,7 +163,15 @@ const Home = () => {
     }
     return null;
   };
-  const handleEnter = (e) => { if (e.keyCode === 13) { console.log(value["username"]); } };
+
+  const handleEnter = (e) => { if (e.keyCode === 13 && value != null) { 
+    console.log(value["username"]); 
+    navigateToProfile(value["username"]);
+  } };
+
+  const navigateToProfile = (username: string) => {
+    navigate("/profile/"+username);
+  }
 
   const SearchUserField = () => {
     if(isCourseSelected() === false) return null;
@@ -171,7 +181,7 @@ const Home = () => {
       onChange={(event, value) => {
         setValue(value);
       }}
-      id="combo-box-demo"
+      id="user-search-bar"
       options={courseUsers}
       getOptionLabel={(option) => {
           if(option?.username === undefined)
@@ -185,8 +195,6 @@ const Home = () => {
       }}
       sx={{ width: 300 }}  
       renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
-
-
     />
     );
   }

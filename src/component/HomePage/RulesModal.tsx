@@ -16,7 +16,17 @@ type RulesProps = {
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
 };
 
-const RulesModal = ({RulesText, RulesOpen, setRulesText, setRulesOpen, course, currentCourse, setUserCourses, userCourses, setCurrentCourse }: RulesProps) => {
+const RulesModal = ({
+  RulesText,
+  RulesOpen,
+  setRulesText,
+  setRulesOpen,
+  course,
+  currentCourse,
+  setUserCourses,
+  userCourses,
+  setCurrentCourse,
+}: RulesProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseRules = () => {
@@ -24,13 +34,13 @@ const RulesModal = ({RulesText, RulesOpen, setRulesText, setRulesOpen, course, c
     setRulesText(""); //wipe the text field
   };
 
-
- 
-
   const SaveRules = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setRulesOpen(false);//newThreadValue
-    //setRulesText(""); //wipe the text field
+    const newRules = event.target[0].value;
+    console.log(newRules);
+
+    setRulesOpen(false);
+    setRulesText(newRules);
   };
 
   return (
@@ -39,9 +49,19 @@ const RulesModal = ({RulesText, RulesOpen, setRulesText, setRulesOpen, course, c
         <DialogTitle>Rules</DialogTitle>
         <DialogContent>
           <DialogContentText>Rules for this course discussion:</DialogContentText>
-          <TextField autoFocus margin="dense" id="rulesdialog" label="Rules" type="text" variant="outlined" fullWidth rows={10} multiline
+          <TextField
+            autoFocus
+            margin="dense"
+            id="rulesdialog"
+            label="Rules"
+            type="text"
+            variant="outlined"
+            fullWidth
+            rows={10}
+            multiline
+            value={RulesText}
+            onChange={(e) => setRulesText(e.target.value)}
             sx={{
-                    
               width: 500,
               display: "flex",
             }}

@@ -192,13 +192,13 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
         const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
         setUserCourses([...userCourses, ...matchingCourses]);
         //if course is a new department, add it to the list of distinct departments
+        const newDepartments = [];
         matchingCourses.forEach((course) => {
-          if(!distinctDepartments.includes(course.department)) {
-            console.log("adding new department");
-            
-            setDistinctDepartments([...distinctDepartments, course.department]);
+          if(!distinctDepartments.includes(course.department)) {            
+            newDepartments.push(course.department);
           }
         });
+        setDistinctDepartments([...distinctDepartments, ...newDepartments]);
         //trigger a re-render of the course list
         setActiveIcon({...activeIcon})
         setuserAddedCourses([{...emptyCourse}]);

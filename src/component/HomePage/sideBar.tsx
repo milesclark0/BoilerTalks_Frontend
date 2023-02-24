@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import HomeIcon from "@mui/icons-material/Home";
-import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -115,7 +114,6 @@ const SideBar = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
-  const navigate = useNavigate();
 
   const [newThreadOpen, setnewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setnewThreadValue] = React.useState(""); //What the new thread name string is
@@ -224,7 +222,7 @@ const SideBar = ({
   };
 
   const navigateToProfile = () => {
-    navigate("/profile");
+    navigate("/profile/" + user.username);
   };
 
   const SettingsMenu = () => {

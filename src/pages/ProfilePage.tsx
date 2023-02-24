@@ -9,10 +9,12 @@ import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Profile } from "../types/types";
 import EditBioModal from "../component/Profile.tsx/EditBioModal";
+import { useParams } from "react-router-dom";
 
 
 const ProfilePage = () => {
-    const { user } = useAuth();
+    const { requestUsername } = useParams();
+    const { user } = useAuth()
     const [showEditBio, setShowEditBio] = useState(false);
     const [fetchError, setFetchError] = useState("");
     const [profileInfo, setProfileInfo] = useState<Profile>(null);
@@ -25,7 +27,8 @@ const ProfilePage = () => {
 
     //change this to use axiosprivate
     const fetchProfile = async () => {
-        return await axiosPrivate.get(getProfileURL + user?.username);
+        console.log(requestUsername);
+        return await axiosPrivate.get(getProfileURL + requestUsername);
     }; 
 
     const { isLoading, error, data } = useQuery("profile", fetchProfile, {
@@ -41,7 +44,7 @@ const ProfilePage = () => {
     });
 
     const editBioProps = {
-        user,
+        requestUsername,
         showEditBio,
         setShowEditBio,
     };
@@ -56,11 +59,15 @@ const ProfilePage = () => {
                     <AppBar position="fixed" sx={{  ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
                     <Typography variant="h4">{profileInfo?.username}</Typography>
                     <h2>{profileInfo?.bio}</h2>
-                    <Button variant="outlined" onClick={() => setShowEditBio(true) }sx={{
-                        color: "white",
-                    }}>
+
+                    {user.username == requestUsername ? 
+                        (<Button variant="outlined" onClick={() => setShowEditBio(true) }sx={{
+                            color: "white",
+                        }}>
                         Edit Bio
-                    </Button>
+                        </Button>) : (<h4></h4>)}
+
+
                     <h2>{profileInfo?.modThreads}</h2>
                     </AppBar>
                 </Box>

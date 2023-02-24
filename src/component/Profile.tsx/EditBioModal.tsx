@@ -12,11 +12,11 @@ import React from "react";
 import { editProfileURL } from "../../API/ProfileAPI";
 
 type Props = {
-    user: User;
+    requestUsername: string;
     showEditBio: boolean;
     setShowEditBio: (value: boolean) => void;
 };
-const EditBioModal = ({ user, showEditBio, setShowEditBio }: Props) => {
+const EditBioModal = ({ requestUsername, showEditBio, setShowEditBio }: Props) => {
     const api = useAxiosPrivate();
     const { setUser } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ const EditBioModal = ({ user, showEditBio, setShowEditBio }: Props) => {
     };
 
     const editBio = async () => {
-        return await api.post(editProfileURL, {bio: textInput, username: user.username})
+        return await api.post(editProfileURL, {bio: textInput, username: requestUsername})
     };
 
     const handleSubmit = (event) => {

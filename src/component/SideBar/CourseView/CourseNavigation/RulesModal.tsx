@@ -1,8 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
 //import { addRoomToCourseURL } from "../../API/CoursesAPI";
-import { useAuth } from "../../context/context";
-import { Course, Room } from "../../types/types";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useAuth } from "../../../../context/context";
+import { Course, Room } from "../../../../types/types";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
 type RulesProps = {
   RulesText: string;
@@ -10,23 +10,11 @@ type RulesProps = {
   setRulesOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setRulesText: React.Dispatch<React.SetStateAction<string>>;
   course: Course;
-  currentCourse: Course | null;
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   userCourses: Course[];
-  setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
 };
 
-const RulesModal = ({
-  RulesText,
-  RulesOpen,
-  setRulesText,
-  setRulesOpen,
-  course,
-  currentCourse,
-  setUserCourses,
-  userCourses,
-  setCurrentCourse,
-}: RulesProps) => {
+const RulesModal = ({ RulesText, RulesOpen, setRulesText, setRulesOpen, course, setUserCourses, userCourses }: RulesProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseRules = () => {

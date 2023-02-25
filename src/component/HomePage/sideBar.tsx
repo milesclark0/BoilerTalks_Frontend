@@ -1,27 +1,17 @@
-import styled from "@emotion/styled";
-import { Divider, Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar, Menu, MenuItem, Button } from "@mui/material";
-import { Course, Room, User } from "../../types/types";
+import { Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar } from "@mui/material";
+import { Course, User } from "../../types/types";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Settings } from "@mui/icons-material";
-import useLogout from "./../../hooks/useLogout";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { setCourseActiveURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
 import { useNavigate } from "react-router-dom";
-import PushPinIcon from "@mui/icons-material/PushPin";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import HomeIcon from "@mui/icons-material/Home";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { axiosPrivate } from "../../API/axios";
-import { unsubscribeFromCourseURL } from "./../../API/CoursesAPI";
-import AddThreadModal from "./addThreadModal";
-import RulesModal from "./RulesModal";
+import { CourseIcon } from "../SideBar/CourseIcon";
+import { StyledDivider } from "../SideBar/StyledDivider";
+import { SettingsMenu } from "../SideBar/SettingsMenu";
+import { CourseNavigation } from "./../SideBar/CourseNavigation";
+import { CourseView } from "../SideBar/CourseView/CourseView";
 
 type Props = {
   user: User;
@@ -39,71 +29,28 @@ type Props = {
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-
-
-const SideBar = ({
-  user,
-  activeIcon,
-  setActiveIcon,
-  drawerWidth,
-  innerDrawerWidth,
-  currentCourse,
-  distinctCoursesByDepartment,
-  setUserCourses,
-  userCourses,
-  appBarHeight,
-  setCurrentCourse,
-  distinctDepartments,
-  setDistinctDepartments,
-}: Props) => {
-  const api = useAxiosPrivate();
-  const { setUser } = useAuth();
-  const AvatarSize = { width: 50, height: 50 };
+const SideBar = ({ ...props }: Props) => {
+  const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
+  const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const selectedIconColor = "#7e7e7e";
-  const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const settingsOpen = Boolean(anchorEl);
-  const logout = useLogout();
-
-  const [newThreadOpen, setNewThreadOpen] = React.useState(false); //whether a create new thread dialogue is open or not
-  const [newThreadValue, setNewThreadValue] = React.useState(""); //What the new thread name string is
-  const CreateNewThreadProps = {
-    newThreadOpen,
-    newThreadValue,
-    setNewThreadOpen,
-    setNewThreadValue,
+  const AvatarSize = { width: 50, height: 50 };
+  const {
+    user,
+    activeIcon,
+    setActiveIcon,
+    drawerWidth,
+    innerDrawerWidth,
+    appBarHeight,
     currentCourse,
-    setCurrentCourse,
+    distinctCoursesByDepartment,
     setUserCourses,
     userCourses,
-  };
-  const handleClickNewThread = () => {
-    setNewThreadOpen(true);
-  };
-
-  const [RulesOpen, setRulesOpen] = React.useState(false); //whether the rules dialogue is open or not
-  const [RulesText, setRulesText] = React.useState(""); //import backend rules text
-  const RulesProps = {
-    RulesText,
-    RulesOpen,
-    setRulesOpen,
-    setRulesText,
-    currentCourse,
     setCurrentCourse,
-    setUserCourses,
-    userCourses,
-  };
-  const handleClickRules = () => { 
-    setRulesOpen(true);
-  };
-
-  // get distinct departments from course list
-
-  useEffect(() => {
-    const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
-    setDistinctDepartments(distinctDepartments);
-  }, []);
-
+    distinctDepartments,
+    setDistinctDepartments,
+  } = props;
+  
   const OuterDrawerStyles = {
     width: drawerWidth,
     flexShrink: 0,
@@ -131,6 +78,14 @@ const SideBar = ({
       alignItems: "center",
     },
   };
+  // get distinct departments from course list
+
+  useEffect(() => {
+    const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
+    setDistinctDepartments(distinctDepartments);
+  }, []);
+
+
 
   const handleIconClick = (course: string, isActiveCourse: boolean) => {
     //add delay to prevent rerendering before the button animation is done
@@ -143,16 +98,33 @@ const SideBar = ({
     setAnchorEl(event.currentTarget);
   };
 
-  const handleSettingsClose = () => {
-    setAnchorEl(null);
+  const CourseIconProps = {
+    activeIcon,
+    setActiveIcon,
+    handleIconClick,
+    selectedIconColor,
+    AvatarSize,
   };
 
-  const navigateToSettings = () => {
-    navigate("/settings");
+  const SettingsMenuProps = {
+    anchorEl,
+    setAnchorEl,
   };
 
-  const navigateToAbout = () => {
-    navigate("/about");
+  const CourseViewProps = {
+    activeIcon,
+    currentCourse,
+    distinctCoursesByDepartment,
+    setUserCourses,
+    userCourses,
+    distinctDepartments,
+    setDistinctDepartments,
+    setActiveIcon,
+    newThreadOpen,
+    setNewThreadOpen,
+    newThreadValue,
+    setNewThreadValue,
+    setCurrentCourse,
   };
 
   const BoilerTalksIcon = () => {
@@ -171,250 +143,6 @@ const SideBar = ({
     );
   };
 
-  const StyledDivider = () => {
-    return (
-      <Divider
-        sx={{
-          borderColor: "rgba(7, 7, 7, 0.199)",
-        }}
-      />
-    );
-  };
-
-  const activeCourseSwitch = async (course: Course) => {
-    try {
-      const res = await api.post(setCourseActiveURL, { courseName: course?.name, username: user?.username });
-      console.log(res);
-
-      if (res.data.statusCode == 200) {
-        if (res.data.data == "removing") {
-          setUser({ ...user, activeCourses: [...user.activeCourses.filter((courseName) => course?.name != courseName)] });
-        } else {
-          setUser({ ...user, activeCourses: [...user.activeCourses, course?.name] });
-        }
-      } else {
-        alert("Error");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const navigateToProfile = () => {
-    navigate("/profile/" + user.username);
-  };
-
-  const SettingsMenu = () => {
-    return (
-      <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
-        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>
-          {user?.username}
-        </MenuItem>
-        <StyledDivider />
-        <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
-        <MenuItem onClick={navigateToAbout}>About</MenuItem>
-        <MenuItem onClick={logout}>Logout</MenuItem>
-      </Menu>
-    );
-  };
-
-  const CourseIcon = ({ labelText, isActiveCourse }: { labelText: string; isActiveCourse: boolean }) => {
-    const iconColor = isActiveCourse ? "lightblue" : "";
-    const outLineColor = activeIcon.course === labelText ? selectedIconColor : "";
-    const outlineStyle = activeIcon.course === labelText ? "solid" : "";
-    const [department, courseNumber] = labelText.split(" ");
-    const label = isActiveCourse ? department + " " + courseNumber : department;
-    return (
-      <ListItem>
-        <IconButton onClick={() => handleIconClick(labelText, isActiveCourse)}>
-          <Avatar sx={{ ...AvatarSize, bgcolor: iconColor, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography color="black" variant="body2">
-              {label}
-            </Typography>
-          </Avatar>
-        </IconButton>
-      </ListItem>
-    );
-  };
-
-  const PinIcon = ({ course }: { course: Course }) => {
-    const isActiveCourse = user.activeCourses?.includes(course?.name);
-    const color = isActiveCourse ? "primary" : "disabled";
-    return (
-      <IconButton onClick={() => activeCourseSwitch(course)} sx={{ transform: "rotate(45deg)" }}>
-        <PushPinIcon color={color} />
-      </IconButton>
-    );
-  };
-
-  const MoreIcon = ({ course }: { course: Course }) => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
-    const handleLeaveServer = async () => {
-      const ret = await api.post(unsubscribeFromCourseURL, { courseName: course.name, username: user.username });
-      if (ret.data.statusCode == 200) {
-        //remove the course from the user's courses states and the user.courses context
-        setUser({ ...user, courses: [...user.courses.filter((c) => c != course.name)] });
-        setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
-        console.log([...userCourses.filter((c) => c.name != course.name)]);
-        //if the course is the active course, set the active course to nothing
-        if (course.name == activeIcon.course) {
-          setActiveIcon({ course: "", isActiveCourse: false });
-        } else if (distinctCoursesByDepartment?.length == 1) {
-          //if the course is the last course in the department, set the active course to nothing
-          setDistinctDepartments([...distinctDepartments.filter((d) => d != course.department)]);
-          setActiveIcon({ course: "", isActiveCourse: false });
-          console.log([...distinctDepartments.filter((d) => d != course.department)]);
-        } else {
-          //trigger a rerender of the course icons
-          setActiveIcon({ course: distinctCoursesByDepartment[0].department, isActiveCourse: false });
-        }
-        setUser({ ...user, activeCourses: user?.activeCourses?.filter((c) => c != course.name) });
-        setUserCourses([...userCourses.filter((c) => c.name != course.name)]);
-      } else {
-        alert("Error leaving server");
-      }
-      handleClose();
-    };
-
-    return (
-      <React.Fragment>
-        <IconButton onClick={handleClick}>
-          <MoreHorizIcon />
-        </IconButton>
-        <Menu
-          id="long-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            sx: {
-              width: "20ch",
-              maxHeight: 48 * 4.5,
-              bgcolor: "background.paper",
-            },
-          }}
-        >
-          <MenuItem onClick={handleLeaveServer}>Leave Server</MenuItem>
-          {/* {add more options for mods and what not} */}
-        </Menu>
-      </React.Fragment>
-    );
-  };
-
-  const CourseNavigation = ({ course }: { course: Course }) => {
-    return (
-      <List>
-        <ListItem>
-          <Typography variant="body1" noWrap component="div">
-            {course?.name}
-          </Typography>
-          <PinIcon course={course} />
-          <MoreIcon course={course} />
-        </ListItem>
-        <StyledDivider />
-        <ListItem>
-          <List>
-            <Button
-              sx={{
-                width: "100%",
-              }}
-            >
-              <ListItem>
-                <Typography variant="body2" noWrap component="div">
-                  Q&A
-                </Typography>
-              </ListItem>
-            </Button>
-            {course?.rooms?.map((room) => {
-              return (
-                <React.Fragment key={`${course.name}: ${room?.name}`}>
-                  <Button
-                    sx={{
-                      width: "100%",
-                    }}
-                  >
-                    <ListItem>
-                      <Typography variant="body2" noWrap>
-                        {room?.name?.replace(course?.name, "")}
-                      </Typography>
-                    </ListItem>
-                  </Button>
-                </React.Fragment>
-              );
-            })}
-            {/* <ListItem>
-                <Typography variant="body1" noWrap component="div">
-                  Mod Chat
-                </Typography>
-              </ListItem> */}
-            <Button variant="text" onClick={handleClickRules}>
-              <ListItem>
-                <Typography variant="body2">Rules</Typography>
-              </ListItem>
-            </Button>
-            <RulesModal course={course} {...RulesProps} />
-            <Button variant="outlined" onClick={handleClickNewThread}>
-              <ListItem>
-                <Typography variant="body2">New thread</Typography>
-              </ListItem>
-            </Button>
-            <AddThreadModal course={course} {...CreateNewThreadProps} />
-          </List>
-        </ListItem>
-      </List>
-    );
-  };
-
-  
-
-  const CourseView = () => {
-    // if no course is selected, show boilertalks home
-    if (activeIcon.course === "") {
-      return (
-        <List>
-          <ListItem>
-            <Typography variant="h6" noWrap component="div">
-              BoilerTalks Home
-            </Typography>
-          </ListItem>
-          <StyledDivider />
-        </List>
-      );
-    }
-    // if a course is selected, show course navigation
-    if (activeIcon.isActiveCourse) {
-      return <CourseNavigation course={currentCourse} />;
-    }
-    // if a department is selected, show course list
-    return (
-      <List>
-        <ListItem>
-          <Typography variant="h6" noWrap component="div">
-            {activeIcon.course} Courses
-          </Typography>
-        </ListItem>
-        <StyledDivider />
-        {distinctCoursesByDepartment?.map((course) => (
-          <React.Fragment key={course.name + course.semester}>
-            <CourseNavigation course={course} />
-            <StyledDivider />
-          </React.Fragment>
-        ))}
-      </List>
-    );
-  };
-
   return (
     <Box>
       <AppBar position="fixed" sx={{ width: drawerWidth, left: 0, height: appBarHeight }}>
@@ -425,7 +153,7 @@ const SideBar = ({
           <IconButton onClick={handleSettingsClick}>
             <Settings />
           </IconButton>
-          <SettingsMenu />
+          <SettingsMenu {...SettingsMenuProps} />
         </Toolbar>
       </AppBar>
       <Drawer sx={OuterDrawerStyles} variant="permanent" anchor="left">
@@ -436,7 +164,7 @@ const SideBar = ({
             paddingTop: `${appBarHeight}px`,
           }}
         >
-          <CourseView />
+          <CourseView {...CourseViewProps} />
         </Box>
         <Drawer sx={InnerDrawerStyles} variant="permanent" anchor="left">
           <List>
@@ -444,13 +172,13 @@ const SideBar = ({
             <StyledDivider />
             {user.activeCourses?.map((course: string) => (
               <React.Fragment key={course}>
-                <CourseIcon labelText={course} isActiveCourse={true} />
+                <CourseIcon labelText={course} isActiveCourse={true} {...CourseIconProps} />
               </React.Fragment>
             ))}
             {user.activeCourses.length > 0 && <StyledDivider />}
             {distinctDepartments.map((course: string) => (
               <React.Fragment key={course}>
-                <CourseIcon labelText={course} isActiveCourse={false} />
+                <CourseIcon labelText={course} isActiveCourse={false} {...CourseIconProps} />
               </React.Fragment>
             ))}
           </List>

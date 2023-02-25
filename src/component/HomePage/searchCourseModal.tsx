@@ -213,6 +213,8 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
 
   const courseEntry = (course: Course, index: number) => {
     cacheCurrentCourses();
+    console.log(userCourses);
+    
     return (
       <Box key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction={"row"} spacing={2} sx={{ width: "600px" }}>
@@ -257,7 +259,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
               }}
             >
               <Tooltip title={currentCourses.get(course.name) ? "Subscribed" : "Delete"}>
-                <CheckCircleOutlineIcon color={userCourses.includes(course) ? "success" : "disabled"} />
+                <CheckCircleOutlineIcon color={userCourses.some((userCourse) => userCourse.name === course.name) ? "success" : "disabled"} />
               </Tooltip>
             </IconButton>
             <IconButton

@@ -1,8 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
-import { addRoomToCourseURL } from "../../API/CoursesAPI";
-import { useAuth } from "../../context/context";
-import { Course, Room } from "../../types/types";
-import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
+import { addRoomToCourseURL } from "../../../../API/CoursesAPI";
+import { useAuth } from "../../../../context/context";
+import { Course, Room } from "../../../../types/types";
+import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
 
 type AddThreadProps = {
   newThreadValue: string;
@@ -10,13 +10,19 @@ type AddThreadProps = {
   setNewThreadOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setNewThreadValue: React.Dispatch<React.SetStateAction<string>>;
   course: Course;
-  currentCourse: Course | null;
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   userCourses: Course[];
-  setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
 };
 
-const AddThreadModal = ({ newThreadValue, newThreadOpen, setNewThreadOpen, setNewThreadValue, course, currentCourse, setUserCourses, userCourses, setCurrentCourse }: AddThreadProps) => {
+const AddThreadModal = ({
+  newThreadValue,
+  newThreadOpen,
+  setNewThreadOpen,
+  setNewThreadValue,
+  course,
+  setUserCourses,
+  userCourses,
+}: AddThreadProps) => {
   const api = useAxiosPrivate();
   const handleCloseNewThread = () => {
     setNewThreadOpen(false);
@@ -28,19 +34,17 @@ const AddThreadModal = ({ newThreadValue, newThreadOpen, setNewThreadOpen, setNe
     const newRoomName = event.target[0].value; //newRoomName
     console.log(newRoomName);
 
-    const res = await api.post(addRoomToCourseURL, {courseName: course.name, roomName: newRoomName});
+    const res = await api.post(addRoomToCourseURL, { courseName: course.name, roomName: newRoomName });
     if (res.data.statusCode === 200) {
-        console.log(res.data.data);
-        const newRoom: Room = res.data.data;
-        userCourses.forEach((course) => {
-            if (course.name === currentCourse?.name) {
-                course.rooms.push(newRoom);
-            }
-            });
-        //updates the userCourses state
-        setUserCourses([...userCourses]);
-        //adds the new room to the current course
-        // setCurrentCourse({ ...currentCourse, rooms: [...currentCourse?.rooms, newRoom] });
+      console.log(res.data.data);
+      const newRoom: Room = res.data.data;
+      userCourses.forEach((userCourse) => {
+        if (userCourse.name === course?.name) {
+          course.rooms.push(newRoom);
+        }
+      });
+      //updates the userCourses state
+      setUserCourses([...userCourses]);
     }
     setNewThreadOpen(false); //newThreadValue
     setNewThreadValue(""); //wipe the text field

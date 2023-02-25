@@ -1,7 +1,7 @@
 import { List, ListItem, Typography } from "@mui/material";
 import React from "react";
 import { Course } from "../../../types/types";
-import { CourseNavigation } from "../CourseNavigation";
+import { CourseNavigation } from "./CourseNavigation";
 import { StyledDivider } from "../StyledDivider";
 
 type Props = {

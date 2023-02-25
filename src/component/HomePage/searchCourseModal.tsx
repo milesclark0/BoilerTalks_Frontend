@@ -53,7 +53,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   // tracks the current filter for each course
   const [courseFilters, setUserFilteredCourses] = useState<string[]>([]);
   // tracks the current courses the user added
-  const [userAddedCourses, setuserAddedCourses] = useState<Course[]>([emptyCourse]);
+  const [userAddedCourses, setUserAddedCourses] = useState<Course[]>([emptyCourse]);
   // tracks the current courses the user is in
   const currentCourses = new Map<string, boolean>();
   // tracks the unique departments in course list
@@ -79,7 +79,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
     const newFilters = [...courseFilters];
     newFilters.splice(index, 1);
     setUserFilteredCourses(newFilters);
-    setuserAddedCourses(newCourses);
+    setUserAddedCourses(newCourses);
   };
 
   const handleCourseDepartmentChange = (index: number, value: string) => {
@@ -88,7 +88,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
     newCourses[index].department = value;
     //clear the course name field
     newCourses[index].name = "";
-    setuserAddedCourses(newCourses);
+    setUserAddedCourses(newCourses);
 
     //update the filter for the changed course
     const courseFilter = courseFilters;
@@ -100,7 +100,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
     const newCourses = structuredClone(userAddedCourses);
     //save the course name to the added course list and set the corresponding department
     newCourses[index].name = value;
-    setuserAddedCourses(newCourses);
+    setUserAddedCourses(newCourses);
 
     newCourses[index].department = value.split(" ")[0];
     //update the filter for the changed course
@@ -136,7 +136,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
 
   const addEmptyCourse = () => {
     const structEmptyCourse = structuredClone(emptyCourse);
-    setuserAddedCourses([...userAddedCourses, structEmptyCourse]);
+    setUserAddedCourses([...userAddedCourses, structEmptyCourse]);
   };
 
   useEffect(() => {
@@ -201,10 +201,10 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
         setDistinctDepartments([...distinctDepartments, ...newDepartments]);
         //trigger a re-render of the course list
         setActiveIcon({...activeIcon})
-        setuserAddedCourses([{...emptyCourse}]);
+        setUserAddedCourses([{...emptyCourse}]);
       } else {
         console.log(response.data.message);
-        //TODO: handle error
+        alert(response.data.message)
       }
     } catch (error) {
       console.log(error);

@@ -10,7 +10,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { CourseIcon } from "../SideBar/CourseIcon";
 import { StyledDivider } from "../SideBar/StyledDivider";
 import { SettingsMenu } from "../SideBar/SettingsMenu";
-import { CourseNavigation } from "./../SideBar/CourseNavigation";
+import { CourseNavigation } from "../SideBar/CourseView/CourseNavigation";
 import { CourseView } from "../SideBar/CourseView/CourseView";
 
 type Props = {
@@ -50,7 +50,7 @@ const SideBar = ({ ...props }: Props) => {
     distinctDepartments,
     setDistinctDepartments,
   } = props;
-  
+
   const OuterDrawerStyles = {
     width: drawerWidth,
     flexShrink: 0,
@@ -84,8 +84,6 @@ const SideBar = ({ ...props }: Props) => {
     const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
     setDistinctDepartments(distinctDepartments);
   }, []);
-
-
 
   const handleIconClick = (course: string, isActiveCourse: boolean) => {
     //add delay to prevent rerendering before the button animation is done

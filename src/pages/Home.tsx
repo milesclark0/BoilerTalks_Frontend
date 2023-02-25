@@ -48,7 +48,6 @@ const Home = () => {
     const fetchCourseUsers = async () => {
       const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
       if (res.data.statusCode == 200) {
-        console.log(res.data.data);
         setCourseUsers(res.data.data);
       }
     };
@@ -220,7 +219,7 @@ const Home = () => {
     );
   };
 
-  const [value, setValue] = React.useState<string>("");
+  const [value, setValue] = React.useState<string>();
   /*const filter = createFilterOptions<UserOptionType>();
   
   interface UserOptionType {

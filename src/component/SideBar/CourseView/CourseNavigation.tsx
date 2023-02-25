@@ -1,11 +1,11 @@
 import { List, ListItem, Typography, Button } from "@mui/material";
 import React, { useState } from "react";
-import { Course } from "../../types/types";
-import AddThreadModal from "./CourseView/CourseNavigation/addThreadModal";
-import { MoreIcon } from "./CourseView/CourseNavigation/MoreIcon";
-import { PinIcon } from "./CourseView/CourseNavigation/PinIcon";
-import RulesModal from "./CourseView/CourseNavigation/RulesModal";
-import { StyledDivider } from "./StyledDivider";
+import { Course } from "../../../types/types";
+import AddThreadModal from "./CourseNavigation/addThreadModal";
+import { MoreIcon } from "./CourseNavigation/MoreIcon";
+import { PinIcon } from "./CourseNavigation/PinIcon";
+import RulesModal from "./CourseNavigation/RulesModal";
+import { StyledDivider } from "../StyledDivider";
 
 type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;

@@ -122,6 +122,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                     }}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
+                        props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
                       }
                     }}

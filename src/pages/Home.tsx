@@ -33,7 +33,6 @@ const Home = () => {
   const navigate = useNavigate();
   const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
 
-
   const defaultPadding = 4;
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
@@ -45,7 +44,7 @@ const Home = () => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
           setCurrentRoom(course.rooms[0]);
-          assignMessages(course.rooms[0]);
+          console.log(course.rooms[0].messages);
         }
       });
     } else {
@@ -54,6 +53,12 @@ const Home = () => {
       setCurrentRoom(null);
     }
   }, [activeIcon]);
+
+  useEffect(() => {
+    if (currentCourse) {
+      assignMessages(currentCourse.rooms[0]);
+    }
+  }, [currentCourse]);
   //userlist
 
   useEffect(() => {
@@ -84,22 +89,20 @@ const Home = () => {
     setMessages(newMessages);
   };
 
-
-
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
-    refetchInterval: 1000 * 60 * 3, //3 minutes
+    refetchInterval: 1000 * 60 * 2, //2 minutes
     refetchOnMount: "always",
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
         //sort rooms by name
         const courses: Course[] = data.data.data;
         console.log(courses);
-        
+
         courses.forEach((course) => {
           course.rooms?.sort((a, b) => (a.name < b.name ? -1 : 1));
         });
-        
+
         setUserCourses(courses);
       } else setFetchError(data.data.data);
     },

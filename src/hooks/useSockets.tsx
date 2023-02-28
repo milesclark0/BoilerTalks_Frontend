@@ -47,7 +47,7 @@ const useSockets = () => {
   const sendMessage = (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => {
     //TODO: send profile picture with message
     if (socket !== null) {
-      if (message.message !== "") {
+      if (message.message.trim() !== "") {
         if (!isSystemMessage) {
           console.log(`[${user?.username}]: ${room?._id.$oid}`);
 

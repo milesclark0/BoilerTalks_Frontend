@@ -14,14 +14,28 @@ type Props = {
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
   message: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
-  messages: Message[]
+  messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
   connectToRoom: (room: Room) => void;
   disconnectFromRoom: (room: Room) => void;
 };
 
-const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCourses, currentRoom, setCurrentRoom, message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom }: Props) => {
+const MessageBox = ({
+  currentCourse,
+  setCurrentCourse,
+  userCourses,
+  setUserCourses,
+  currentRoom,
+  setCurrentRoom,
+  message,
+  setMessage,
+  messages,
+  setMessages,
+  sendMessage,
+  connectToRoom,
+  disconnectFromRoom,
+}: Props) => {
   const { user } = useAuth();
 
   useEffect(() => {
@@ -37,7 +51,11 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
 
   useEffect(() => {
     //on message received, update the messages
-    updateMessageFields(message);
+    
+    if (message !== "") {     
+      updateMessageFields(message);
+      setMessage("");
+    }
   }, [messages]);
 
   // get the current date and time in the format of YYYY-MM-DD HH:MM:SS
@@ -82,7 +100,6 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
   const handleSendMessage = () => {
     const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}` };
     sendMessage(formattedMessage, currentRoom, false);
-    setMessage("");
   };
 
   return (
@@ -100,9 +117,9 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
         }}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => {
-            if (e.key === "Enter") {
-                handleSendMessage();
-            }
+          if (e.key === "Enter") {
+            handleSendMessage();
+          }
         }}
       />
       <Button onClick={handleSendMessage}>Send</Button>

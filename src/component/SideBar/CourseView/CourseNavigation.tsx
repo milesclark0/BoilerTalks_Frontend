@@ -1,11 +1,12 @@
 import { List, ListItem, Typography, Button } from "@mui/material";
 import React, { useState } from "react";
-import { Course } from "../../../types/types";
+import { Course, Room } from "../../../types/types";
 import AddThreadModal from "./CourseNavigation/addThreadModal";
 import { MoreIcon } from "./CourseNavigation/MoreIcon";
 import { PinIcon } from "./CourseNavigation/PinIcon";
 import RulesModal from "./CourseNavigation/RulesModal";
 import { StyledDivider } from "../StyledDivider";
+import { width } from "@mui/system";
 
 type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
@@ -22,6 +23,8 @@ type Props = {
   course: Course;
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
+  currentRoom: Room | null;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
 };
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
@@ -35,7 +38,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     distinctDepartments: props.distinctDepartments,
     setActiveIcon: props.setActiveIcon,
     activeIcon: props.activeIcon,
-    course: course,
+    course,
     distinctCoursesByDepartment: props.distinctCoursesByDepartment,
   };
 
@@ -68,21 +71,74 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     props.setNewThreadOpen(true);
   };
 
+  const handleClickCourse = () => {
+    props.setCurrentCourse(course);
+    props.setCurrentRoom(course?.rooms[0]);
+  };
+
+  const buttonStyle = () => {
+    const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
+    const color = "black";
+    const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "white";
+    const hoverColor = "lightblue";
+    return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+  };
+
+  const roomButtonStyle = (room: Room) => {
+    const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
+    const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
+    return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+  };
+
+  const otherButtonStyle = () => {
+    const backgroundColor = "white";
+    const hoverColor = "lightgrey";
+    return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+  };
+
   return (
     <List>
       <ListItem>
-        <Typography variant="body1" noWrap component="div">
-          {course?.name}
-        </Typography>
+        <Button onClick={handleClickCourse} sx={buttonStyle()}>
+          <Typography variant="body1" noWrap component="div">
+            {course?.name}
+          </Typography>
+        </Button>
         <PinIcon course={course} />
         <MoreIcon course={course} {...MoreIconProps} />
       </ListItem>
       <StyledDivider />
       <ListItem>
         <List>
+          {course?.rooms
+            ?.sort((a, b) => (a.name > b.name ? 1 : -1))
+            .map((room) => {
+              return (
+                <React.Fragment key={`${course.name}: ${room?.name}`}>
+                  <Button
+                    sx={{
+                      width: "100%",
+                      ...roomButtonStyle(room),
+                    }}
+                    onClick={() => {
+                      if (props.currentRoom?._id.$oid !== room?._id.$oid) {
+                        props.setCurrentRoom(room);
+                      }
+                    }}
+                  >
+                    <ListItem>
+                      <Typography variant="body2" noWrap>
+                        {room?.name?.replace(course?.name, "")}
+                      </Typography>
+                    </ListItem>
+                  </Button>
+                </React.Fragment>
+              );
+            })}
           <Button
             sx={{
               width: "100%",
+              ...otherButtonStyle(),
             }}
           >
             <ListItem>
@@ -91,29 +147,12 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               </Typography>
             </ListItem>
           </Button>
-          {course?.rooms?.map((room) => {
-            return (
-              <React.Fragment key={`${course.name}: ${room?.name}`}>
-                <Button
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <ListItem>
-                    <Typography variant="body2" noWrap>
-                      {room?.name?.replace(course?.name, "")}
-                    </Typography>
-                  </ListItem>
-                </Button>
-              </React.Fragment>
-            );
-          })}
           {/* <ListItem>
                 <Typography variant="body1" noWrap component="div">
                   Mod Chat
                 </Typography>
               </ListItem> */}
-          <Button variant="text" onClick={handleClickRules}>
+          <Button variant="text" onClick={handleClickRules} sx={{ ...otherButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>

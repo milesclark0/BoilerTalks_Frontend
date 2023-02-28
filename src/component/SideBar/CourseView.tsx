@@ -1,8 +1,8 @@
 import { List, ListItem, Typography } from "@mui/material";
 import React from "react";
-import { Course } from "../../../types/types";
-import { CourseNavigation } from "./CourseNavigation";
-import { StyledDivider } from "../StyledDivider";
+import { Course, Room } from "../../types/types";
+import { CourseNavigation } from "./CourseView/CourseNavigation";
+import { StyledDivider } from "./StyledDivider";
 
 type Props = {
   activeIcon: { course: string; isActiveCourse: boolean };
@@ -18,6 +18,8 @@ type Props = {
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
   distinctDepartments: string[];
+  currentRoom: Room | null;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
 };
 
 export const CourseView = ({ ...props }: Props) => {

@@ -1,5 +1,5 @@
 import { Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar } from "@mui/material";
-import { Course, User } from "../../types/types";
+import { Course, Room, User } from "../../types/types";
 import React from "react";
 import { useEffect, useState } from "react";
 import { Settings } from "@mui/icons-material";
@@ -11,7 +11,7 @@ import { CourseIcon } from "../SideBar/CourseIcon";
 import { StyledDivider } from "../SideBar/StyledDivider";
 import { SettingsMenu } from "../SideBar/SettingsMenu";
 import { CourseNavigation } from "../SideBar/CourseView/CourseNavigation";
-import { CourseView } from "../SideBar/CourseView/CourseView";
+import { CourseView } from "../SideBar/CourseView";
 
 type Props = {
   user: User;
@@ -27,6 +27,8 @@ type Props = {
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
+  currentRoom: Room | null;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
 };
 
 const SideBar = ({ ...props }: Props) => {
@@ -49,6 +51,8 @@ const SideBar = ({ ...props }: Props) => {
     setCurrentCourse,
     distinctDepartments,
     setDistinctDepartments,
+    currentRoom,
+    setCurrentRoom,
   } = props;
 
   const OuterDrawerStyles = {
@@ -123,6 +127,8 @@ const SideBar = ({ ...props }: Props) => {
     newThreadValue,
     setNewThreadValue,
     setCurrentCourse,
+    currentRoom,
+    setCurrentRoom,
   };
 
   const BoilerTalksIcon = () => {

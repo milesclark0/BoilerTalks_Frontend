@@ -43,3 +43,8 @@ export type Room = {
   messages: [{username: string, message: string, timeSent: {$date: string}}];
 }
 
+export type Message = {
+  username: string;
+  message: string;
+  timeSent: string;
+}

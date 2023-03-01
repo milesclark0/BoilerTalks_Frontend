@@ -4,9 +4,31 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
-import { getUserCoursesURL, getCourseURL, getCourseUsersURL } from "../API/CoursesAPI";
+import EmojiPicker, {
+  EmojiStyle,
+  SkinTones,
+  Theme,
+  Categories,
+  EmojiClickData,
+  Emoji,
+  SuggestionMode,
+  SkinTonePickerLocation,
+} from "emoji-picker-react";
+import {
+  getUserCoursesURL,
+  getCourseURL,
+  getCourseUsersURL,
+} from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { Course, Room } from "../types/types";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -20,18 +42,32 @@ const Home = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [showCourses, setShowCourses] = useState(false);
-  const [activeIcon, setActiveIcon] = useState<{ course: string; isActiveCourse: boolean }>({ course: "", isActiveCourse: false });
+  const [activeIcon, setActiveIcon] = useState<{
+    course: string;
+    isActiveCourse: boolean;
+  }>({ course: "", isActiveCourse: false });
   //this value will hold the actual course data (all semesters included) for each user course
   const [userCourses, setUserCourses] = useState<Course[]>([]);
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
   const [currentRoom, setCurrentRoom] = useState<Room>(null);
-  const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useState<Course[]>([]);
-  const [distinctDepartments, setDistinctDepartments] = React.useState<string[]>([]); //What the new thread name string is
+  const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] =
+    useState<Course[]>([]);
+  const [distinctDepartments, setDistinctDepartments] = React.useState<
+    string[]
+  >([]); //What the new thread name string is
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
   const navigate = useNavigate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const {
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+  } = useSockets();
 
   const defaultPadding = 4;
   const drawerWidth = 300;
@@ -48,7 +84,9 @@ const Home = () => {
         }
       });
     } else {
-      setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
+      setDistinctCoursesByDepartment(
+        getDistinctCoursesByDepartment(activeIcon.course)
+      );
       setCurrentCourse(null);
       setCurrentRoom(null);
     }
@@ -89,32 +127,39 @@ const Home = () => {
     setMessages(newMessages);
   };
 
-  const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
-    enabled: true,
-    refetchInterval: 1000 * 60 * 2, //2 minutes
-    refetchOnMount: "always",
-    onSuccess: (data) => {
-      if (data.data.statusCode === 200) {
-        //sort rooms by name
-        const courses: Course[] = data.data.data;
-        console.log(courses);
+  const { isLoading, error, data } = useQuery(
+    "user_courses: " + user?.username,
+    fetchCourse,
+    {
+      enabled: true,
+      refetchInterval: 1000 * 60 * 2, //2 minutes
+      refetchOnMount: "always",
+      onSuccess: (data) => {
+        if (data.data.statusCode === 200) {
+          //sort rooms by name
+          const courses: Course[] = data.data.data;
+          console.log(courses);
 
-        courses.forEach((course) => {
-          course.rooms?.sort((a, b) => (a.name < b.name ? -1 : 1));
-        });
+          courses.forEach((course) => {
+            course.rooms?.sort((a, b) => (a.name < b.name ? -1 : 1));
+          });
 
-        setUserCourses(courses);
-      } else setFetchError(data.data.data);
-    },
-    onError: (error: string) => console.log(error),
-  });
+          setUserCourses(courses);
+        } else setFetchError(data.data.data);
+      },
+      onError: (error: string) => console.log(error),
+    }
+  );
 
   const getDistinctCoursesByDepartment = (department: string) => {
-    const courses = userCourses?.filter((course) => course.name.split(" ")[0] === department);
+    const courses = userCourses?.filter(
+      (course) => course.name.split(" ")[0] === department
+    );
     //distinct named courses
     const distinctCourses = new Map<string, Course>();
     courses?.forEach((course) => {
-      if (!distinctCourses.has(course.name)) distinctCourses.set(course.name, course);
+      if (!distinctCourses.has(course.name))
+        distinctCourses.set(course.name, course);
     });
     return [...distinctCourses.values()];
   };
@@ -215,7 +260,11 @@ const Home = () => {
           value={currentSemester || getMostRecentSemester(userCourses)}
           onChange={(e) => {
             setCurrentSemester(e.target.value as string);
-            const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+            const course = userCourses.find(
+              (course) =>
+                course.name === currentCourse.name &&
+                course.semester === e.target.value
+            );
             if (course) {
               setCurrentCourse(course);
               setCurrentRoom(course.rooms[0]);
@@ -265,17 +314,54 @@ const Home = () => {
           }
         }}
         sx={{ width: drawerWidth - innerDrawerWidth }}
-        renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
+        renderInput={(params) => (
+          <TextField
+            onKeyDown={(e) => handleEnter(e)}
+            {...params}
+            variant="outlined"
+            color="info"
+            label="Search users..."
+          />
+        )}
       />
     );
   };
 
+  const EmojiPanel = () => {
+    const [selectedEmojis, setSelectedEmojis] = useState<string>("");
+
+    return (
+      <div>
+        <div>
+          <EmojiPicker
+            theme="dark"
+            onEmojiClick={(emojiData: EmojiClickData) => {
+              setSelectedEmojis(emojiData.unified);
+              console.log(selectedEmojis);
+            }}
+          />
+        </div>
+        <div className="show-emoji">
+          Your selected Emoji is:
+          {selectedEmojis ? (
+            <Emoji
+              unified={selectedEmojis}
+              emojiStyle={EmojiStyle.APPLE}
+              size={22}
+            />
+          ) : null}
+        </div>
+      </div>
+    );
+  };
+
   const [value, setValue] = React.useState<string>();
-  /*const filter = createFilterOptions<UserOptionType>();
+
+  const toggleEmojiPanel = () => {
+    setShowEmojiPanel(!showEmojiPanel);
+  };
   
-  interface UserOptionType {
-    username: string;
-  }*/
+  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -283,11 +369,21 @@ const Home = () => {
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
         <Box sx={{ pl: `${drawerWidth}px`, width: "100%", height: "100%" }}>
-          <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, height: appBarHeight, alignContent: "center" }}>
+          <AppBar
+            position="fixed"
+            sx={{
+              width: `calc(100% - ${drawerWidth}px)`,
+              height: appBarHeight,
+              alignContent: "center",
+            }}
+          >
             <Toolbar sx={{ padding: 0 }}>
               <Box sx={{ display: "flex", flexGrow: 1, height: appBarHeight }}>
                 <Typography variant="h5" sx={{ p: 2 }}>
-                  {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
+                  {`${currentCourse?.name}: ${currentRoom?.name.replace(
+                    currentCourse?.name,
+                    ""
+                  )}` ||
                     activeIcon.course ||
                     "Select a course or Department"}
                 </Typography>
@@ -316,6 +412,8 @@ const Home = () => {
                 </Typography>
               ))}
             </Box>
+            <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
+            {showEmojiPanel && <EmojiPanel />}
             {currentCourse && <UserBar {...userBarProps} />}
             {currentRoom && (
               <Box
@@ -333,10 +431,17 @@ const Home = () => {
           </Box>
         </Box>
       ) : (
-        <Box sx={{ padding: defaultPadding, paddingLeft: `${sideBarProps.drawerWidth + 4 * defaultPadding}px` }}>
+        <Box
+          sx={{
+            padding: defaultPadding,
+            paddingLeft: `${sideBarProps.drawerWidth + 4 * defaultPadding}px`,
+          }}
+        >
           {isLoading ? <Typography variant="h4">Loading...</Typography> : null}
           {error ? <Typography variant="h4">Error: {error}</Typography> : null}
-          {fetchError ? <Typography variant="h4">Error: {fetchError}</Typography> : null}
+          {fetchError ? (
+            <Typography variant="h4">Error: {fetchError}</Typography>
+          ) : null}
         </Box>
       )}
     </Box>

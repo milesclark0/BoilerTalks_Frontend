@@ -8,7 +8,7 @@ import { getProfileURL } from "../API/ProfileAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Profile } from "../types/types";
-import EditBioModal from "../component/Profile.tsx/EditBioModal";
+import EditBioModal from "../component/Profile/EditBioModal";
 import { useParams } from "react-router-dom";
 
 

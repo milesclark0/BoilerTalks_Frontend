@@ -39,7 +39,7 @@ const MessageBox = ({
   const { user } = useAuth();
 
   useEffect(() => {
-    //when the current room changes, connect to the room
+    //when the current room changes, connect to the room and set the messages to the messages in the room
     const connect = async (room: Room) => {
       console.log("connecting to room", room?.name);
       if (room) {
@@ -47,6 +47,7 @@ const MessageBox = ({
       }
     };
     connect(currentRoom);
+    
   }, [currentRoom]);
 
   useEffect(() => {

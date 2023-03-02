@@ -25,6 +25,9 @@ import { useNavigate } from "react-router-dom";
 import MessageBox from "./../component/HomePage/messageBox";
 import UserBar from "./../component/HomePage/userBar";
 import useSockets from "../hooks/useSockets";
+import Appeals from "../component/SideBar/CourseView/CourseNavigation/Appeals";
+import WarningDialog from "../component/SideBar/CourseView/WarningDialog";
+import BanDialog from "../component/SideBar/CourseView/BanDialog";
 
 const Home = () => {
   const { user } = useAuth();
@@ -74,7 +77,7 @@ const Home = () => {
     }
   }, [currentCourse]);
 
-  //when the current room changes, we want to update the messages
+  // when the current room changes, we want to update the messages
   useEffect(() => {
     if (currentRoom) {
       assignMessages(currentRoom);
@@ -97,6 +100,7 @@ const Home = () => {
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
+
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
@@ -368,6 +372,9 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
+          {/* get user and see if they have warning or ban */}
+          {/* <WarningDialog/> */}
+          {/* <BanDialog/> */}
           <Box>
             <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px` }}>
               <Typography variant="h4">Messages</Typography>

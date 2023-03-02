@@ -153,6 +153,11 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   Mod Chat
                 </Typography>
               </ListItem> */}
+          <Button sx={{ ...otherButtonStyle(), width: "100%" }}>
+            <ListItem>
+              <Typography variant="body2">Appeals</Typography>
+            </ListItem>
+          </Button>
           <Button variant="text" onClick={handleClickRules} sx={{ ...otherButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>

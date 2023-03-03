@@ -32,8 +32,13 @@ export type Profile = {
   _id: {$oid: string};
   bio: string;
   modThreads: string[];
-  profilePicture: string;
+  profilePicture: any;
+  blockedUsers: string[];
+  creationDate: {$date: string};
+  displayName: string;
 }
+
+
 
 export type Room = {
   _id: {$oid: string};

@@ -33,7 +33,10 @@ const Login = () => {
       console.log(res);
       if (res.data.statusCode === 200) {
         // sign in (and navigate to home page)
-        signIn(res.data.data.user);
+
+        const user = res.data.data.user;
+        const profile = res.data.data.profile;
+        signIn(user, profile);
       } else {
         setError(res.data.message);
       }

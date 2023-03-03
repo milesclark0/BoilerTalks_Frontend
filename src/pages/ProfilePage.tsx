@@ -4,107 +4,151 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
-import { getProfileURL } from "../API/ProfileAPI";
+import { getProfileURL, uploadProfilePictureURL } from "../API/ProfileAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
+import { AppBar, Avatar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Profile } from "../types/types";
 import EditBioModal from "../component/Profile/EditBioModal";
 import { useParams } from "react-router-dom";
-
+import React from "react";
 
 const ProfilePage = () => {
-    const { requestUsername } = useParams();
-    const { user } = useAuth()
-    const [showEditBio, setShowEditBio] = useState(false);
-    const [fetchError, setFetchError] = useState("");
-    const [profileInfo, setProfileInfo] = useState<Profile>(null);
-    const axiosPrivate = useAxiosPrivate();
+  const { requestUsername } = useParams();
+  const { user } = useAuth();
+  const [showEditBio, setShowEditBio] = useState(false);
+  const [fetchError, setFetchError] = useState("");
+  const [profileInfo, setProfileInfo] = useState<Profile>(null);
+  const axiosPrivate = useAxiosPrivate();
 
-    const defaultPadding = 4;
-    const drawerWidth = 300;
-    const innerDrawerWidth = 85;
-    const appBarHeight = 64;
+  const defaultPadding = 4;
+  const drawerWidth = 300;
+  const innerDrawerWidth = 85;
+  const appBarHeight = 64;
+  const jpeg = "data:image/jpeg;base64,";
+  //change this to use axiosprivate
+  const fetchProfile = async () => {
+    console.log(requestUsername);
+    return await axiosPrivate.get(getProfileURL + requestUsername);
+  };
 
-    //change this to use axiosprivate
-    const fetchProfile = async () => {
-        console.log(requestUsername);
-        return await axiosPrivate.get(getProfileURL + requestUsername);
-    }; 
+  const { isLoading, error, data } = useQuery("profile", fetchProfile, {
+    enabled: true,
+    staleTime: 1000 * 60, //1 minute
+    refetchOnMount: "always",
+    onSuccess: (data) => {
+      if (data.data.statusCode === 200) {
+        setProfileInfo(data.data.data);
+        console.log(data.data.data);
+      } else setFetchError(data.data.message);
+    },
+    onError: (error: string) => console.log(error),
+  });
 
-    const { isLoading, error, data } = useQuery("profile", fetchProfile, {
-        enabled: true,
-        staleTime: 1000 * 60, //1 minute
-        onSuccess: (data) => {
-          if (data.data.statusCode === 200) {
-
-            setProfileInfo(data.data.data);
-          } else setFetchError(data.data.message);
+  const upLoadProfilePicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await axiosPrivate.post(uploadProfilePictureURL + user?.username, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-        onError: (error: string) => console.log(error),
-    });
+      });
+      if (response.data.statusCode === 200) {
+        console.log(response.data.data);
+        setProfileInfo(response.data.data);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const editBioProps = {
-        requestUsername,
-        showEditBio,
-        setShowEditBio,
-    };
+  const editBioProps = {
+    requestUsername,
+    showEditBio,
+    setShowEditBio,
+  };
 
-    //add a back button
-    return (
-        <Box sx={{ display: "flex" }}>
-            <EditBioModal {...editBioProps} />
+  const GetProfilePicture = () => {
+    if (profileInfo?.profilePicture) {
+      return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={jpeg + profileInfo?.profilePicture.$binary.base64} />;
+    } else {
+      return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture} />;
+    }
+  };
 
-            {!isLoading && !error && !fetchError ? (
-                <Box>
-                    <AppBar position="fixed" sx={{  ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
-                    <Typography variant="h4">{profileInfo?.username}</Typography>
-                    <Box sx={{ display: "flex", margin: 5 }}>
-                        <Box
-                            sx={{
-                            
-                            boxShadow: 8,
-                            height: "75%",
-                            width: "55%",
-                            borderRadius: 5,                     
-                            justifyContent: "center",
-                            alignItems: "initial",
-                            flexDirection: "column",
-                            margin: "auto",
-                            padding: "1%",
-                            // "& > :not(style)": { m: 1 },
-                            }}>
-                        <Typography variant="h3" 
-                            sx={{
-                                color: "black",
-                                marginLeft: 5,
-                                display: "table-caption"
-                            }}
-                        >{profileInfo?.bio}</Typography>
-                        </Box>
-                    </Box>
+  //add a back button
+  return (
+    <Box sx={{ display: "flex" }}>
+      <EditBioModal {...editBioProps} />
 
-                    {user.username == requestUsername ? 
-                        (<Button variant="contained" onClick={() => setShowEditBio(true) }sx={{
-                            color: "white",
-                            marginTop: 0,
-                            marginLeft: 90,
-                            marginRight: 90,
-                        }}>
-                        Edit Bio
-                        </Button>) : (<h4></h4>)}
-                    <h2>{profileInfo?.modThreads}</h2>
-                    </AppBar>
-                </Box>
+      {!isLoading && !error && !fetchError ? (
+        <Box>
+          <AppBar position="fixed" sx={{ height: appBarHeight }}>
+            <Toolbar>
+              <GetProfilePicture />
+              <Typography variant="h4">{profileInfo?.username}</Typography>
+            </Toolbar>
+          </AppBar>
+          <Box sx={{ display: "flex", margin: 5, mt: `${appBarHeight}px`, justifyContent: "center" }}>
+            <Box
+              sx={{
+                boxShadow: 8,
+                borderRadius: 1,
+                width: 400,
+                height: 100,
+                margin: "auto",
+                // "& > :not(style)": { m: 1 },
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "black",
+                }}
+              >
+                {profileInfo?.bio}
+              </Typography>
+            </Box>
+          </Box>
 
-            ) : (
-                <Box sx={{ padding: defaultPadding, paddingLeft: `${drawerWidth + 4 * defaultPadding}px` }}>
-                {isLoading ? <Typography variant="h4">Loading...</Typography> : null}
-                {error ? <Typography variant="h4">Error: {error}</Typography> : null}
-                {fetchError ? <Typography variant="h4">Error: {fetchError}</Typography> : null}
-                </Box>
-            )}
+          {user.username == requestUsername ? (
+            <Box sx={{ m: 5 }}>
+              <Button
+                variant="contained"
+                onClick={() => setShowEditBio(true)}
+                sx={{
+                  color: "white",
+                }}
+              >
+                Edit Bio
+              </Button>
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  color: "white",
+                }}
+              >
+                Upload Profile Picture
+                <input type="file" hidden accept="image/*" onChange={upLoadProfilePicture} />
+              </Button>
+            </Box>
+          ) : null}
+          <h2>{profileInfo?.modThreads}</h2>
         </Box>
-    );
-}
+      ) : (
+        <Box sx={{ padding: defaultPadding, paddingLeft: `${drawerWidth + 4 * defaultPadding}px` }}>
+          {isLoading ? <Typography variant="h4">Loading...</Typography> : null}
+          {error ? <Typography variant="h4">Error: {error}</Typography> : null}
+          {fetchError ? <Typography variant="h4">Error: {fetchError}</Typography> : null}
+        </Box>
+      )}
+    </Box>
+  );
+};
 
 export default ProfilePage;

@@ -37,6 +37,8 @@ const SideBar = ({ ...props }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const selectedIconColor = "#7e7e7e";
   const AvatarSize = { width: 50, height: 50 };
+  const jpeg = "data:image/jpeg;base64,";
+  const { profile } = useAuth();
   const {
     user,
     activeIcon,
@@ -147,10 +149,19 @@ const SideBar = ({ ...props }: Props) => {
     );
   };
 
+  const GetProfilePicture = () => {
+    if (profile?.profilePicture) {
+      return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={jpeg + profile?.profilePicture.$binary.base64} />;
+    } else {
+      return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture} />;
+    }
+  };
+
   return (
     <Box>
       <AppBar position="fixed" sx={{ width: drawerWidth, left: 0, height: appBarHeight }}>
         <Toolbar>
+          <GetProfilePicture />
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Hi, {user?.username}
           </Typography>

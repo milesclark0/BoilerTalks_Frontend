@@ -14,8 +14,9 @@ const useRefreshToken = () => {
       if (response.data.statusCode === 200) {
         //token refreshed
         console.log(response);
-
-        signIn(response.data.data.user);
+        const user = response.data.data.user;
+        const profile = response.data.data.profile;
+        signIn(user, profile);
       } else {
         //something went wrong
         console.log(response.data.message);

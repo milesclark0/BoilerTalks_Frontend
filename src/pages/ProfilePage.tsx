@@ -25,7 +25,6 @@ const ProfilePage = () => {
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
   
-  //change this to use axiosprivate
   const fetchProfile = async () => {
     console.log(requestUsername);
     return await axiosPrivate.get(getProfileURL + requestUsername);

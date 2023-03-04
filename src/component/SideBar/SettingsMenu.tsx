@@ -33,8 +33,8 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
   };
 
   return (
-    <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose}>
-      <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center" }}>
+    <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose} sx={{pt:0}}>
+      <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m:0 }}>
         {user?.username}
       </MenuItem>
       <StyledDivider />

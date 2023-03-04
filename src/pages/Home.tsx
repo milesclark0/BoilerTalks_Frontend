@@ -57,7 +57,7 @@ const Home = () => {
   useEffect(() => {
     if (activeIcon.isActiveCourse) {
       userCourses.forEach((course) => {
-        if (course.name === activeIcon.course) {
+        if (course.name === activeIcon.course) {          
           setCurrentCourse(course);
           setCurrentRoom(course.rooms[0]);
           console.log(course.rooms[0].messages);
@@ -67,6 +67,7 @@ const Home = () => {
       setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
       setCurrentCourse(null);
       setCurrentRoom(null);
+      setMessages([]);
     }
   }, [activeIcon]);
 
@@ -161,6 +162,14 @@ const Home = () => {
 
   const isCourseSelected = () => {
     return currentCourse !== null;
+  };
+
+  const isDepartmentSelected = () => {
+    return activeIcon.course !== "" && !activeIcon.isActiveCourse;
+  };
+
+  const isRoomSelected = () => {
+    return currentRoom !== null;
   };
 
   // returns the most recent semester for a given course
@@ -352,9 +361,12 @@ const Home = () => {
             <Toolbar sx={{ padding: 0 }}>
               <Box sx={{ display: "flex", flexGrow: 1, height: appBarHeight }}>
                 <Typography variant="h5" sx={{ p: 2 }}>
-                  {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
+                  {/* {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
                     activeIcon.course ||
-                    "Select a course or Department"}
+                    "Select a course or Department"} */}
+                    {
+                      currentCourse?.name ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` : activeIcon.course || "Select a course or Department"
+                    }
                 </Typography>
                 <Button
                   variant="outlined"
@@ -377,12 +389,12 @@ const Home = () => {
           {/* <BanDialog/> */}
           <Box>
             <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px` }}>
-              <Typography variant="h4">Messages</Typography>
-              {messages.map((message, index) => (
+              {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
+              {isCourseSelected() ? messages.length > 0 ? messages.map((message, index) => (
                 <Typography key={index} variant="h6">
                   {`[${message.username}]: ${message.message}`}
                 </Typography>
-              ))}
+              )): <Typography variant="h6">No messages yet!</Typography> : null}
             </Box>
             <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
             {showEmojiPanel && <EmojiPanel />}

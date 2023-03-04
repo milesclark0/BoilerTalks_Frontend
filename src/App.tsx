@@ -14,17 +14,13 @@ import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
-    
     // <ThemeProvider theme={theme}>
-      <div className="appDisplay">
-
+    <div className="appDisplay">
       <Routes>
         {/* public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/policies" element={<Policies />} />
-        <Route path="/profile/:requestUsername" element={<ProfilePage />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/about" element={<About />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
 
@@ -32,6 +28,8 @@ function App() {
         <Route element={<PersistLogin />}>
           <Route element={<ProtectedRoutes />}>
             <Route path="/chooseThreads" element={<ChooseThreads />} />
+            <Route path="/profile/:requestUsername" element={<ProfilePage />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/home" element={<Home />} />
           </Route>
         </Route>
@@ -39,7 +37,7 @@ function App() {
         {/* 404 */}
         <Route path="*" element={<MissingRoute />} />
       </Routes>
-      </div>
+    </div>
 
     //</ThemeProvider>
   );

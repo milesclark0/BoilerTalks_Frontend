@@ -31,29 +31,8 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/home";
-  const [user, setUser] = useState<User>({
-    username: Cookies.get("user"),
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    _id: { $oid: "" },
-    profilePicture: "",
-    courses: [],
-    activeCourses: [],
-    blockedUsers: [],
-    creationDate: { $date: "" },
-  });
-  const [profile, setProfile] = useState<Profile>({
-    username: "",
-    _id: { $oid: "" },
-    bio: "",
-    modThreads: [],
-    profilePicture: null,
-    blockedUsers: [],
-    creationDate: { $date: "" },
-    displayName: "",
-  });
+  const [user, setUser] = useState<User>(undefined);
+  const [profile, setProfile] = useState<Profile>(undefined);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 

@@ -24,7 +24,7 @@ const ProfilePage = () => {
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
-  const jpeg = "data:image/jpeg;base64,";
+  
   //change this to use axiosprivate
   const fetchProfile = async () => {
     console.log(requestUsername);
@@ -44,7 +44,7 @@ const ProfilePage = () => {
     onError: (error: string) => console.log(error),
   });
 
-  const upLoadProfilePicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadProfilePicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files[0];
     const formData = new FormData();
@@ -57,7 +57,7 @@ const ProfilePage = () => {
       });
       if (response.data.statusCode === 200) {
         console.log(response.data.data);
-        setProfileInfo(response.data.data);
+        alert(response.data.message);
       } else {
         alert(response.data.message);
       }
@@ -73,11 +73,7 @@ const ProfilePage = () => {
   };
 
   const GetProfilePicture = () => {
-    if (profileInfo?.profilePicture) {
-      return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={jpeg + profileInfo?.profilePicture.$binary.base64} />;
-    } else {
-      return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture} />;
-    }
+    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture + `?${performance.now()}`} />;
   };
 
   //add a back button
@@ -115,7 +111,7 @@ const ProfilePage = () => {
             </Box>
           </Box>
 
-          {user.username == requestUsername ? (
+          {user?.username == requestUsername ? (
             <Box sx={{ m: 5 }}>
               <Button
                 variant="contained"
@@ -134,7 +130,7 @@ const ProfilePage = () => {
                 }}
               >
                 Upload Profile Picture
-                <input type="file" hidden accept="image/*" onChange={upLoadProfilePicture} />
+                <input type="file" hidden accept="image/*" onChange={uploadProfilePicture} />
               </Button>
             </Box>
           ) : null}

@@ -13,7 +13,6 @@ const useRefreshToken = () => {
       });
       if (response.data.statusCode === 200) {
         //token refreshed
-        console.log(response);
         const user = response.data.data.user;
         const profile = response.data.data.profile;
         signIn(user, profile);

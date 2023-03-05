@@ -88,7 +88,9 @@ const Register = () => {
           // set login context
           const loginResponse = await LoginAPI(username, password);
           if (loginResponse.data.statusCode === 200) {
-            signIn(loginResponse.data.data.user);
+            const user = loginResponse.data.data.user;
+            const profile = loginResponse.data.data.profile;
+            signIn(user, profile);
             navigate("/chooseThreads");
           }
         } else {

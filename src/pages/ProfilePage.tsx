@@ -14,7 +14,7 @@ import React from "react";
 
 const ProfilePage = () => {
   const { requestUsername } = useParams();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [showEditBio, setShowEditBio] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [profileInfo, setProfileInfo] = useState<Profile>(null);
@@ -56,6 +56,7 @@ const ProfilePage = () => {
       });
       if (response.data.statusCode === 200) {
         console.log(response.data.data);
+        setUser({ ...user, profilePicture: user?.profilePicture + `?${performance.now()}` });
         alert(response.data.message);
       } else {
         alert(response.data.message);
@@ -72,7 +73,7 @@ const ProfilePage = () => {
   };
 
   const GetProfilePicture = () => {
-    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture + `?${performance.now()}`} />;
+    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture} />;
   };
 
   //add a back button

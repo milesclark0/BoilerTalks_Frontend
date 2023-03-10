@@ -39,6 +39,7 @@ const SideBar = ({ ...props }: Props) => {
   const AvatarSize = { width: 50, height: 50 };
   const jpeg = "data:image/jpeg;base64,";
   const { profile } = useAuth();
+  const navigate = useNavigate();
   const {
     user,
     activeIcon,
@@ -96,6 +97,13 @@ const SideBar = ({ ...props }: Props) => {
     setTimeout(() => {
       setActiveIcon({ course: course, isActiveCourse: isActiveCourse });
     }, 200);
+    if (course === "") {
+      navigate("/home");
+    } else {
+      if (!isActiveCourse) {
+        navigate(`/home/courses`);
+      }
+    }
   };
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {

@@ -30,6 +30,8 @@ function App() {
             <Route path="/chooseThreads" element={<ChooseThreads />} />
             <Route path="/profile/:requestUsername" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/home/courses/:courseId/:roomId" element={<Home />} />
+            <Route path="/home/courses" element={<Home />} />
             <Route path="/home" element={<Home />} />
           </Route>
         </Route>

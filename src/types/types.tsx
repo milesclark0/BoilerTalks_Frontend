@@ -44,7 +44,7 @@ export type Room = {
   _id: {$oid: string};
   name: string;
   courseId: {$oid: string};
-  connected: [{username: string, sid: string}];
+  connected: [{username: string, sid: string, profilePic: string}];
   messages: [{username: string, message: string, timeSent: string}];
 }
 

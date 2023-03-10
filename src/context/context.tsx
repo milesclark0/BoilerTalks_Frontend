@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     setProfile(profile);
     setIsLoggedIn(true);
     Cookies.set("user", user?.username);
-    console.log("signed in: navigate to", from.pathname);
+    console.log("signed in: navigate to", from);
     if (from.pathname === "/login" || from.pathname === "/register" || from.pathname === "/forgotPassword" || from.pathname === "/policies") {
       navigate("/home", { replace: true });
       return;

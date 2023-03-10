@@ -2,32 +2,19 @@ import { useAuth } from "../context/context";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import useLogout from "../hooks/useLogout";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
-import EmojiPicker, {
-  EmojiStyle,
-  SkinTones,
-  Theme,
-  Categories,
-  EmojiClickData,
-  Emoji,
-  SuggestionMode,
-  SkinTonePickerLocation,
-} from "emoji-picker-react";
-import { getUserCoursesURL, getCourseURL, getCourseUsersURL } from "../API/CoursesAPI";
+import EmojiPicker, { EmojiStyle, Theme, EmojiClickData, Emoji } from "emoji-picker-react";
+import { getUserCoursesURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
 import { Course, Room } from "../types/types";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import MessageBox from "./../component/HomePage/messageBox";
 import UserBar from "./../component/HomePage/userBar";
 import useSockets from "../hooks/useSockets";
-import Appeals from "../component/SideBar/CourseView/CourseNavigation/Appeals";
-import WarningDialog from "../component/SideBar/CourseView/WarningDialog";
-import BanDialog from "../component/SideBar/CourseView/BanDialog";
 
 const Home = () => {
   const { user } = useAuth();
@@ -48,26 +35,69 @@ const Home = () => {
   const [courseUsers, setCourseUsers] = useState([]);
   const navigate = useNavigate();
   const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
 
+  const getCourseFromUrl = () => {
+    const course = userCourses?.find((course) => course._id.$oid === courseId);
+    return course;
+  };
+
+  const getRoomFromUrl = () => {
+    const course = getCourseFromUrl();
+    const room = course?.rooms.find((room) => room._id.$oid === roomId);
+    return room;
+  };
+
+  const getActiveCourses = () => {
+    const activeCourses = [];
+    user?.activeCourses.forEach((course) => {
+      userCourses.forEach((userCourse) => {
+        if (course === userCourse.name) {
+          activeCourses.push(userCourse);
+        }
+      });
+    });
+    return activeCourses;
+  };
+
+  useEffect(() => {
+    if (courseId) {
+      const course = getCourseFromUrl();
+      setCurrentCourse(course);
+      //if course iname is in user active courses, set it as the active icon else set as the department name
+      const activeCourses = getActiveCourses();
+      if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+        setActiveIcon({ course: course?.name, isActiveCourse: true });
+      } else {
+        setActiveIcon({ course: course?.department, isActiveCourse: false });
+      }
+      if (roomId) {
+        const room = getRoomFromUrl();
+        setCurrentRoom(room);
+      }
+    }
+  }, [userCourses]);
+
   useEffect(() => {
     if (activeIcon.isActiveCourse) {
       userCourses.forEach((course) => {
-        if (course.name === activeIcon.course) {          
+        if (course.name === activeIcon.course) {
           setCurrentCourse(course);
-          setCurrentRoom(course.rooms[0]);
-          console.log(course.rooms[0].messages);
+          setCurrentRoom(course?.rooms[0]);
+          //navigate to home/courses/courseId
+          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
         }
       });
     } else {
+      //will always trigger on page load when activeIcon is {course: "", isActiveCourse: false}
       setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
-      setCurrentCourse(null);
-      setCurrentRoom(null);
-      setMessages([]);
+      setCurrentCourse(getCourseFromUrl() || null);
+      setCurrentRoom(getRoomFromUrl() || null);
     }
   }, [activeIcon]);
 
@@ -105,9 +135,9 @@ const Home = () => {
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
-    userCourses.forEach((course) => {
+    userCourses?.forEach((course) => {
       course.rooms.forEach((room) => {
-        if (room.name === currentRoom.name) {
+        if (room.name === currentRoom?.name) {
           foundRoom = room;
         }
       });
@@ -119,7 +149,6 @@ const Home = () => {
         message: message.message,
         timeSent: message.timeSent,
       };
-      console.log(newMessage);
       return newMessage;
     });
     setMessages(newMessages);
@@ -133,8 +162,6 @@ const Home = () => {
       if (data.data.statusCode === 200) {
         //sort rooms by name
         const courses: Course[] = data.data.data;
-        console.log(courses);
-
         courses.forEach((course) => {
           course.rooms?.sort((a, b) => (a.name < b.name ? -1 : 1));
         });
@@ -218,6 +245,8 @@ const Home = () => {
   const userBarProps = {
     innerDrawerWidth,
     drawerWidth,
+    appBarHeight,
+    currentCourse,
   };
 
   const searchCourseProps = {
@@ -280,18 +309,18 @@ const Home = () => {
     return null;
   };
 
-  const handleEnter = (e) => {
-    if (e.keyCode === 13 && value != null) {
-      console.log(value["username"]);
-      navigateToProfile(value["username"]);
-    }
-  };
-
   const navigateToProfile = (username: string) => {
     navigate("/profile/" + username);
   };
 
   const SearchUserField = () => {
+    const [value, setValue] = React.useState<string>();
+    const handleEnter = (e) => {
+      if (e.keyCode === 13 && value != null) {
+        console.log(value["username"]);
+        navigateToProfile(value["username"]);
+      }
+    };
     if (isCourseSelected() === false) return null;
     return (
       <Autocomplete
@@ -336,8 +365,6 @@ const Home = () => {
     );
   };
 
-  const [value, setValue] = React.useState<string>();
-
   const toggleEmojiPanel = () => {
     setShowEmojiPanel(!showEmojiPanel);
   };
@@ -364,9 +391,9 @@ const Home = () => {
                   {/* {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
                     activeIcon.course ||
                     "Select a course or Department"} */}
-                    {
-                      currentCourse?.name ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` : activeIcon.course || "Select a course or Department"
-                    }
+                  {currentCourse?.name
+                    ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}`
+                    : activeIcon.course || "Select a course or Department"}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -390,11 +417,17 @@ const Home = () => {
           <Box>
             <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px` }}>
               {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
-              {isCourseSelected() ? messages.length > 0 ? messages.map((message, index) => (
-                <Typography key={index} variant="h6">
-                  {`[${message.username}]: ${message.message}`}
-                </Typography>
-              )): <Typography variant="h6">No messages yet!</Typography> : null}
+              {isCourseSelected() ? (
+                messages.length > 0 ? (
+                  messages.map((message, index) => (
+                    <Typography key={index} variant="h6">
+                      {`[${message.username}]: ${message.message}`}
+                    </Typography>
+                  ))
+                ) : (
+                  <Typography variant="h6">No messages yet!</Typography>
+                )
+              ) : null}
             </Box>
             <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
             {showEmojiPanel && <EmojiPanel />}

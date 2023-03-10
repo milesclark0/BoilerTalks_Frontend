@@ -68,7 +68,7 @@ const useSockets = () => {
       let ret;
       if (room !== null) {
         ret = await new Promise((resolve) =>
-          socket.emit(namespace.join, { roomID: room?._id.$oid, username: user?.username }, (response: string | Room) => resolve(response))
+          socket.emit(namespace.join, { roomID: room?._id.$oid, username: user?.username, profilePic: user?.profilePicture }, (response: string | Room) => resolve(response))
         );
       }
       return ret;

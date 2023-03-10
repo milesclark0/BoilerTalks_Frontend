@@ -7,9 +7,9 @@ import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import { getProfileURL, uploadProfilePictureURL } from "../API/ProfileAPI";
 import SideBar from "../component/HomePage/sideBar";
 import { AppBar, Avatar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
-import { Profile } from "../types/types";
+import { Profile, User } from "../types/types";
 import EditBioModal from "../component/Profile/EditBioModal";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import React from "react";
 
 const ProfilePage = () => {
@@ -18,12 +18,16 @@ const ProfilePage = () => {
   const [showEditBio, setShowEditBio] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [profileInfo, setProfileInfo] = useState<Profile>(null);
+  const [viewedUser, setViewedUser] = useState<User>(null);
   const axiosPrivate = useAxiosPrivate();
+  const location = useLocation();
 
   const defaultPadding = 4;
   const drawerWidth = 300;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
+
+  console.log(location);
   
   const fetchProfile = async () => {
     console.log(requestUsername);
@@ -36,8 +40,8 @@ const ProfilePage = () => {
     refetchOnMount: "always",
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
-        setProfileInfo(data.data.data);
-        console.log(data.data.data);
+        setProfileInfo(data.data.data[0]);
+        setViewedUser(data.data.data[1]);
       } else setFetchError(data.data.message);
     },
     onError: (error: string) => console.log(error),
@@ -73,7 +77,7 @@ const ProfilePage = () => {
   };
 
   const GetProfilePicture = () => {
-    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={user?.profilePicture} />;
+    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={viewedUser?.profilePicture} />;
   };
 
   //add a back button

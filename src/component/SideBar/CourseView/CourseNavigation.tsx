@@ -7,6 +7,7 @@ import { PinIcon } from "./CourseNavigation/PinIcon";
 import RulesModal from "./CourseNavigation/RulesModal";
 import { StyledDivider } from "../StyledDivider";
 import { width } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
@@ -30,6 +31,7 @@ type Props = {
 export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesText, setRulesText] = useState(""); //import backend rules text
+  const navigate = useNavigate();
 
   const MoreIconProps = {
     setUserCourses: props.setUserCourses,
@@ -73,10 +75,13 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const handleClickCourse = () => {
     props.setCurrentCourse(course);
-    props.setCurrentRoom(course?.rooms[0]);
+    props.setCurrentRoom(course?.rooms[0]);    
+    navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+
   };
 
   const buttonStyle = () => {
+
     const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
     const color = "black";
     const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "white";
@@ -84,7 +89,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
-  const roomButtonStyle = (room: Room) => {
+  const roomButtonStyle = (room: Room) => {    
     const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
     const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
@@ -124,6 +129,8 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
+                        navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
+
                       }
                     }}
                   >

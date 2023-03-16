@@ -412,10 +412,10 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
-          <Box>
-            <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, maxWidth: `calc(100% - ${drawerWidth}px)` }}>
-              <Outlet context={{ userBarProps, messageBoxProps }} />
-              {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
+          <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, width: `calc(100% - ${drawerWidth * 2}px)` }}>
+            {/* <Box> */}
+            <Outlet context={{ userBarProps, messageBoxProps }} />
+            {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
               {isCourseSelected() ? (
                 messages.length > 0 ? (
                   messages.map((message, index) => (
@@ -427,7 +427,7 @@ const Home = () => {
                   <Typography variant="h6">No messages yet!</Typography>
                 )
               ) : null} */}
-            </Box>
+            {/* </Box> */}
             {/* <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
             {showEmojiPanel && <EmojiPanel />}
             {currentCourse && <UserBar {...userBarProps} />}

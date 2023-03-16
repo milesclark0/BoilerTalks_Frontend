@@ -31,21 +31,6 @@ type Props = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  // const [showCourses, setShowCourses] = useState(false);
-  // const [activeIcon, setActiveIcon] = useState<{
-  //   course: string;
-  //   isActiveCourse: boolean;
-  // }>({ course: "", isActiveCourse: false });
-  //this value will hold the actual course data (all semesters included) for each user course
-  // const [userCourses, setUserCourses] = useState<Course[]>([]);
-  // const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
-  // const [currentRoom, setCurrentRoom] = useState<Room>(null);
-  // const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useState<Course[]>([]);
-  // const [distinctDepartments, setDistinctDepartments] = useState<string[]>([]); 
-  // const [currentSemester, setCurrentSemester] = useState<string>("");
-  // const [fetchError, setFetchError] = useState("");
-  // const [courseUsers, setCourseUsers] = useState([]);
-  // const navigate = useNavigate();
   const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
   const { roomId } = useParams();
   const { userBarProps, messageBoxProps } = useOutletContext<{ userBarProps: Props; messageBoxProps: Props }>();
@@ -92,14 +77,18 @@ const RoomDisplay = () => {
         <Box sx={{ overflowY: "auto" }} className="scollBar">
           <Typography variant="h4">Messages</Typography>
           {messages.map((message, index) => (
-            <Typography key={index} variant="h6">
-              {`[${message.username}]: ${message.message}`}
-            </Typography>
+            <Box key={index}>
+              <Typography variant="h6">
+                {`[${message.username}]: `}
+              </Typography>
+              <Typography variant="h6" sx={{ wordWrap: "break-word" }}>{message.message}</Typography>
+            </Box>
           ))}
         </Box>
       ) : (
         <Typography variant="h6">No messages yet!</Typography>
       )}
+      <UserBar {...userBarProps} />
       <Box
         sx={{
           height: `${userBarProps.appBarHeight}px`,
@@ -111,7 +100,6 @@ const RoomDisplay = () => {
       >
         <MessageBox {...messageBoxProps} />
       </Box>
-      <UserBar {...userBarProps} />
     </Box>
   );
 };

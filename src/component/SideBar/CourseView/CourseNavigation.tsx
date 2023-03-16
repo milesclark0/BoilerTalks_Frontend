@@ -178,6 +178,9 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             }}
             component={NavLink}
             to={`courses/${course._id.$oid}/Q&A`}
+            onClick={() => {
+              props.setCurrentCourse(course);
+            }}
           >
             <ListItem>
               <Typography variant="body2" noWrap component="div">
@@ -191,7 +194,14 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 </Typography>
               </ListItem> */}
           {profileInfo?.modThreads?.includes(course.name) && (
-            <Button sx={{ ...otherButtonStyle(), width: "100%" }} component={NavLink} to={`/home/courses/${course._id.$oid}/Appeals`}>
+            <Button
+              sx={{ ...otherButtonStyle(), width: "100%" }}
+              component={NavLink}
+              to={`/home/courses/${course._id.$oid}/Appeals`}
+              onClick={() => {
+                props.setCurrentCourse(course);
+              }}
+            >
               <ListItem>
                 <Typography variant="body2">Appeals</Typography>
               </ListItem>

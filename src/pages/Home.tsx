@@ -6,14 +6,11 @@ import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import EmojiPicker, { EmojiStyle, Theme, EmojiClickData, Emoji } from "emoji-picker-react";
 import { getUserCoursesURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography, Autocomplete, TextField } from "@mui/material";
 import { Course, Room } from "../types/types";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import MessageBox from "./../component/HomePage/messageBox";
-import UserBar from "./../component/HomePage/userBar";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+// import MessageBox from "./../component/HomePage/messageBox";
+// import UserBar from "./../component/HomePage/userBar";
 import useSockets from "../hooks/useSockets";
 
 const Home = () => {
@@ -29,7 +26,7 @@ const Home = () => {
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
   const [currentRoom, setCurrentRoom] = useState<Room>(null);
   const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useState<Course[]>([]);
-  const [distinctDepartments, setDistinctDepartments] = React.useState<string[]>([]); //What the new thread name string is
+  const [distinctDepartments, setDistinctDepartments] = useState<string[]>([]); //What the new thread name string is
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
@@ -90,7 +87,8 @@ const Home = () => {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
           //navigate to home/courses/courseId
-          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
         }
       });
     } else {
@@ -102,18 +100,18 @@ const Home = () => {
   }, [activeIcon]);
 
   // when the current course changes, we want to update the messages
-  useEffect(() => {
-    if (currentCourse) {
-      assignMessages(currentCourse.rooms[0]);
-    }
-  }, [currentCourse]);
+  // useEffect(() => {
+  //   if (currentCourse) {
+  //     assignMessages(currentCourse.rooms[0]);
+  //   }
+  // }, [currentCourse]);
 
   // when the current room changes, we want to update the messages
-  useEffect(() => {
-    if (currentRoom) {
-      assignMessages(currentRoom);
-    }
-  }, [currentRoom]);
+  // useEffect(() => {
+  //   if (currentRoom) {
+  //     assignMessages(currentRoom);
+  //   }
+  // }, [currentRoom]);
 
   useEffect(() => {
     const fetchCourseUsers = async () => {
@@ -132,27 +130,27 @@ const Home = () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
 
-  const assignMessages = (room: Room) => {
-    //find room in userCourses since currentRoom messages are not updated
-    let foundRoom: Room;
-    userCourses?.forEach((course) => {
-      course.rooms.forEach((room) => {
-        if (room.name === currentRoom?.name) {
-          foundRoom = room;
-        }
-      });
-    });
+  // const assignMessages = (room: Room) => {
+  //   //find room in userCourses since currentRoom messages are not updated
+  //   let foundRoom: Room;
+  //   userCourses?.forEach((course) => {
+  //     course.rooms.forEach((room) => {
+  //       if (room.name === currentRoom?.name) {
+  //         foundRoom = room;
+  //       }
+  //     });
+  //   });
 
-    const newMessages = foundRoom.messages.map((message) => {
-      const newMessage = {
-        username: message.username,
-        message: message.message,
-        timeSent: message.timeSent,
-      };
-      return newMessage;
-    });
-    setMessages(newMessages);
-  };
+  //   const newMessages = foundRoom?.messages.map((message) => {
+  //     const newMessage = {
+  //       username: message.username,
+  //       message: message.message,
+  //       timeSent: message.timeSent,
+  //     };
+  //     return newMessage;
+  //   });
+  //   setMessages(newMessages);
+  // };
 
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
@@ -279,6 +277,7 @@ const Home = () => {
     disconnectFromRoom,
   };
 
+  // can try and move this into a different file to clean up this file
   const SemesterSelector = () => {
     // if the active icon is a department
     if (isCourseSelected()) {
@@ -294,6 +293,8 @@ const Home = () => {
               setCurrentRoom(course.rooms[0]);
             }
           }}
+          // removes border from box
+          sx={{ boxShadow: "none", ".MuiOutlinedInput-notchedOutline": { border: 0 }, color: "white" }}
         >
           <MenuItem disabled value="">
             Select Semester
@@ -314,7 +315,7 @@ const Home = () => {
   };
 
   const SearchUserField = () => {
-    const [value, setValue] = React.useState<string>();
+    const [value, setValue] = useState<string>();
     const handleEnter = (e) => {
       if (e.keyCode === 13 && value != null) {
         console.log(value["username"]);
@@ -393,7 +394,7 @@ const Home = () => {
                     "Select a course or Department"} */}
                   {currentCourse?.name
                     ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}`
-                    : activeIcon.course || "Select a course or Department"}
+                    : activeIcon.course || "Select a Department"}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -411,12 +412,10 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
-          {/* get user and see if they have warning or ban */}
-          {/* <WarningDialog/> */}
-          {/* <BanDialog/> */}
           <Box>
-            <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px` }}>
-              {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
+            <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, maxWidth: `calc(100% - ${drawerWidth}px)` }}>
+              <Outlet context={{ userBarProps, messageBoxProps }} />
+              {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
               {isCourseSelected() ? (
                 messages.length > 0 ? (
                   messages.map((message, index) => (
@@ -427,9 +426,9 @@ const Home = () => {
                 ) : (
                   <Typography variant="h6">No messages yet!</Typography>
                 )
-              ) : null}
+              ) : null} */}
             </Box>
-            <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
+            {/* <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
             {showEmojiPanel && <EmojiPanel />}
             {currentCourse && <UserBar {...userBarProps} />}
             {currentRoom && (
@@ -444,7 +443,7 @@ const Home = () => {
               >
                 <MessageBox {...messageBoxProps} />
               </Box>
-            )}
+            )} */}
           </Box>
         </Box>
       ) : (

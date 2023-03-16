@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
 import useSockets from "../../hooks/useSockets";
 import { Course, Message, Room } from "../../types/types";
 import { useAuth } from "../../context/context";
+import SendIcon from "@mui/icons-material/Send";
 
 type Props = {
   currentCourse: Course | null;
@@ -108,6 +109,7 @@ const MessageBox = ({
       display={"flex"}
       sx={{
         pl: 2,
+        pr: 2
       }}
     >
       <TextField
@@ -122,8 +124,17 @@ const MessageBox = ({
             handleSendMessage();
           }
         }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={handleSendMessage}>
+                <SendIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
-      <Button onClick={handleSendMessage}>Send</Button>
+      {/* <Button onClick={handleSendMessage}>Send</Button> */}
     </Box>
   );
 };

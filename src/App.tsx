@@ -11,6 +11,9 @@ import Register from "./pages/Register";
 import ChooseThreads from "./component/Register/ChooseThreads";
 import Policies from "./pages/Policies";
 import ProfilePage from "./pages/ProfilePage";
+import RoomDisplay from "./component/ThreadDisplay/RoomDisplay";
+import AppealsDisplay from "./component/ThreadDisplay/AppealsDisplay";
+import QADisplay from "./component/ThreadDisplay/QADisplay";
 
 function App() {
   return (
@@ -30,9 +33,12 @@ function App() {
             <Route path="/chooseThreads" element={<ChooseThreads />} />
             <Route path="/profile/:requestUsername" element={<ProfilePage />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/home/courses/:courseId/:roomId" element={<Home />} />
             <Route path="/home/courses" element={<Home />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<Home />}>
+              <Route path="courses/:courseId/:roomId" element={<RoomDisplay />} />
+              <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
+              <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
+            </Route>
           </Route>
         </Route>
 

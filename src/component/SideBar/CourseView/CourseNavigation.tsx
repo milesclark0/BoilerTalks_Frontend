@@ -8,6 +8,12 @@ import RulesModal from "./CourseNavigation/RulesModal";
 import { StyledDivider } from "../StyledDivider";
 import { width } from "@mui/system";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/context";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { getProfileURL } from "../../../API/ProfileAPI";
+import { useQuery } from "react-query";
+import { Profile } from "../../../types/types";
+import { NavLink } from "react-router-dom";
 
 type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
@@ -32,6 +38,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesText, setRulesText] = useState(""); //import backend rules text
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+  const [fetchError, setFetchError] = useState("");
+  const [profileInfo, setProfileInfo] = useState<Profile>(null);
 
   const MoreIconProps = {
     setUserCourses: props.setUserCourses,
@@ -75,13 +85,12 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const handleClickCourse = () => {
     props.setCurrentCourse(course);
-    props.setCurrentRoom(course?.rooms[0]);    
-    navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-
+    props.setCurrentRoom(course?.rooms[0]);
+    // navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+    navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`);
   };
 
   const buttonStyle = () => {
-
     const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
     const color = "black";
     const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "white";
@@ -89,7 +98,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
-  const roomButtonStyle = (room: Room) => {    
+  const roomButtonStyle = (room: Room) => {
     const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
     const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
@@ -100,6 +109,24 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     const hoverColor = "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
+
+  //change this to use axiosprivate
+  const fetchProfile = async () => {
+    return await axiosPrivate.get(getProfileURL + user?.username);
+  };
+
+  const { isLoading, error, data } = useQuery("profile", fetchProfile, {
+    enabled: true,
+    staleTime: 1000 * 60, //1 minute
+    refetchOnMount: "always",
+    onSuccess: (data) => {
+      if (data.data.statusCode === 200) {
+        setProfileInfo(data.data.data[0]);
+        // console.log(data.data.data);
+      } else setFetchError(data.data.message);
+    },
+    onError: (error: string) => console.log(error),
+  });
 
   return (
     <List>
@@ -125,12 +152,13 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       width: "100%",
                       ...roomButtonStyle(room),
                     }}
+                    component={NavLink}
+                    to={`/home/courses/${course._id.$oid}/${room?.name.replace(course?.name, "").replace(/\s/g, "")}`}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
-                        navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
-
+                        // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
                   >
@@ -148,6 +176,8 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               width: "100%",
               ...otherButtonStyle(),
             }}
+            component={NavLink}
+            to={`courses/${course._id.$oid}/Q&A`}
           >
             <ListItem>
               <Typography variant="body2" noWrap component="div">
@@ -160,21 +190,25 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   Mod Chat
                 </Typography>
               </ListItem> */}
-          <Button sx={{ ...otherButtonStyle(), width: "100%" }}>
-            <ListItem>
-              <Typography variant="body2">Appeals</Typography>
-            </ListItem>
-          </Button>
+          {profileInfo?.modThreads?.includes(course.name) && (
+            <Button sx={{ ...otherButtonStyle(), width: "100%" }} component={NavLink} to={`/home/courses/${course._id.$oid}/Appeals`}>
+              <ListItem>
+                <Typography variant="body2">Appeals</Typography>
+              </ListItem>
+            </Button>
+          )}
           <Button variant="text" onClick={handleClickRules} sx={{ ...otherButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          <Button variant="outlined" onClick={handleClickNewThread}>
-            <ListItem>
-              <Typography variant="body2">New thread</Typography>
-            </ListItem>
-          </Button>
+          {profileInfo?.modThreads?.includes(course.name) && (
+            <Button variant="outlined" onClick={handleClickNewThread}>
+              <ListItem>
+                <Typography variant="body2">New thread</Typography>
+              </ListItem>
+            </Button>
+          )}
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
         </List>

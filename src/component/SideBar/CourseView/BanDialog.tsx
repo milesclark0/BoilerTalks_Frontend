@@ -1,17 +1,22 @@
 import React, { useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from "@mui/material";
 import DangerousIcon from "@mui/icons-material/Dangerous";
+import { useOutletContext } from "react-router-dom";
+import { Course } from "../../../types/types";
+
+type Props = {
+  drawerWidth: number;
+  innerDrawerWidth: number;
+  appBarHeight: number;
+  currentCourse: Course;
+};
 
 const BanDialog = () => {
-  const [open, setOpen] = useState<boolean>(false);
   const [submittedAppeal, setSubmittedAppeal] = useState<boolean>(false);
+  const { userBarProps } = useOutletContext<{ userBarProps: Props }>();
 
   const AppealProps = {
-    setSubmittedAppeal
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    setSubmittedAppeal,
   };
 
   const AppealForm = ({ ...AppealProps }) => {
@@ -79,34 +84,33 @@ const BanDialog = () => {
   };
 
   return (
-    <Dialog open={open}>
-      <DialogTitle sx={{ display: "flex", alignItems: "center" }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "column",
+        boxShadow: 8,
+        borderRadius: 2,
+        height: "60%",
+        width: "50%",
+      }}
+    >
+      <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mt: 4 }}>
         <DangerousIcon sx={{ color: "red", mr: 2 }} />
-        {"You have been banned!"}
-      </DialogTitle>
+        You have been banned!
+      </Typography>
       {submittedAppeal ? (
-        <>
-          <DialogContent>
-            <DialogContentText>
-              {/* get username and get reason for ban */}
-              Your appeal is under review. You will be notified of the decision once it has been processed.
-            </DialogContentText>
-          </DialogContent>
-        </>
+        <Typography variant="h6">Your appeal is under review. You will be notified of the decision once it has been processed.</Typography>
       ) : (
-        <>
-          <DialogContent>
-            <DialogContentText>
-              {/* get username and get reason for ban */}
-              Very naughty!
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
+        <Box>
+          <Typography sx={{ display: "flex", alignItems: "center"}}>Very naughty!</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <AppealForm {...AppealProps} />
-          </DialogActions>
-        </>
+          </Box>
+        </Box>
       )}
-    </Dialog>
+    </Box>
   );
 };
 

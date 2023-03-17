@@ -8,6 +8,9 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
+import { getBannedUsersURL } from "../../API/CoursesAPI";
+import BanDialog from "../SideBar/CourseView/BanDialog";
+import WarningDialog from "../SideBar/CourseView/WarningDialog";
 
 type Props = {
   currentCourse: Course | null;
@@ -32,8 +35,28 @@ const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
-  const { roomId } = useParams();
+  const { courseId } = useParams();
   const { userBarProps, messageBoxProps } = useOutletContext<{ userBarProps: Props; messageBoxProps: Props }>();
+  const [banned, setBanned] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchBannedUsers = async () => {
+      const res = await axiosPrivate.get(getBannedUsersURL + courseId);
+      console.log(res);
+      if (res.status == 200) {
+        if (res.data.statusCode == 200) {
+          if (res.data.data.includes(user)) {
+            setBanned(true);
+          }
+        } else {
+          setBanned(false);
+        }
+      }
+    };
+    if (messageBoxProps.currentCourse) {
+      fetchBannedUsers();
+    }
+  }, [messageBoxProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
   useEffect(() => {
@@ -72,34 +95,45 @@ const RoomDisplay = () => {
   };
 
   return (
-    <Box>
-      {messages?.length > 0 ? (
-        <Box sx={{ overflowY: "auto" }} className="scollBar">
-          <Typography variant="h4">Messages</Typography>
-          {messages.map((message, index) => (
-            <Box key={index}>
-              <Typography variant="h6">
-                {`[${message.username}]: `}
-              </Typography>
-              <Typography variant="h6" sx={{ wordWrap: "break-word" }}>{message.message}</Typography>
-            </Box>
-          ))}
+    <Box sx={{ height: "100%" }}>
+      {banned && (
+        <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+          <BanDialog />
         </Box>
-      ) : (
-        <Typography variant="h6">No messages yet!</Typography>
       )}
-      <UserBar {...userBarProps} />
-      <Box
-        sx={{
-          height: `${userBarProps.appBarHeight}px`,
-          position: "absolute",
-          bottom: 20,
-          right: `${userBarProps.drawerWidth - userBarProps.innerDrawerWidth + 3 * 8}px`,
-          left: `${userBarProps.drawerWidth}px`,
-        }}
-      >
-        <MessageBox {...messageBoxProps} />
-      </Box>
+      {!banned && (
+        <Box sx={{ p: 4, width: `calc(100% - ${userBarProps.drawerWidth * 2}px)` }}>
+          {messages?.length > 0 ? (
+            <Box>
+              <Typography variant="h4">Messages</Typography>
+              {messages.map((message, index) => (
+                <Box key={index}>
+                  <Typography variant="h6">{`[${message.username}]: `}</Typography>
+                  <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                    {message.message}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="h6">No messages yet!</Typography>
+          )}
+          <UserBar {...userBarProps} />
+          {messageBoxProps.currentRoom && (
+            <Box
+              sx={{
+                height: `${userBarProps.appBarHeight}px`,
+                position: "absolute",
+                bottom: 20,
+                right: `${userBarProps.drawerWidth - userBarProps.innerDrawerWidth + 3 * 8}px`,
+                left: `${userBarProps.drawerWidth}px`,
+              }}
+            >
+              <MessageBox {...messageBoxProps} />
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

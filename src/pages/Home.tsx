@@ -373,11 +373,11 @@ const Home = () => {
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ pl: `${drawerWidth}px`, width: "100%", height: "100%" }}>
+        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }}>
           <AppBar
             position="fixed"
             sx={{
@@ -412,7 +412,8 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
-          <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, width: `calc(100% - ${drawerWidth * 2}px)` }}>
+          {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
+          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }}>
             {/* <Box> */}
             <Outlet context={{ userBarProps, messageBoxProps }} />
             {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}

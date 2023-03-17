@@ -6,6 +6,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room } from "../../types/types";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import UserBar from "../HomePage/userBar";
+import { getCourseAppealsURL } from "../../API/CoursesAPI";
 
 type Props = {
   drawerWidth: number;
@@ -18,28 +19,28 @@ const AppealsDisplay = () => {
   const { user } = useAuth();
   const { userBarProps } = useOutletContext<{ userBarProps: Props }>();
   const axiosPrivate = useAxiosPrivate();
-  const [fetchError, setFetchError] = useState("");
-  // const [appeals, setAppeals] = useState([]);
-  const appeals = [
-    { user: "bob", response: "hello" },
-    { user: "jeff", response: "test" },
-  ];
+  const [appeals, setAppeals] = useState([]);
+  const { courseId } = useParams();
+  // const appeals = [
+  //   { user: "bob", response: "hello" },
+  //   { user: "jeff", response: "test" },
+  // ];
 
-  const fetchAppeals = async () => {
-    // return await axiosPrivate.get(getUserCoursesURL + user?.username);
-  };
+  useEffect(() => {
+    const fetchCourseAppeals = async () => {
+      const res = await axiosPrivate.get(getCourseAppealsURL + courseId);
+      console.log(res);
+      if (res.status == 200) {
+        if (res.data.statusCode == 200) {
+          setAppeals(res.data.data)
+        }
+      }
+    };
+    if (userBarProps.currentCourse) {
+      fetchCourseAppeals();
+    }
+  }, [userBarProps.currentCourse]);
 
-  // const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchAppeals, {
-  //   enabled: true,
-  //   refetchInterval: 1000 * 60 * 2, //2 minutes
-  //   refetchOnMount: "always",
-  //   onSuccess: (data) => {
-  //     if (data.data.statusCode === 200) {
-
-  //     } else setFetchError(data.data.data);
-  //   },
-  //   onError: (error: string) => console.log(error),
-  // });
 
   const AppealBox = ({ appeal }: any) => {
     console.log(appeal);

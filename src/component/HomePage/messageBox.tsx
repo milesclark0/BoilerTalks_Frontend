@@ -48,12 +48,10 @@ const MessageBox = ({
       }
     };
     connect(currentRoom);
-    
   }, [currentRoom]);
 
   useEffect(() => {
     //on message received, update the messages
-    
     if (message !== "") {     
       updateMessageFields(message);
       setMessage("");
@@ -109,7 +107,7 @@ const MessageBox = ({
       display={"flex"}
       sx={{
         pl: 2,
-        pr: 2
+        pr: 2,
       }}
     >
       <TextField

@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography, Autocomplete, TextField } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room, Message } from "../../types/types";
@@ -23,7 +33,11 @@ type Props = {
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
+  sendMessage: (
+    message: { username: string; message: string; timeSent: string },
+    room: Room,
+    isSystemMessage: boolean
+  ) => void;
   connectToRoom: (room: Room) => void;
   disconnectFromRoom: (room: Room) => void;
   drawerWidth: number;
@@ -34,15 +48,27 @@ type Props = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const {
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+  } = useSockets();
   const { courseId } = useParams();
-  const { userBarProps, messageBoxProps } = useOutletContext<{ userBarProps: Props; messageBoxProps: Props }>();
+  const { userBarProps, messageBoxProps } = useOutletContext<{
+    userBarProps: Props;
+    messageBoxProps: Props;
+  }>();
   const [banned, setBanned] = useState<boolean>(false);
 
   useEffect(() => {
+    // get banned users
     const fetchBannedUsers = async () => {
       const res = await axiosPrivate.get(getBannedUsersURL + courseId);
-      console.log(res);
+      // console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           if (res.data.data.includes(user)) {
@@ -97,41 +123,64 @@ const RoomDisplay = () => {
   return (
     <Box sx={{ height: "100%" }}>
       {banned && (
-        <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
           <BanDialog />
         </Box>
       )}
       {!banned && (
-        <Box sx={{ p: 4, width: `calc(100% - ${userBarProps.drawerWidth * 2}px)` }}>
-          {messages?.length > 0 ? (
-            <Box>
-              <Typography variant="h4">Messages</Typography>
-              {messages.map((message, index) => (
-                <Box key={index}>
-                  <Typography variant="h6">{`[${message.username}]: `}</Typography>
-                  <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
-                    {message.message}
-                  </Typography>
+        <Box sx={{ height: "100%" }} id="test2">
+          <Box
+            sx={{
+              p: 4,
+              width: `calc(100% - ${userBarProps.drawerWidth * 2}px)`,
+              height: "80%",
+              overflowY: "auto",
+            }}
+            className="scrollBar"
+          >
+            {messages?.length > 0 ? (
+              <Box>
+                <Typography variant="h4">Messages</Typography>
+                <Box sx={{ display: "flex", flexDirection: "column-reverse" }}>
+                  {messages
+                    .slice(0)
+                    .reverse()
+                    .map((message, index) => (
+                      <Box key={index}>
+                        <Typography variant="h6">{`[${message.username}]: `}</Typography>
+                        <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                          {message.message}
+                        </Typography>
+                      </Box>
+                    ))}
                 </Box>
-              ))}
-            </Box>
-          ) : (
-            <Typography variant="h6">No messages yet!</Typography>
-          )}
+              </Box>
+            ) : (
+              <Typography variant="h6">No messages yet!</Typography>
+            )}
+          </Box>
+          {/* <Box id="userbar"> */}
           <UserBar {...userBarProps} />
-          {messageBoxProps.currentRoom && (
-            <Box
-              sx={{
-                height: `${userBarProps.appBarHeight}px`,
-                position: "absolute",
-                bottom: 20,
-                right: `${userBarProps.drawerWidth - userBarProps.innerDrawerWidth + 3 * 8}px`,
-                left: `${userBarProps.drawerWidth}px`,
-              }}
-            >
-              <MessageBox {...messageBoxProps} />
-            </Box>
-          )}
+          {/* </Box> */}
+          <Box
+            sx={{
+              height: `${userBarProps.appBarHeight}px`,
+              position: "absolute",
+              bottom: 20,
+              right: `${userBarProps.drawerWidth - userBarProps.innerDrawerWidth + 3 * 8}px`,
+              left: `${userBarProps.drawerWidth}px`,
+            }}
+          >
+            <MessageBox {...messageBoxProps} />
+          </Box>
         </Box>
       )}
     </Box>

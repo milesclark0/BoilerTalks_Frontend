@@ -413,7 +413,7 @@ const Home = () => {
             </Toolbar>
           </AppBar>
           {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
-          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }}>
+          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }} id="test">
             {/* <Box> */}
             <Outlet context={{ userBarProps, messageBoxProps }} />
             {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}

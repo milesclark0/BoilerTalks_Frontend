@@ -3,9 +3,9 @@ import React from "react";
 import { useAuth } from "../../context/context";
 import { Course } from "../../types/types";
 import ProfilePage from "./../../pages/ProfilePage";
-import { Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 type Props = {
   drawerWidth: number;
   innerDrawerWidth: number;
@@ -47,25 +47,21 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }:
     return users.sort((a, b) => a.username.localeCompare(b.username));
   };
 
-
   const OnlineUser = ({ user }) => {
     return (
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <Avatar src={user.profilePic} />
-        <Link to={`/profile/${user.username}`} style={{ textDecoration: 'none', color: 'black' }}>
-        <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", backgroundColor: "lightgrey" }}}>
-          {user.username}
-        </Typography>
+        <Link to={`/profile/${user.username}`} style={{ textDecoration: "none", color: "black" }}>
+          <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", backgroundColor: "lightgrey" } }}>{user.username}</Typography>
         </Link>
       </Box>
     );
   };
 
-
   return (
-    <Box>
+    // <Box>
       <Drawer sx={OuterDrawerStyles} anchor="right" variant="permanent">
-        <Box sx={{ display: "block", mt: `${appBarHeight}px`, p:1 }}>
+        <Box sx={{ display: "block", mt: `${appBarHeight}px`, p: 1 }}>
           <Typography variant="h5" sx={{ mb: 1 }}>
             Online Users
           </Typography>
@@ -76,7 +72,7 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }:
           ))}
         </Box>
       </Drawer>
-    </Box>
+    // </Box> 
   );
 };
 

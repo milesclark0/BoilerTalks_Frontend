@@ -29,7 +29,7 @@ const AppealsDisplay = () => {
   useEffect(() => {
     const fetchCourseAppeals = async () => {
       const res = await axiosPrivate.get(getCourseAppealsURL + courseId);
-      console.log(res);
+      // console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           setAppeals(res.data.data)

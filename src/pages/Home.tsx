@@ -6,7 +6,17 @@ import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import EmojiPicker, { EmojiStyle, Theme, EmojiClickData, Emoji } from "emoji-picker-react";
 import { getUserCoursesURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography, Autocomplete, TextField } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { Course, Room } from "../types/types";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 // import MessageBox from "./../component/HomePage/messageBox";
@@ -31,7 +41,15 @@ const Home = () => {
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
   const navigate = useNavigate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const {
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+  } = useSockets();
   const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
@@ -62,23 +80,23 @@ const Home = () => {
     return activeCourses;
   };
 
-  useEffect(() => {
-    if (courseId) {
-      const course = getCourseFromUrl();
-      setCurrentCourse(course);
-      //if course iname is in user active courses, set it as the active icon else set as the department name
-      const activeCourses = getActiveCourses();
-      if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
-        setActiveIcon({ course: course?.name, isActiveCourse: true });
-      } else {
-        setActiveIcon({ course: course?.department, isActiveCourse: false });
-      }
-      if (roomId) {
-        const room = getRoomFromUrl();
-        setCurrentRoom(room);
-      }
-    }
-  }, [userCourses]);
+  // useEffect(() => {
+  //   if (courseId) {
+  //     const course = getCourseFromUrl();
+  //     setCurrentCourse(course);
+  //     //if course iname is in user active courses, set it as the active icon else set as the department name
+  //     const activeCourses = getActiveCourses();
+  //     if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+  //       setActiveIcon({ course: course?.name, isActiveCourse: true });
+  //     } else {
+  //       setActiveIcon({ course: course?.department, isActiveCourse: false });
+  //     }
+  //     if (roomId) {
+  //       const room = getRoomFromUrl();
+  //       setCurrentRoom(room);
+  //     }
+  //   }
+  // }, [userCourses]);
 
   useEffect(() => {
     if (activeIcon.isActiveCourse) {
@@ -189,13 +207,13 @@ const Home = () => {
     return currentCourse !== null;
   };
 
-  const isDepartmentSelected = () => {
-    return activeIcon.course !== "" && !activeIcon.isActiveCourse;
-  };
+  // const isDepartmentSelected = () => {
+  //   return activeIcon.course !== "" && !activeIcon.isActiveCourse;
+  // };
 
-  const isRoomSelected = () => {
-    return currentRoom !== null;
-  };
+  // const isRoomSelected = () => {
+  //   return currentRoom !== null;
+  // };
 
   // returns the most recent semester for a given course
   const getMostRecentSemester = (courses: Course[]) => {
@@ -238,6 +256,31 @@ const Home = () => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
+  };
+
+  const roomProps = {
+    activeIcon,
+    setActiveIcon,
+    drawerWidth,
+    innerDrawerWidth,
+    appBarHeight,
+    currentCourse,
+    distinctCoursesByDepartment,
+    setDistinctCoursesByDepartment,
+    setUserCourses,
+    userCourses,
+    setCurrentCourse,
+    distinctDepartments,
+    setDistinctDepartments,
+    currentRoom,
+    setCurrentRoom,
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
   };
 
   const userBarProps = {
@@ -287,14 +330,20 @@ const Home = () => {
           value={currentSemester || getMostRecentSemester(userCourses)}
           onChange={(e) => {
             setCurrentSemester(e.target.value as string);
-            const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+            const course = userCourses.find(
+              (course) => course.name === currentCourse.name && course.semester === e.target.value
+            );
             if (course) {
               setCurrentCourse(course);
               setCurrentRoom(course.rooms[0]);
             }
           }}
           // removes border from box
-          sx={{ boxShadow: "none", ".MuiOutlinedInput-notchedOutline": { border: 0 }, color: "white" }}
+          sx={{
+            boxShadow: "none",
+            ".MuiOutlinedInput-notchedOutline": { border: 0 },
+            color: "white",
+          }}
         >
           <MenuItem disabled value="">
             Select Semester
@@ -339,7 +388,15 @@ const Home = () => {
           }
         }}
         sx={{ width: drawerWidth - innerDrawerWidth }}
-        renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
+        renderInput={(params) => (
+          <TextField
+            onKeyDown={(e) => handleEnter(e)}
+            {...params}
+            variant="outlined"
+            color="info"
+            label="Search users..."
+          />
+        )}
       />
     );
   };
@@ -360,7 +417,9 @@ const Home = () => {
         </div>
         <div className="show-emoji">
           Your selected Emoji is:
-          {selectedEmojis ? <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} /> : null}
+          {selectedEmojis ? (
+            <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} />
+          ) : null}
         </div>
       </div>
     );
@@ -393,7 +452,10 @@ const Home = () => {
                     activeIcon.course ||
                     "Select a course or Department"} */}
                   {currentCourse?.name
-                    ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}`
+                    ? `${currentCourse?.name}: ${currentRoom?.name.replace(
+                        currentCourse?.name,
+                        ""
+                      )}`
                     : activeIcon.course || "Select a Department"}
                 </Typography>
                 <Button
@@ -415,7 +477,7 @@ const Home = () => {
           {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
           <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }} id="test">
             {/* <Box> */}
-            <Outlet context={{ userBarProps, messageBoxProps }} />
+            <Outlet context={{ roomProps }} />
             {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
               {isCourseSelected() ? (
                 messages.length > 0 ? (

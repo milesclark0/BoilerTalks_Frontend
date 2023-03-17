@@ -23,6 +23,8 @@ import BanDialog from "../SideBar/CourseView/BanDialog";
 import WarningDialog from "../SideBar/CourseView/WarningDialog";
 
 type Props = {
+  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
+  activeIcon: { course: string; isActiveCourse: boolean };
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
   userCourses: Course[];
@@ -43,6 +45,10 @@ type Props = {
   drawerWidth: number;
   innerDrawerWidth: number;
   appBarHeight: number;
+  distinctCoursesByDepartment: Course[];
+  setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
+  distinctDepartments: string[];
+  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const RoomDisplay = () => {
@@ -57,12 +63,12 @@ const RoomDisplay = () => {
     connectToRoom,
     disconnectFromRoom,
   } = useSockets();
-  const { courseId } = useParams();
-  const { userBarProps, messageBoxProps } = useOutletContext<{
-    userBarProps: Props;
-    messageBoxProps: Props;
+  const { courseId, roomId } = useParams();
+  const { roomProps } = useOutletContext<{
+    roomProps: Props;
   }>();
   const [banned, setBanned] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // get banned users
@@ -79,31 +85,110 @@ const RoomDisplay = () => {
         }
       }
     };
-    if (messageBoxProps.currentCourse) {
+    if (roomProps.currentCourse) {
       fetchBannedUsers();
     }
-  }, [messageBoxProps.currentCourse]);
+  }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
   useEffect(() => {
-    if (messageBoxProps.currentCourse) {
-      assignMessages(messageBoxProps.currentCourse.rooms[0]);
+    if (roomProps.currentCourse) {
+      assignMessages(roomProps.currentCourse.rooms[0]);
     }
-  }, [messageBoxProps.currentCourse]);
+  }, [roomProps.currentCourse]);
 
   // when the current room changes, we want to update the messages
   useEffect(() => {
-    if (messageBoxProps.currentRoom) {
-      assignMessages(messageBoxProps.currentRoom);
+    if (roomProps.currentRoom) {
+      assignMessages(roomProps.currentRoom);
     }
-  }, [messageBoxProps.currentRoom]);
+  }, [roomProps.currentRoom]);
+
+  const getCourseFromUrl = () => {
+    const course = roomProps.userCourses?.find((course) => course._id.$oid === courseId);
+    return course;
+  };
+
+  const getRoomFromUrl = () => {
+    const course = getCourseFromUrl();
+    const room = course?.rooms.find((room) => room._id.$oid === roomId);
+    return room;
+  };
+
+  const getActiveCourses = () => {
+    const activeCourses = [];
+    user?.activeCourses.forEach((course) => {
+      roomProps.userCourses.forEach((userCourse) => {
+        if (course === userCourse.name) {
+          activeCourses.push(userCourse);
+        }
+      });
+    });
+    return activeCourses;
+  };
+
+  const getDistinctCoursesByDepartment = (department: string) => {
+    const courses = roomProps.userCourses?.filter(
+      (course) => course.name.split(" ")[0] === department
+    );
+    //distinct named courses
+    const distinctCourses = new Map<string, Course>();
+    courses?.forEach((course) => {
+      if (!distinctCourses.has(course.name)) distinctCourses.set(course.name, course);
+    });
+    return [...distinctCourses.values()];
+  };
+
+  useEffect(() => {
+    if (roomProps.activeIcon.isActiveCourse) {
+      roomProps.userCourses.forEach((course) => {
+        if (course.name === roomProps.activeIcon.course) {
+          roomProps.setCurrentCourse(course);
+          roomProps.setCurrentRoom(course?.rooms[0]);
+          //navigate to home/courses/courseId
+          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          navigate(
+            `/home/courses/${course._id.$oid}/${course?.rooms[0].name
+              .replace(course?.name, "")
+              .replace(/\s/g, "")}`,
+            { replace: true }
+          );
+        }
+      });
+    } else {
+      //will always trigger on page load when activeIcon is {course: "", isActiveCourse: false}
+      roomProps.setDistinctCoursesByDepartment(
+        getDistinctCoursesByDepartment(roomProps.activeIcon.course)
+      );
+      roomProps.setCurrentCourse(getCourseFromUrl() || null);
+      roomProps.setCurrentRoom(getRoomFromUrl() || null);
+    }
+  }, [roomProps.activeIcon]);
+
+  useEffect(() => {
+    if (courseId) {
+      const course = getCourseFromUrl();
+      roomProps.setCurrentCourse(course);
+      //if course iname is in user active courses, set it as the active icon else set as the department name
+      const activeCourses = getActiveCourses();
+      if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+        roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
+      } else {
+        roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
+      }
+      if (roomId) {
+        const room = getRoomFromUrl();
+        roomProps.setCurrentRoom(room);
+      }
+    }
+  }, [roomProps.userCourses]);
 
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
-    messageBoxProps.userCourses?.forEach((course) => {
+    roomProps.userCourses?.forEach((course) => {
       course.rooms.forEach((room) => {
-        if (room.name === messageBoxProps.currentRoom?.name) {
+        if (room.name === roomProps.currentRoom?.name) {
           foundRoom = room;
         }
       });
@@ -140,46 +225,43 @@ const RoomDisplay = () => {
           <Box
             sx={{
               p: 4,
-              width: `calc(100% - ${userBarProps.drawerWidth * 2}px)`,
-              height: "80%",
+              width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
+              maxHeight: "80%",
               overflowY: "auto",
+              display: "flex",
+              flexDirection: "column-reverse",
             }}
             className="scrollBar"
           >
             {messages?.length > 0 ? (
               <Box>
                 <Typography variant="h4">Messages</Typography>
-                <Box sx={{ display: "flex", flexDirection: "column-reverse" }}>
-                  {messages
-                    .slice(0)
-                    .reverse()
-                    .map((message, index) => (
-                      <Box key={index}>
-                        <Typography variant="h6">{`[${message.username}]: `}</Typography>
-                        <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
-                          {message.message}
-                        </Typography>
-                      </Box>
-                    ))}
+                <Box>
+                  {messages.map((message, index) => (
+                    <Box key={index}>
+                      <Typography variant="h6">{`[${message.username}]: `}</Typography>
+                      <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                        {message.message}
+                      </Typography>
+                    </Box>
+                  ))}
                 </Box>
               </Box>
             ) : (
               <Typography variant="h6">No messages yet!</Typography>
             )}
           </Box>
-          {/* <Box id="userbar"> */}
-          <UserBar {...userBarProps} />
-          {/* </Box> */}
+          <UserBar {...roomProps} />
           <Box
             sx={{
-              height: `${userBarProps.appBarHeight}px`,
+              height: `${roomProps.appBarHeight}px`,
               position: "absolute",
               bottom: 20,
-              right: `${userBarProps.drawerWidth - userBarProps.innerDrawerWidth + 3 * 8}px`,
-              left: `${userBarProps.drawerWidth}px`,
+              right: `${roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8}px`,
+              left: `${roomProps.drawerWidth}px`,
             }}
           >
-            <MessageBox {...messageBoxProps} />
+            <MessageBox {...roomProps} />
           </Box>
         </Box>
       )}

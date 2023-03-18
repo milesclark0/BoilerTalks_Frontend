@@ -40,6 +40,7 @@ const Home = () => {
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
+  const [activeCourseThread, setActiveCourseThread] = useState<string>("");
   const navigate = useNavigate();
   const {
     message,
@@ -260,6 +261,7 @@ const Home = () => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
+    setActiveCourseThread
   };
 
   const roomProps = {
@@ -456,11 +458,14 @@ const Home = () => {
                   {/* {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
                     activeIcon.course ||
                     "Select a course or Department"} */}
-                  {currentCourse?.name
+                  {/* {currentCourse?.name
                     ? `${currentCourse?.name}: ${currentRoom?.name.replace(
                         currentCourse?.name,
                         ""
                       )}`
+                    : activeIcon.course || "Select a Department"} */}
+                  {currentCourse?.name
+                    ? `${currentCourse?.name}: ${activeCourseThread}`
                     : activeIcon.course || "Select a Department"}
                 </Typography>
                 <Button

@@ -32,6 +32,7 @@ type Props = {
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
@@ -165,6 +166,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
+                        props.setActiveCourseThread(room?.name.replace(course?.name, ""))
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
@@ -187,6 +189,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             to={`/home/courses/${course._id.$oid}/Q&A`}
             onClick={() => {
               props.setCurrentCourse(course);
+              props.setActiveCourseThread("Q&A");
             }}
           >
             <ListItem>
@@ -207,6 +210,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               to={`/home/courses/${course._id.$oid}/Appeals`}
               onClick={() => {
                 props.setCurrentCourse(course);
+                props.setActiveCourseThread("Appeals")
               }}
             >
               <ListItem>

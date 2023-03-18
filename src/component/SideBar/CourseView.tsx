@@ -20,11 +20,12 @@ type Props = {
   distinctDepartments: string[];
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const CourseView = ({ ...props }: Props) => {
   // if no course is selected, show boilertalks home
-  const { activeIcon, currentCourse, distinctCoursesByDepartment } = props;
+  const { activeIcon, currentCourse, distinctCoursesByDepartment, setActiveCourseThread } = props;
 
   const CourseNavigationProps = {
     ...props,

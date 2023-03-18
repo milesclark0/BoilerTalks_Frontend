@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
 import {
-  AppBar,
   Box,
-  Button,
-  MenuItem,
-  Select,
-  Toolbar,
   Typography,
-  Autocomplete,
-  TextField,
 } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -18,7 +10,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
-import { getBannedUsersURL } from "../../API/CoursesAPI";
+import { getCourseManagementURL } from "../../API/CoursesAPI";
 import BanDialog from "../SideBar/CourseView/BanDialog";
 import WarningDialog from "../SideBar/CourseView/WarningDialog";
 
@@ -74,7 +66,7 @@ const RoomDisplay = () => {
   // get banned users
   useEffect(() => {
     const fetchBannedUsers = async () => {
-      const res = await axiosPrivate.get(getBannedUsersURL + courseId);
+      const res = await axiosPrivate.get(getCourseManagementURL + courseId);
       // console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
@@ -85,6 +77,7 @@ const RoomDisplay = () => {
           setBanned(false);
         }
       }
+      // setBanned(true)
     };
     if (roomProps.currentCourse) {
       fetchBannedUsers();
@@ -173,24 +166,6 @@ const RoomDisplay = () => {
     // }
   }, [roomProps.userCourses]);
 
-  const isCourseSelected = () => {
-    return roomProps.currentCourse !== null;
-  };
-
-  // useEffect(() => {
-  //   console.log(roomProps.activeIcon);
-  //   const fetchCourseUsers = async () => {
-  //     if (roomProps.activeIcon.course === "") return;
-  //     const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
-  //     if (res.data.statusCode == 200) {
-  //       roomProps.setCourseUsers(res.data.data);
-  //     }
-  //   };
-  //   if (isCourseSelected()) {
-  //     fetchCourseUsers();
-  //   }
-  // }, [roomProps.activeIcon]);
-
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
@@ -225,7 +200,8 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          <BanDialog />
+          {/* <WarningDialog /> */}
+          <BanDialog/>
         </Box>
       )}
       {!banned && (
@@ -233,7 +209,7 @@ const RoomDisplay = () => {
           <Box
             sx={{
               p: roomProps.defaultPadding,
-              width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
+              width: `calc(100% - ${roomProps.drawerWidth*2}px)`,
               maxHeight: "80%",
               overflowY: "auto",
               display: "flex",

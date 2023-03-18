@@ -102,6 +102,7 @@ const Home = () => {
   useEffect(() => {
     console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
+      // TODO: i dont think this will ever reach either
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
@@ -133,7 +134,7 @@ const Home = () => {
   //   }
   // }, [currentRoom]);
 
-  // i dont think this does anything for now
+  // TODO: i dont think this does anything for now
   // useEffect(() => {
   //   const fetchCourseUsers = async () => {
   //     if (activeIcon.course === "") return;

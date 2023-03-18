@@ -12,11 +12,13 @@ type Props = {
 };
 
 const QADisplay = () => {
-  const { userBarProps, messageBoxProps } = useOutletContext<{ userBarProps: Props; messageBoxProps: Props }>();
+  const { roomProps } = useOutletContext<{
+    roomProps: Props;
+  }>();
   return (
-    <Box>
+    <Box sx={{ height: "100%" }}>
       <Typography variant="h1">Q&A</Typography>
-      <UserBar {...userBarProps} />
+      <UserBar {...roomProps} />
     </Box>
   );
 };

@@ -68,23 +68,24 @@ const Home = () => {
     return room;
   };
 
-  const getActiveCourses = () => {
-    const activeCourses = [];
-    user?.activeCourses.forEach((course) => {
-      userCourses.forEach((userCourse) => {
-        if (course === userCourse.name) {
-          activeCourses.push(userCourse);
-        }
-      });
-    });
-    return activeCourses;
-  };
+  // const getActiveCourses = () => {
+  //   const activeCourses = [];
+  //   user?.activeCourses.forEach((course) => {
+  //     userCourses.forEach((userCourse) => {
+  //       if (course === userCourse.name) {
+  //         activeCourses.push(userCourse);
+  //       }
+  //     });
+  //   });
+  //   return activeCourses;
+  // };
 
   // useEffect(() => {
+  //   console.log(courseId, roomId)
   //   if (courseId) {
   //     const course = getCourseFromUrl();
   //     setCurrentCourse(course);
-  //     //if course iname is in user active courses, set it as the active icon else set as the department name
+  //     //if course name is in user active courses, set it as the active icon else set as the department name
   //     const activeCourses = getActiveCourses();
   //     if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
   //       setActiveIcon({ course: course?.name, isActiveCourse: true });
@@ -99,14 +100,15 @@ const Home = () => {
   // }, [userCourses]);
 
   useEffect(() => {
+    console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
           //navigate to home/courses/courseId
-          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
+          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
         }
       });
     } else {
@@ -131,18 +133,19 @@ const Home = () => {
   //   }
   // }, [currentRoom]);
 
-  useEffect(() => {
-    const fetchCourseUsers = async () => {
-      if (activeIcon.course === "") return;
-      const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
-      if (res.data.statusCode == 200) {
-        setCourseUsers(res.data.data);
-      }
-    };
-    if (isCourseSelected()) {
-      fetchCourseUsers();
-    }
-  }, [activeIcon]);
+  // i dont think this does anything for now
+  // useEffect(() => {
+  //   const fetchCourseUsers = async () => {
+  //     if (activeIcon.course === "") return;
+  //     const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+  //     if (res.data.statusCode == 200) {
+  //       setCourseUsers(res.data.data);
+  //     }
+  //   };
+  //   if (isCourseSelected()) {
+  //     fetchCourseUsers();
+  //   }
+  // }, [activeIcon]);
 
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
@@ -207,13 +210,13 @@ const Home = () => {
     return currentCourse !== null;
   };
 
-  // const isDepartmentSelected = () => {
-  //   return activeIcon.course !== "" && !activeIcon.isActiveCourse;
-  // };
+  const isDepartmentSelected = () => {
+    return activeIcon.course !== "" && !activeIcon.isActiveCourse;
+  };
 
-  // const isRoomSelected = () => {
-  //   return currentRoom !== null;
-  // };
+  const isRoomSelected = () => {
+    return currentRoom !== null;
+  };
 
   // returns the most recent semester for a given course
   const getMostRecentSemester = (courses: Course[]) => {
@@ -264,6 +267,7 @@ const Home = () => {
     drawerWidth,
     innerDrawerWidth,
     appBarHeight,
+    defaultPadding,
     currentCourse,
     distinctCoursesByDepartment,
     setDistinctCoursesByDepartment,
@@ -283,12 +287,12 @@ const Home = () => {
     disconnectFromRoom,
   };
 
-  const userBarProps = {
-    innerDrawerWidth,
-    drawerWidth,
-    appBarHeight,
-    currentCourse,
-  };
+  // const userBarProps = {
+  //   innerDrawerWidth,
+  //   drawerWidth,
+  //   appBarHeight,
+  //   currentCourse,
+  // };
 
   const searchCourseProps = {
     user,
@@ -302,23 +306,23 @@ const Home = () => {
     setDistinctDepartments,
   };
 
-  const messageBoxProps = {
-    currentCourse,
-    setCurrentCourse,
-    userCourses,
-    setUserCourses,
-    currentRoom,
-    setCurrentRoom,
-    activeIcon,
-    setActiveIcon,
-    message,
-    setMessage,
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
-  };
+  // const messageBoxProps = {
+  //   currentCourse,
+  //   setCurrentCourse,
+  //   userCourses,
+  //   setUserCourses,
+  //   currentRoom,
+  //   setCurrentRoom,
+  //   activeIcon,
+  //   setActiveIcon,
+  //   message,
+  //   setMessage,
+  //   messages,
+  //   setMessages,
+  //   sendMessage,
+  //   connectToRoom,
+  //   disconnectFromRoom,
+  // };
 
   // can try and move this into a different file to clean up this file
   const SemesterSelector = () => {

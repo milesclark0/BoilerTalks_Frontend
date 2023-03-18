@@ -45,6 +45,7 @@ type Props = {
   drawerWidth: number;
   innerDrawerWidth: number;
   appBarHeight: number;
+  defaultPadding: number;
   distinctCoursesByDepartment: Course[];
   setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
   distinctDepartments: string[];
@@ -70,8 +71,8 @@ const RoomDisplay = () => {
   const [banned, setBanned] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  // get banned users
   useEffect(() => {
-    // get banned users
     const fetchBannedUsers = async () => {
       const res = await axiosPrivate.get(getBannedUsersURL + courseId);
       // console.log(res);
@@ -127,61 +128,68 @@ const RoomDisplay = () => {
     return activeCourses;
   };
 
-  const getDistinctCoursesByDepartment = (department: string) => {
-    const courses = roomProps.userCourses?.filter(
-      (course) => course.name.split(" ")[0] === department
-    );
-    //distinct named courses
-    const distinctCourses = new Map<string, Course>();
-    courses?.forEach((course) => {
-      if (!distinctCourses.has(course.name)) distinctCourses.set(course.name, course);
-    });
-    return [...distinctCourses.values()];
-  };
+  // useEffect(() => {
+  //   if (roomProps.activeIcon.isActiveCourse) {
+  //     roomProps.userCourses.forEach((course) => {
+  //       if (course.name === roomProps.activeIcon.course) {
+  //         roomProps.setCurrentCourse(course);
+  //         roomProps.setCurrentRoom(course?.rooms[0]);
+  //         //navigate to home/courses/courseId
+  //         // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+  //         navigate(
+  //           `/home/courses/${course._id.$oid}/${course?.rooms[0].name
+  //             .replace(course?.name, "")
+  //             .replace(/\s/g, "")}`,
+  //           { replace: true }
+  //         );
+  //       }
+  //     });
+  //   } else {
+  //     //will always trigger on page load when activeIcon is {course: "", isActiveCourse: false}
+  //     roomProps.setDistinctCoursesByDepartment(
+  //       getDistinctCoursesByDepartment(roomProps.activeIcon.course)
+  //     );
+  //     roomProps.setCurrentCourse(getCourseFromUrl() || null);
+  //     roomProps.setCurrentRoom(getRoomFromUrl() || null);
+  //   }
+  // }, [roomProps.activeIcon]);
 
   useEffect(() => {
-    if (roomProps.activeIcon.isActiveCourse) {
-      roomProps.userCourses.forEach((course) => {
-        if (course.name === roomProps.activeIcon.course) {
-          roomProps.setCurrentCourse(course);
-          roomProps.setCurrentRoom(course?.rooms[0]);
-          //navigate to home/courses/courseId
-          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-          navigate(
-            `/home/courses/${course._id.$oid}/${course?.rooms[0].name
-              .replace(course?.name, "")
-              .replace(/\s/g, "")}`,
-            { replace: true }
-          );
-        }
-      });
-    } else {
-      //will always trigger on page load when activeIcon is {course: "", isActiveCourse: false}
-      roomProps.setDistinctCoursesByDepartment(
-        getDistinctCoursesByDepartment(roomProps.activeIcon.course)
-      );
-      roomProps.setCurrentCourse(getCourseFromUrl() || null);
-      roomProps.setCurrentRoom(getRoomFromUrl() || null);
-    }
-  }, [roomProps.activeIcon]);
-
-  useEffect(() => {
-    if (courseId) {
+    // if (courseId) {
+      console.log(courseId, roomId)
       const course = getCourseFromUrl();
       roomProps.setCurrentCourse(course);
-      //if course iname is in user active courses, set it as the active icon else set as the department name
+      //if course name is in user active courses, set it as the active icon else set as the department name
       const activeCourses = getActiveCourses();
       if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
         roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
       } else {
         roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
       }
-      if (roomId) {
+      // if (roomId) {
         const room = getRoomFromUrl();
         roomProps.setCurrentRoom(room);
-      }
-    }
+      // }
+    // }
   }, [roomProps.userCourses]);
+
+  const isCourseSelected = () => {
+    return roomProps.currentCourse !== null;
+  };
+
+  // useEffect(() => {
+  //   console.log(roomProps.activeIcon);
+  //   const fetchCourseUsers = async () => {
+  //     if (roomProps.activeIcon.course === "") return;
+  //     const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+  //     if (res.data.statusCode == 200) {
+  //       roomProps.setCourseUsers(res.data.data);
+  //     }
+  //   };
+  //   if (isCourseSelected()) {
+  //     fetchCourseUsers();
+  //   }
+  // }, [roomProps.activeIcon]);
 
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
@@ -224,7 +232,7 @@ const RoomDisplay = () => {
         <Box sx={{ height: "100%" }} id="test2">
           <Box
             sx={{
-              p: 4,
+              p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
               maxHeight: "80%",
               overflowY: "auto",

@@ -86,12 +86,12 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const handleClickCourse = () => {
     props.setCurrentCourse(course);
     props.setCurrentRoom(course?.rooms[0]);
-    // navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-    navigate(
-      `/home/courses/${course?._id.$oid}/${course?.rooms[0].name
-        .replace(course?.name, "")
-        .replace(/\s/g, "")}`
-    );
+    navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+    // navigate(
+    //   `/home/courses/${course?._id.$oid}/${course?.rooms[0].name
+    //     .replace(course?.name, "")
+    //     .replace(/\s/g, "")}`
+    // );
   };
 
   const buttonStyle = () => {
@@ -157,9 +157,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       ...roomButtonStyle(room),
                     }}
                     component={NavLink}
-                    to={`/home/courses/${course._id.$oid}/${room?.name
-                      .replace(course?.name, "")
-                      .replace(/\s/g, "")}`}
+                    // to={`/home/courses/${course._id.$oid}/${room?.name
+                    //   .replace(course?.name, "")
+                    //   .replace(/\s/g, "")}`}
+                    to={`/home/courses/${course._id.$oid}/${room._id.$oid}`}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
@@ -183,7 +184,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               ...otherButtonStyle(),
             }}
             component={NavLink}
-            to={`courses/${course._id.$oid}/Q&A`}
+            to={`/home/courses/${course._id.$oid}/Q&A`}
             onClick={() => {
               props.setCurrentCourse(course);
             }}

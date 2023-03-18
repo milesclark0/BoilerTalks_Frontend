@@ -7,7 +7,7 @@ import { PinIcon } from "./CourseNavigation/PinIcon";
 import RulesModal from "./CourseNavigation/RulesModal";
 import { StyledDivider } from "../StyledDivider";
 import { width } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../context/context";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { getProfileURL } from "../../../API/ProfileAPI";
@@ -33,6 +33,7 @@ type Props = {
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  activeCourseThread: string;
 };
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
@@ -103,9 +104,21 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
-  const roomButtonStyle = (room: Room) => {
-    const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
-    const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
+  // const roomButtonStyle = (room: Room) => {
+  //   const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
+  //   const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
+  //   return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+  // };
+
+  const threadButtonStyle = (courseName: string, threadName: string) => {
+    const backgroundColor =
+      props.activeCourseThread === threadName && props.currentCourse?.name === courseName
+        ? "lightblue"
+        : "white";
+    const hoverColor =
+      props.activeCourseThread === threadName && props.currentCourse?.name === courseName
+        ? "lightblue"
+        : "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
@@ -155,7 +168,8 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   <Button
                     sx={{
                       width: "100%",
-                      ...roomButtonStyle(room),
+                      // ...roomButtonStyle(room),
+                      ...threadButtonStyle(course?.name, room?.name.replace(course?.name, "")),
                     }}
                     component={NavLink}
                     // to={`/home/courses/${course._id.$oid}/${room?.name
@@ -166,7 +180,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
-                        props.setActiveCourseThread(room?.name.replace(course?.name, ""))
+                        props.setActiveCourseThread(room?.name.replace(course?.name, ""));
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
@@ -183,7 +197,8 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           <Button
             sx={{
               width: "100%",
-              ...otherButtonStyle(),
+              // ...otherButtonStyle(),
+              ...threadButtonStyle(course?.name, "Q&A"),
             }}
             component={NavLink}
             to={`/home/courses/${course._id.$oid}/Q&A`}
@@ -205,12 +220,16 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               </ListItem> */}
           {profileInfo?.modThreads?.includes(course.name) && (
             <Button
-              sx={{ ...otherButtonStyle(), width: "100%" }}
+              sx={{
+                // ...otherButtonStyle(),
+                ...threadButtonStyle(course?.name, "Appeals"),
+                width: "100%",
+              }}
               component={NavLink}
               to={`/home/courses/${course._id.$oid}/Appeals`}
               onClick={() => {
                 props.setCurrentCourse(course);
-                props.setActiveCourseThread("Appeals")
+                props.setActiveCourseThread("Appeals");
               }}
             >
               <ListItem>

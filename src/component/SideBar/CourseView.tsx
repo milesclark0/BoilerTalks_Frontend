@@ -21,6 +21,7 @@ type Props = {
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  activeCourseThread: string;
 };
 
 export const CourseView = ({ ...props }: Props) => {

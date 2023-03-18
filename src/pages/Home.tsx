@@ -261,7 +261,8 @@ const Home = () => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
-    setActiveCourseThread
+    setActiveCourseThread,
+    activeCourseThread,
   };
 
   const roomProps = {

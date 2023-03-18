@@ -25,7 +25,7 @@ type Props = {
 
 export const CourseView = ({ ...props }: Props) => {
   // if no course is selected, show boilertalks home
-  const { activeIcon, currentCourse, distinctCoursesByDepartment, setActiveCourseThread } = props;
+  const { activeIcon, currentCourse, distinctCoursesByDepartment } = props;
 
   const CourseNavigationProps = {
     ...props,

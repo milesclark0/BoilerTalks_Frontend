@@ -103,7 +103,7 @@ const Home = () => {
   useEffect(() => {
     console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
-      // TODO: i dont think this will ever reach either
+      // TODO: i dont think this will ever reach
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
@@ -118,6 +118,8 @@ const Home = () => {
       setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
       setCurrentCourse(getCourseFromUrl() || null);
       setCurrentRoom(getRoomFromUrl() || null);
+      // console.log(getRoomFromUrl()?.name)
+      setActiveCourseThread(getRoomFromUrl()?.name.replace(getCourseFromUrl()?.name, ""));
     }
   }, [activeIcon]);
 

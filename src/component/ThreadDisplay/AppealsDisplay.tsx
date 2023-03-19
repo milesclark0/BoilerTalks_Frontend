@@ -76,6 +76,7 @@ const AppealsDisplay = () => {
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Box
+          key={appeal.user}
           sx={{
             width: "100%",
             minHeight: 250,

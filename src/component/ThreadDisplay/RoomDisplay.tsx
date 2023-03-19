@@ -178,7 +178,7 @@ const RoomDisplay = () => {
         </Box>
       )}
       {!banned && !warned && (
-        <Box sx={{ height: "100%" }} id="test2">
+        <Box sx={{ height: "100%" }}>
           <Box
             sx={{
               p: roomProps.defaultPadding,
@@ -189,6 +189,7 @@ const RoomDisplay = () => {
               flexDirection: "column-reverse",
             }}
             className="scrollBar"
+            id="messages"
           >
             {messages?.length > 0 ? (
               <Box>
@@ -201,7 +202,7 @@ const RoomDisplay = () => {
                         sx={{ display: "flex", flexDirection: "row", width: "100%" }}
                       >
                         <Box>
-                          <UserMenu username={message.username} />
+                          <UserMenu username={message.username} course={roomProps.currentCourse}/>
                         </Box>
                         <Box sx={{ overflow: "hidden" }}>
                           <Typography

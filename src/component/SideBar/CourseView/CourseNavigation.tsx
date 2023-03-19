@@ -40,10 +40,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesText, setRulesText] = useState(""); //import backend rules text
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [fetchError, setFetchError] = useState("");
-  const [profileInfo, setProfileInfo] = useState<Profile>(null);
+  // const [profileInfo, setProfileInfo] = useState<Profile>(null);
 
   const MoreIconProps = {
     setUserCourses: props.setUserCourses,
@@ -125,23 +125,22 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
-  //change this to use axiosprivate
-  const fetchProfile = async () => {
-    return await axiosPrivate.get(getProfileURL + user?.username);
-  };
+  // const fetchProfile = async () => {
+  //   return await axiosPrivate.get(getProfileURL + user?.username);
+  // };
 
-  const { isLoading, error, data } = useQuery("profile", fetchProfile, {
-    enabled: true,
-    staleTime: 1000 * 60, //1 minute
-    refetchOnMount: "always",
-    onSuccess: (data) => {
-      if (data.data.statusCode === 200) {
-        setProfileInfo(data.data.data[0]);
-        // console.log(data.data.data);
-      } else setFetchError(data.data.message);
-    },
-    onError: (error: string) => console.log(error),
-  });
+  // const { isLoading, error, data } = useQuery("profile", fetchProfile, {
+  //   enabled: true,
+  //   staleTime: 1000 * 60, //1 minute
+  //   refetchOnMount: "always",
+  //   onSuccess: (data) => {
+  //     if (data.data.statusCode === 200) {
+  //       setProfileInfo(data.data.data[0]);
+  //       // console.log(data.data.data);
+  //     } else setFetchError(data.data.message);
+  //   },
+  //   onError: (error: string) => console.log(error),
+  // });
 
   return (
     <List>
@@ -175,7 +174,9 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
                         props.setActiveCourseThread(room?.name.replace(course?.name, ""));
-                        // console.log(room?.name.replace(course?.name, ""));
+                        // scrolls to bottom every time
+                        const element = document.getElementById("messages");
+                        element.scrollTop = element.scrollHeight;
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
@@ -213,7 +214,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   Mod Chat
                 </Typography>
               </ListItem> */}
-          {profileInfo?.modThreads?.includes(course.name) && (
+          {profile?.modThreads?.includes(course.name) && (
             <Button
               sx={{
                 // ...otherButtonStyle(),
@@ -241,7 +242,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          {profileInfo?.modThreads?.includes(course.name) && (
+          {profile?.modThreads?.includes(course.name) && (
             <Button variant="outlined" onClick={handleClickNewThread}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>

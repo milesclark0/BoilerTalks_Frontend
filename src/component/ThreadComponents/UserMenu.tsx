@@ -1,19 +1,22 @@
-import { Menu, MenuItem, IconButton, Avatar } from "@mui/material";
+import { Menu, MenuItem, IconButton, Avatar, Box } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/context";
 import { StyledDivider } from "../SideBar/StyledDivider";
+import { Course } from "../../types/types";
 
 type Props = {
   //   anchorEl: HTMLElement | null;
   //   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
   username: string;
+  course: Course | null;
 };
 
-const UserMenu = ({ username }: Props) => {
+const UserMenu = ({ username, course }: Props) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openUserMenu = Boolean(anchorEl);
+  const { profile } = useAuth();
 
   const handleUserMenuClose = () => {
     setAnchorEl(null);
@@ -50,9 +53,13 @@ const UserMenu = ({ username }: Props) => {
         <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
           Profile
         </MenuItem>
-        <StyledDivider />
-        <MenuItem>Warn</MenuItem>
-        <MenuItem>Ban</MenuItem>
+        {profile?.modThreads.includes(course?.name) && profile.username !== username && (
+          <Box>
+            <StyledDivider />
+            <MenuItem>Warn</MenuItem>
+            <MenuItem>Ban</MenuItem>
+          </Box>
+        )}
       </Menu>
     </React.Fragment>
   );

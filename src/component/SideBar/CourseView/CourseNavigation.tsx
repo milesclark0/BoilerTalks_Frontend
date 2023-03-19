@@ -88,12 +88,8 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const handleClickCourse = () => {
     props.setCurrentCourse(course);
     props.setCurrentRoom(course?.rooms[0]);
+    props.setActiveCourseThread(course?.rooms[0].name.replace(course?.name, ""));
     navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-    // navigate(
-    //   `/home/courses/${course?._id.$oid}/${course?.rooms[0].name
-    //     .replace(course?.name, "")
-    //     .replace(/\s/g, "")}`
-    // );
   };
 
   const buttonStyle = () => {
@@ -110,13 +106,14 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   //   return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   // };
 
-  const threadButtonStyle = (courseName: string, threadName: string) => {
+  const threadButtonStyle = (threadName: string) => {
+    // console.log("props: " + props.activeCourseThread + "\nthreadName: " + threadName);
     const backgroundColor =
-      props.activeCourseThread === threadName && props.currentCourse?.name === courseName
+      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
         ? "lightblue"
         : "white";
     const hoverColor =
-      props.activeCourseThread === threadName && props.currentCourse?.name === courseName
+      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
         ? "lightblue"
         : "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
@@ -169,18 +166,16 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                     sx={{
                       width: "100%",
                       // ...roomButtonStyle(room),
-                      ...threadButtonStyle(course?.name, room?.name.replace(course?.name, "")),
+                      ...threadButtonStyle(room?.name.replace(course?.name, "")),
                     }}
                     component={NavLink}
-                    // to={`/home/courses/${course._id.$oid}/${room?.name
-                    //   .replace(course?.name, "")
-                    //   .replace(/\s/g, "")}`}
                     to={`/home/courses/${course._id.$oid}/${room._id.$oid}`}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
                         props.setActiveCourseThread(room?.name.replace(course?.name, ""));
+                        // console.log(room?.name.replace(course?.name, ""));
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
@@ -198,7 +193,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             sx={{
               width: "100%",
               // ...otherButtonStyle(),
-              ...threadButtonStyle(course?.name, "Q&A"),
+              ...threadButtonStyle("Q&A"),
             }}
             component={NavLink}
             to={`/home/courses/${course._id.$oid}/Q&A`}
@@ -222,7 +217,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             <Button
               sx={{
                 // ...otherButtonStyle(),
-                ...threadButtonStyle(course?.name, "Appeals"),
+                ...threadButtonStyle("Appeals"),
                 width: "100%",
               }}
               component={NavLink}

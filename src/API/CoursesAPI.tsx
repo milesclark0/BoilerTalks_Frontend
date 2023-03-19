@@ -1,7 +1,6 @@
 // since courses grabs private data, we need to use private axios, which can only be used in a hook
 // thus only the urls are exported
 
-
 export const getAllCoursesURL = "/courses/getAllCourses";
 
 export const addCourseURL = "/courses/addCourse";
@@ -21,7 +20,3 @@ export const unsubscribeFromCourseURL = "/courses/unsubscribeFromCourse";
 export const setCourseActiveURL = "/courses/setActiveCourse";
 
 export const addRoomToCourseURL = "/courses/addRoomToCourse";
-
-export const getCourseManagementURL = "/courses/getCourseManagement/";
-
-export const addAppealURL = "/courses/addAppeal/";

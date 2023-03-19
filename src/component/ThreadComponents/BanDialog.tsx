@@ -1,3 +1,4 @@
+// This file is used to display the ban to the user
 import React, { useState } from "react";
 import {
   Box,
@@ -14,22 +15,22 @@ import {
 } from "@mui/material";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import { useOutletContext, useParams } from "react-router-dom";
-import { Course } from "../../../types/types";
-import { addAppealURL } from "../../../API/CoursesAPI";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { useAuth } from "../../../context/context";
+import { Course } from "../../types/types";
+import { addAppealURL } from "../../API/CourseManagementAPI";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useAuth } from "../../context/context";
 import { LoadingButton } from "@mui/lab";
 
-type Props = {
-  drawerWidth: number;
-  innerDrawerWidth: number;
-  appBarHeight: number;
-  currentCourse: Course;
-};
+// type Props = {
+//   drawerWidth: number;
+//   innerDrawerWidth: number;
+//   appBarHeight: number;
+//   currentCourse: Course;
+// };
 
 const BanDialog = () => {
   const [submittedAppeal, setSubmittedAppeal] = useState<boolean>(false);
-  const { roomProps } = useOutletContext<{ roomProps: Props }>();
+  // const { roomProps } = useOutletContext<{ roomProps: Props }>();
   const { user } = useAuth();
   const { courseId } = useParams();
 
@@ -42,11 +43,13 @@ const BanDialog = () => {
     const [responseError, setResponseError] = useState<boolean>(false);
     const [response, setResponse] = useState<string>("");
     const axiosPrivate = useAxiosPrivate();
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
     const sendAppeal = async () => {
       try {
         const res = await axiosPrivate.post(addAppealURL + courseId, {
-          appeal: { user: user, response: response },
+          user: user,
+          response: response,
         });
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
@@ -58,13 +61,16 @@ const BanDialog = () => {
     };
 
     const submitAppeal = () => {
+      setSubmitLoading(true);
       if (response.length === 0) {
         setResponseError(true);
+        setSubmitLoading(false);
         return;
       }
       // sendAppeal();
       AppealProps.setSubmittedAppeal(true);
       setOpenForm(false);
+      setSubmitLoading(false);
     };
 
     const openAppealForm = () => {
@@ -110,7 +116,12 @@ const BanDialog = () => {
             <Button onClick={closeAppealForm} variant="outlined">
               Cancel
             </Button>
-            <LoadingButton onClick={submitAppeal} variant="contained">
+            <LoadingButton
+              onClick={submitAppeal}
+              variant="contained"
+              loading={submitLoading}
+              disabled={submitLoading}
+            >
               Submit
             </LoadingButton>
           </DialogActions>
@@ -123,12 +134,12 @@ const BanDialog = () => {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "column",
         boxShadow: 8,
         borderRadius: 2,
-        height: "60%",
+        maxHeight: "60%",
         width: "50%",
       }}
     >
@@ -137,14 +148,18 @@ const BanDialog = () => {
         <Typography variant="h4">You have been banned!</Typography>
       </CardContent>
       {submittedAppeal && (
-        <Typography variant="h6">
-          Your appeal is under review. Check back here to see your decision once it has been
-          processed.
-        </Typography>
+        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
+          <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
+            Your appeal is under review. Check back here to see your decision once it has been
+            processed.
+          </Typography>
+        </CardContent>
       )}
       {!submittedAppeal && (
-        <CardContent sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography variant="h6">Naughty</Typography>
+        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
+          <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
+            Naughty
+          </Typography>
         </CardContent>
       )}
       {!submittedAppeal && (

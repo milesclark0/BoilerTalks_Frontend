@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  Avatar
-} from "@mui/material";
+import { Box, Typography, IconButton, Avatar } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room, Message } from "../../types/types";
@@ -66,7 +61,6 @@ const RoomDisplay = () => {
   const [banned, setBanned] = useState<boolean>(false);
   const [warned, setWarned] = useState<boolean>(false);
   // const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   // get course management
   useEffect(() => {
@@ -75,7 +69,6 @@ const RoomDisplay = () => {
       console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
-          
         }
       }
       // setBanned(true)
@@ -125,20 +118,20 @@ const RoomDisplay = () => {
 
   useEffect(() => {
     // if (courseId) {
-      console.log(courseId, roomId)
-      const course = getCourseFromUrl();
-      roomProps.setCurrentCourse(course);
-      //if course name is in user active courses, set it as the active icon else set as the department name
-      const activeCourses = getActiveCourses();
-      if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
-        roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
-      } else {
-        roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
-      }
-      // if (roomId) {
-        const room = getRoomFromUrl();
-        roomProps.setCurrentRoom(room);
-      // }
+    console.log(courseId, roomId);
+    const course = getCourseFromUrl();
+    roomProps.setCurrentCourse(course);
+    //if course name is in user active courses, set it as the active icon else set as the department name
+    const activeCourses = getActiveCourses();
+    if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+      roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
+    } else {
+      roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
+    }
+    // if (roomId) {
+    const room = getRoomFromUrl();
+    roomProps.setCurrentRoom(room);
+    // }
     // }
   }, [roomProps.userCourses]);
 
@@ -164,14 +157,10 @@ const RoomDisplay = () => {
     setMessages(newMessages);
   };
 
-  const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const userMenuProps = {
-    anchorEl,
-    setAnchorEl,
-  }
+  // const userMenuProps = {
+  //   anchorEl,
+  //   setAnchorEl,
+  // };
 
   return (
     <Box sx={{ height: "100%" }}>
@@ -205,23 +194,27 @@ const RoomDisplay = () => {
               <Box>
                 <Typography variant="h4">Messages</Typography>
                 <Box>
-                  {messages.map((message, index) => (
-                    <Box key={index} sx={{display: "flex", flexDirection: "row", width: "100%"}}>
-                      <Box>
-                        <IconButton onClick={handleUserClick} size="small">
-                          {/* get specific user profile picture */}
-                          <Avatar src={user?.profilePicture} />
-                        </IconButton>
-                        <UserMenu {...userMenuProps} />
+                  {messages.map((message, index) => {
+                    return (
+                      <Box
+                        key={index}
+                        sx={{ display: "flex", flexDirection: "row", width: "100%" }}
+                      >
+                        <Box>
+                          <UserMenu username={message.username} />
+                        </Box>
+                        <Box sx={{ overflow: "hidden" }}>
+                          <Typography
+                            variant="h6"
+                            display="inline"
+                          >{`[${message.username}]: `}</Typography>
+                          <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                            {message.message}
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Box sx={{overflow: "hidden"}}>
-                        <Typography variant="h6" display="inline">{`[${message.username}]: `}</Typography>
-                        <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
-                          {message.message}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ))}
+                    );
+                  })}
                 </Box>
               </Box>
             ) : (

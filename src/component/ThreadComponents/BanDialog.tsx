@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import { useOutletContext, useParams } from "react-router-dom";
-import { Course } from "../../../types/types";
-import { addAppealURL } from "../../../API/CourseManagementAPI";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { useAuth } from "../../../context/context";
+import { Course } from "../../types/types";
+import { addAppealURL } from "../../API/CourseManagementAPI";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useAuth } from "../../context/context";
 import { LoadingButton } from "@mui/lab";
 
 // type Props = {

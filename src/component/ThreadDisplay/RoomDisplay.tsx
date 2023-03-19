@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
+  IconButton,
+  Avatar
 } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -11,8 +13,9 @@ import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
 import { getCourseManagementURL } from "../../API/CourseManagementAPI";
-import BanDialog from "../SideBar/CourseView/BanDialog";
-import WarningDialog from "../SideBar/CourseView/WarningDialog";
+import BanDialog from "../ThreadComponents/BanDialog";
+import WarningDialog from "../ThreadComponents/WarningDialog";
+import UserMenu from "../ThreadComponents/UserMenu";
 
 type Props = {
   setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
@@ -62,7 +65,8 @@ const RoomDisplay = () => {
   }>();
   const [banned, setBanned] = useState<boolean>(false);
   const [warned, setWarned] = useState<boolean>(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   // get course management
   useEffect(() => {
@@ -160,6 +164,15 @@ const RoomDisplay = () => {
     setMessages(newMessages);
   };
 
+  const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const userMenuProps = {
+    anchorEl,
+    setAnchorEl,
+  }
+
   return (
     <Box sx={{ height: "100%" }}>
       {(banned || warned) && (
@@ -193,11 +206,20 @@ const RoomDisplay = () => {
                 <Typography variant="h4">Messages</Typography>
                 <Box>
                   {messages.map((message, index) => (
-                    <Box key={index}>
-                      <Typography variant="h6">{`[${message.username}]: `}</Typography>
-                      <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
-                        {message.message}
-                      </Typography>
+                    <Box key={index} sx={{display: "flex", flexDirection: "row", width: "100%"}}>
+                      <Box>
+                        <IconButton onClick={handleUserClick} size="small">
+                          {/* get specific user profile picture */}
+                          <Avatar src={user?.profilePicture} />
+                        </IconButton>
+                        <UserMenu {...userMenuProps} />
+                      </Box>
+                      <Box sx={{overflow: "hidden"}}>
+                        <Typography variant="h6" display="inline">{`[${message.username}]: `}</Typography>
+                        <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                          {message.message}
+                        </Typography>
+                      </Box>
                     </Box>
                   ))}
                 </Box>

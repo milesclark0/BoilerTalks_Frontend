@@ -48,7 +48,7 @@ const AppealsDisplay = () => {
     }
   }, [roomProps.currentCourse]);
 
-  const AppealBox = ({ appeal }) => {
+  const AppealBox = ({ appeal, index }) => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
     // console.log(appeal);
 
@@ -75,13 +75,13 @@ const AppealsDisplay = () => {
     return (
       <Grid
         item
-        key={appeal.user}
+        key={index}
         m={2}
         xs={6}
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Box
-          key={appeal.user}
+          key={index}
           sx={{
             width: "100%",
             // minHeight: 250,
@@ -177,8 +177,8 @@ const AppealsDisplay = () => {
           // spacing={0}
           sx={{ display: "flex", justifyContent: "center", mb: 6 }}
         >
-          {appeals.map((appeal) => {
-            return <AppealBox appeal={appeal} />;
+          {appeals.map((appeal, index) => {
+            return <AppealBox appeal={appeal} index={index}/>;
           })}
         </Grid>
       ) : (

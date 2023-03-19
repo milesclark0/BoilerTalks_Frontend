@@ -1,3 +1,4 @@
+// This file is used to display the ban to the user
 import React, { useState } from "react";
 import {
   Box,
@@ -47,7 +48,8 @@ const BanDialog = () => {
     const sendAppeal = async () => {
       try {
         const res = await axiosPrivate.post(addAppealURL + courseId, {
-          user: user, response: response
+          user: user,
+          response: response,
         });
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
@@ -114,7 +116,12 @@ const BanDialog = () => {
             <Button onClick={closeAppealForm} variant="outlined">
               Cancel
             </Button>
-            <LoadingButton onClick={submitAppeal} variant="contained" loading={submitLoading} disabled={submitLoading}>
+            <LoadingButton
+              onClick={submitAppeal}
+              variant="contained"
+              loading={submitLoading}
+              disabled={submitLoading}
+            >
               Submit
             </LoadingButton>
           </DialogActions>
@@ -141,9 +148,7 @@ const BanDialog = () => {
         <Typography variant="h4">You have been banned!</Typography>
       </CardContent>
       {submittedAppeal && (
-        <CardContent
-          sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}
-        >
+        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
           <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
             Your appeal is under review. Check back here to see your decision once it has been
             processed.

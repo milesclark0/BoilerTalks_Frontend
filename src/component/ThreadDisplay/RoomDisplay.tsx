@@ -80,16 +80,19 @@ const RoomDisplay = () => {
   }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
-  useEffect(() => {
-    if (roomProps.currentCourse) {
-      assignMessages(roomProps.currentCourse.rooms[0]);
-    }
-  }, [roomProps.currentCourse]);
+  // useEffect(() => {
+  //   if (roomProps.currentCourse) {
+  //     assignMessages(roomProps.currentCourse.rooms[0]);
+  //   }
+  // }, [roomProps.currentCourse]);
 
   // when the current room changes, we want to update the messages
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
+      // scrolls to bottom every time
+      const element = document.getElementById("messages");
+      element.scrollTop = element.scrollHeight;
     }
   }, [roomProps.currentRoom]);
 

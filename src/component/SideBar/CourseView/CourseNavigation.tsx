@@ -174,9 +174,6 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
                         props.setActiveCourseThread(room?.name.replace(course?.name, ""));
-                        // scrolls to bottom every time
-                        const element = document.getElementById("messages");
-                        element.scrollTop = element.scrollHeight;
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}

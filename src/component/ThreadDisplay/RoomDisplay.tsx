@@ -10,7 +10,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
-import { getCourseManagementURL } from "../../API/CoursesAPI";
+import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../SideBar/CourseView/BanDialog";
 import WarningDialog from "../SideBar/CourseView/WarningDialog";
 
@@ -61,26 +61,24 @@ const RoomDisplay = () => {
     roomProps: Props;
   }>();
   const [banned, setBanned] = useState<boolean>(false);
+  const [warned, setWarned] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // get banned users
+  // get course management
   useEffect(() => {
-    const fetchBannedUsers = async () => {
+    const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
-      // console.log(res);
+      console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
-          if (res.data.data.includes(user)) {
-            setBanned(true);
-          }
-        } else {
-          setBanned(false);
+          
         }
       }
       // setBanned(true)
+      // setWarned(true)
     };
     if (roomProps.currentCourse) {
-      fetchBannedUsers();
+      fetchCourseManagement();
     }
   }, [roomProps.currentCourse]);
 
@@ -120,32 +118,6 @@ const RoomDisplay = () => {
     });
     return activeCourses;
   };
-
-  // useEffect(() => {
-  //   if (roomProps.activeIcon.isActiveCourse) {
-  //     roomProps.userCourses.forEach((course) => {
-  //       if (course.name === roomProps.activeIcon.course) {
-  //         roomProps.setCurrentCourse(course);
-  //         roomProps.setCurrentRoom(course?.rooms[0]);
-  //         //navigate to home/courses/courseId
-  //         // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-  //         navigate(
-  //           `/home/courses/${course._id.$oid}/${course?.rooms[0].name
-  //             .replace(course?.name, "")
-  //             .replace(/\s/g, "")}`,
-  //           { replace: true }
-  //         );
-  //       }
-  //     });
-  //   } else {
-  //     //will always trigger on page load when activeIcon is {course: "", isActiveCourse: false}
-  //     roomProps.setDistinctCoursesByDepartment(
-  //       getDistinctCoursesByDepartment(roomProps.activeIcon.course)
-  //     );
-  //     roomProps.setCurrentCourse(getCourseFromUrl() || null);
-  //     roomProps.setCurrentRoom(getRoomFromUrl() || null);
-  //   }
-  // }, [roomProps.activeIcon]);
 
   useEffect(() => {
     // if (courseId) {
@@ -190,7 +162,7 @@ const RoomDisplay = () => {
 
   return (
     <Box sx={{ height: "100%" }}>
-      {banned && (
+      {(banned || warned) && (
         <Box
           sx={{
             height: "100%",
@@ -200,16 +172,15 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {/* <WarningDialog /> */}
-          <BanDialog/>
+          {banned ? <BanDialog /> : <WarningDialog setWarned={setWarned} />}
         </Box>
       )}
-      {!banned && (
+      {!banned && !warned && (
         <Box sx={{ height: "100%" }} id="test2">
           <Box
             sx={{
               p: roomProps.defaultPadding,
-              width: `calc(100% - ${roomProps.drawerWidth*2}px)`,
+              width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
               maxHeight: "80%",
               overflowY: "auto",
               display: "flex",

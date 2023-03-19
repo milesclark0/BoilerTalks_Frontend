@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  CardContent,
-  CardActions,
-} from "@mui/material";
+import { Box, Typography, Grid, CardContent, CardActions, TextField } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room } from "../../types/types";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import UserBar from "../HomePage/userBar";
-import { getCourseManagementURL } from "../../API/CoursesAPI";
+import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import { LoadingButton } from "@mui/lab";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import { updateAppealURL } from "../../API/CourseManagementAPI";
 
 type Props = {
   drawerWidth: number;
@@ -25,7 +20,7 @@ type Props = {
 };
 
 const AppealsDisplay = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const { roomProps } = useOutletContext<{ roomProps: Props }>();
   const axiosPrivate = useAxiosPrivate();
   // const [appeals, setAppeals] = useState([]);
@@ -39,7 +34,7 @@ const AppealsDisplay = () => {
   ];
 
   useEffect(() => {
-    const fetchCourseAppeals = async () => {
+    const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
       // console.log(res);
       if (res.status == 200) {
@@ -49,7 +44,7 @@ const AppealsDisplay = () => {
       }
     };
     if (roomProps.currentCourse) {
-      fetchCourseAppeals();
+      fetchCourseManagement();
     }
   }, [roomProps.currentCourse]);
 
@@ -57,14 +52,24 @@ const AppealsDisplay = () => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
     // console.log(appeal);
 
+    const updateAppeal = async (e) => {
+      try {
+        const res = await axiosPrivate.post(updateAppealURL + courseId, {
+          descision: e.target.innerText,
+        });
+        if (res.status == 200) {
+          if (res.data.statusCode == 200) {
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const appealDecision = (e) => {
       setDecisionLoading(true);
-      if (e.target.innerText === "Unban") {
-
-      } else {
-
-      }
-      // setDecisionLoading(false);
+      // updateAppeal(e);
+      setDecisionLoading(false);
     };
 
     return (
@@ -79,22 +84,55 @@ const AppealsDisplay = () => {
           key={appeal.user}
           sx={{
             width: "100%",
-            minHeight: 250,
+            // minHeight: 250,
+            // maxHeight: 400,
             display: "flex",
             flexDirection: "column",
             borderRadius: 2,
             boxShadow: 8,
-            justifyContent: "space-between",
+            // justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <CardContent sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+          <CardContent>
             <Typography>user: {appeal.user}</Typography>
-            <Typography>ban reason: naughty</Typography>
-            <Typography>user appeal: {appeal.response}</Typography>
-            <Typography>appeal decision: unknown</Typography>
           </CardContent>
-          <CardActions sx={{ mb: 2 }}>
+          <CardContent sx={{ width: "80%" }}>
+            {/* <Typography sx={{ wordBreak: "break-word", textAlign: "center" }}>
+              ban reason: naughty
+            </Typography> */}
+            <TextField
+              sx={{
+                width: "100%",
+              }}
+              multiline
+              label="Ban Reason"
+              value="naughty"
+              maxRows={3}
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="standard"
+            />
+          </CardContent>
+          <CardContent sx={{ width: "80%" }}>
+            {/* <Typography sx={{ wordBreak: "break-word", textAlign: "center" }}>
+              user appeal: naughty
+            </Typography> */}
+            <TextField
+              sx={{
+                width: "100%",
+              }}
+              multiline
+              label="User Appeal"
+              value="naughty"
+              rows={6}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          </CardContent>
+          <CardActions>
             <LoadingButton
               variant="contained"
               startIcon={<CloseIcon />}

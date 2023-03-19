@@ -29,6 +29,8 @@ type Props = {
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  activeCourseThread: string;
 };
 
 const SideBar = ({ ...props }: Props) => {
@@ -56,6 +58,8 @@ const SideBar = ({ ...props }: Props) => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
+    setActiveCourseThread,
+    activeCourseThread,
   } = props;
 
   const OuterDrawerStyles = {
@@ -139,6 +143,8 @@ const SideBar = ({ ...props }: Props) => {
     setCurrentCourse,
     currentRoom,
     setCurrentRoom,
+    setActiveCourseThread,
+    activeCourseThread,
   };
 
   const BoilerTalksIcon = () => {

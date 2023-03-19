@@ -7,7 +7,13 @@ import { PinIcon } from "./CourseNavigation/PinIcon";
 import RulesModal from "./CourseNavigation/RulesModal";
 import { StyledDivider } from "../StyledDivider";
 import { width } from "@mui/system";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../context/context";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { getProfileURL } from "../../../API/ProfileAPI";
+import { useQuery } from "react-query";
+import { Profile } from "../../../types/types";
+import { NavLink } from "react-router-dom";
 
 type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
@@ -26,12 +32,18 @@ type Props = {
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  activeCourseThread: string;
 };
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesText, setRulesText] = useState(""); //import backend rules text
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+  const [fetchError, setFetchError] = useState("");
+  const [profileInfo, setProfileInfo] = useState<Profile>(null);
 
   const MoreIconProps = {
     setUserCourses: props.setUserCourses,
@@ -75,13 +87,12 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const handleClickCourse = () => {
     props.setCurrentCourse(course);
-    props.setCurrentRoom(course?.rooms[0]);    
+    props.setCurrentRoom(course?.rooms[0]);
+    props.setActiveCourseThread(course?.rooms[0].name.replace(course?.name, ""));
     navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
-
   };
 
   const buttonStyle = () => {
-
     const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
     const color = "black";
     const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "white";
@@ -89,9 +100,22 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
-  const roomButtonStyle = (room: Room) => {    
-    const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
-    const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
+  // const roomButtonStyle = (room: Room) => {
+  //   const backgroundColor = props.currentRoom?.name === room.name ? "lightblue" : "white";
+  //   const hoverColor = props.currentRoom?.name === room.name ? "lightblue" : "lightgrey";
+  //   return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+  // };
+
+  const threadButtonStyle = (threadName: string) => {
+    // console.log("props: " + props.activeCourseThread + "\nthreadName: " + threadName);
+    const backgroundColor =
+      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
+        ? "lightblue"
+        : "white";
+    const hoverColor =
+      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
+        ? "lightblue"
+        : "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
 
@@ -100,6 +124,24 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
     const hoverColor = "lightgrey";
     return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
   };
+
+  //change this to use axiosprivate
+  const fetchProfile = async () => {
+    return await axiosPrivate.get(getProfileURL + user?.username);
+  };
+
+  const { isLoading, error, data } = useQuery("profile", fetchProfile, {
+    enabled: true,
+    staleTime: 1000 * 60, //1 minute
+    refetchOnMount: "always",
+    onSuccess: (data) => {
+      if (data.data.statusCode === 200) {
+        setProfileInfo(data.data.data[0]);
+        // console.log(data.data.data);
+      } else setFetchError(data.data.message);
+    },
+    onError: (error: string) => console.log(error),
+  });
 
   return (
     <List>
@@ -123,14 +165,18 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   <Button
                     sx={{
                       width: "100%",
-                      ...roomButtonStyle(room),
+                      // ...roomButtonStyle(room),
+                      ...threadButtonStyle(room?.name.replace(course?.name, "")),
                     }}
+                    component={NavLink}
+                    to={`/home/courses/${course._id.$oid}/${room._id.$oid}`}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
                         props.setCurrentRoom(room);
-                        navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
-
+                        props.setActiveCourseThread(room?.name.replace(course?.name, ""));
+                        // console.log(room?.name.replace(course?.name, ""));
+                        // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
                   >
@@ -146,7 +192,14 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           <Button
             sx={{
               width: "100%",
-              ...otherButtonStyle(),
+              // ...otherButtonStyle(),
+              ...threadButtonStyle("Q&A"),
+            }}
+            component={NavLink}
+            to={`/home/courses/${course._id.$oid}/Q&A`}
+            onClick={() => {
+              props.setCurrentCourse(course);
+              props.setActiveCourseThread("Q&A");
             }}
           >
             <ListItem>
@@ -160,21 +213,41 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   Mod Chat
                 </Typography>
               </ListItem> */}
-          <Button sx={{ ...otherButtonStyle(), width: "100%" }}>
-            <ListItem>
-              <Typography variant="body2">Appeals</Typography>
-            </ListItem>
-          </Button>
-          <Button variant="text" onClick={handleClickRules} sx={{ ...otherButtonStyle(), width: "100%" }}>
+          {profileInfo?.modThreads?.includes(course.name) && (
+            <Button
+              sx={{
+                // ...otherButtonStyle(),
+                ...threadButtonStyle("Appeals"),
+                width: "100%",
+              }}
+              component={NavLink}
+              to={`/home/courses/${course._id.$oid}/Appeals`}
+              onClick={() => {
+                props.setCurrentCourse(course);
+                props.setActiveCourseThread("Appeals");
+              }}
+            >
+              <ListItem>
+                <Typography variant="body2">Appeals</Typography>
+              </ListItem>
+            </Button>
+          )}
+          <Button
+            variant="text"
+            onClick={handleClickRules}
+            sx={{ ...otherButtonStyle(), width: "100%" }}
+          >
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          <Button variant="outlined" onClick={handleClickNewThread}>
-            <ListItem>
-              <Typography variant="body2">New thread</Typography>
-            </ListItem>
-          </Button>
+          {profileInfo?.modThreads?.includes(course.name) && (
+            <Button variant="outlined" onClick={handleClickNewThread}>
+              <ListItem>
+                <Typography variant="body2">New thread</Typography>
+              </ListItem>
+            </Button>
+          )}
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
         </List>

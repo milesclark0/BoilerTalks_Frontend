@@ -22,4 +22,6 @@ export const setCourseActiveURL = "/courses/setActiveCourse";
 
 export const addRoomToCourseURL = "/courses/addRoomToCourse";
 
+export const getCourseManagementURL = "/courses/getCourseManagement/";
 
+export const addAppealURL = "/courses/addAppeal/";

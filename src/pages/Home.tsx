@@ -6,14 +6,21 @@ import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import EmojiPicker, { EmojiStyle, Theme, EmojiClickData, Emoji } from "emoji-picker-react";
 import { getUserCoursesURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { Course, Room } from "../types/types";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import React from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import MessageBox from "./../component/HomePage/messageBox";
-import UserBar from "./../component/HomePage/userBar";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+// import MessageBox from "./../component/HomePage/messageBox";
+// import UserBar from "./../component/HomePage/userBar";
 import useSockets from "../hooks/useSockets";
 
 const Home = () => {
@@ -29,12 +36,21 @@ const Home = () => {
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
   const [currentRoom, setCurrentRoom] = useState<Room>(null);
   const [distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useState<Course[]>([]);
-  const [distinctDepartments, setDistinctDepartments] = React.useState<string[]>([]); //What the new thread name string is
+  const [distinctDepartments, setDistinctDepartments] = useState<string[]>([]); //What the new thread name string is
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [fetchError, setFetchError] = useState("");
   const [courseUsers, setCourseUsers] = useState([]);
+  const [activeCourseThread, setActiveCourseThread] = useState<string>("");
   const navigate = useNavigate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const {
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+  } = useSockets();
   const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
@@ -53,44 +69,48 @@ const Home = () => {
     return room;
   };
 
-  const getActiveCourses = () => {
-    const activeCourses = [];
-    user?.activeCourses.forEach((course) => {
-      userCourses.forEach((userCourse) => {
-        if (course === userCourse.name) {
-          activeCourses.push(userCourse);
-        }
-      });
-    });
-    return activeCourses;
-  };
+  // const getActiveCourses = () => {
+  //   const activeCourses = [];
+  //   user?.activeCourses.forEach((course) => {
+  //     userCourses.forEach((userCourse) => {
+  //       if (course === userCourse.name) {
+  //         activeCourses.push(userCourse);
+  //       }
+  //     });
+  //   });
+  //   return activeCourses;
+  // };
+
+  // useEffect(() => {
+  //   console.log(courseId, roomId)
+  //   if (courseId) {
+  //     const course = getCourseFromUrl();
+  //     setCurrentCourse(course);
+  //     //if course name is in user active courses, set it as the active icon else set as the department name
+  //     const activeCourses = getActiveCourses();
+  //     if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+  //       setActiveIcon({ course: course?.name, isActiveCourse: true });
+  //     } else {
+  //       setActiveIcon({ course: course?.department, isActiveCourse: false });
+  //     }
+  //     if (roomId) {
+  //       const room = getRoomFromUrl();
+  //       setCurrentRoom(room);
+  //     }
+  //   }
+  // }, [userCourses]);
 
   useEffect(() => {
-    if (courseId) {
-      const course = getCourseFromUrl();
-      setCurrentCourse(course);
-      //if course iname is in user active courses, set it as the active icon else set as the department name
-      const activeCourses = getActiveCourses();
-      if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
-        setActiveIcon({ course: course?.name, isActiveCourse: true });
-      } else {
-        setActiveIcon({ course: course?.department, isActiveCourse: false });
-      }
-      if (roomId) {
-        const room = getRoomFromUrl();
-        setCurrentRoom(room);
-      }
-    }
-  }, [userCourses]);
-
-  useEffect(() => {
+    console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
+      // TODO: i dont think this will ever reach
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
           //navigate to home/courses/courseId
           navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
         }
       });
     } else {
@@ -98,61 +118,64 @@ const Home = () => {
       setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
       setCurrentCourse(getCourseFromUrl() || null);
       setCurrentRoom(getRoomFromUrl() || null);
+      // console.log(getRoomFromUrl()?.name)
+      setActiveCourseThread(getRoomFromUrl()?.name.replace(getCourseFromUrl()?.name, ""));
     }
   }, [activeIcon]);
 
   // when the current course changes, we want to update the messages
-  useEffect(() => {
-    if (currentCourse) {
-      assignMessages(currentCourse.rooms[0]);
-    }
-  }, [currentCourse]);
+  // useEffect(() => {
+  //   if (currentCourse) {
+  //     assignMessages(currentCourse.rooms[0]);
+  //   }
+  // }, [currentCourse]);
 
   // when the current room changes, we want to update the messages
-  useEffect(() => {
-    if (currentRoom) {
-      assignMessages(currentRoom);
-    }
-  }, [currentRoom]);
+  // useEffect(() => {
+  //   if (currentRoom) {
+  //     assignMessages(currentRoom);
+  //   }
+  // }, [currentRoom]);
 
-  useEffect(() => {
-    const fetchCourseUsers = async () => {
-      if (activeIcon.course === "") return;
-      const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
-      if (res.data.statusCode == 200) {
-        setCourseUsers(res.data.data);
-      }
-    };
-    if (isCourseSelected()) {
-      fetchCourseUsers();
-    }
-  }, [activeIcon]);
+  // TODO: i dont think this does anything for now
+  // useEffect(() => {
+  //   const fetchCourseUsers = async () => {
+  //     if (activeIcon.course === "") return;
+  //     const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+  //     if (res.data.statusCode == 200) {
+  //       setCourseUsers(res.data.data);
+  //     }
+  //   };
+  //   if (isCourseSelected()) {
+  //     fetchCourseUsers();
+  //   }
+  // }, [activeIcon]);
 
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
 
-  const assignMessages = (room: Room) => {
-    //find room in userCourses since currentRoom messages are not updated
-    let foundRoom: Room;
-    userCourses?.forEach((course) => {
-      course.rooms.forEach((room) => {
-        if (room.name === currentRoom?.name) {
-          foundRoom = room;
-        }
-      });
-    });
+  // const assignMessages = (room: Room) => {
+  //   //find room in userCourses since currentRoom messages are not updated
+  //   let foundRoom: Room;
+  //   userCourses?.forEach((course) => {
+  //     course.rooms.forEach((room) => {
+  //       if (room.name === currentRoom?.name) {
+  //         foundRoom = room;
+  //       }
+  //     });
+  //   });
 
-    const newMessages = foundRoom.messages.map((message) => {
-      const newMessage = {
-        username: message.username,
-        message: message.message,
-        timeSent: message.timeSent,
-      };
-      return newMessage;
-    });
-    setMessages(newMessages);
-  };
+  //   const newMessages = foundRoom?.messages.map((message) => {
+  //     const newMessage = {
+  //       username: message.username,
+  //       message: message.message,
+  //       timeSent: message.timeSent,
+  //     };
+  //     return newMessage;
+  //   });
+  //   setMessages(newMessages);
+  // };
 
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
@@ -240,14 +263,42 @@ const Home = () => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
+    setActiveCourseThread,
+    activeCourseThread,
   };
 
-  const userBarProps = {
-    innerDrawerWidth,
+  const roomProps = {
+    activeIcon,
+    setActiveIcon,
     drawerWidth,
+    innerDrawerWidth,
     appBarHeight,
+    defaultPadding,
     currentCourse,
+    distinctCoursesByDepartment,
+    setDistinctCoursesByDepartment,
+    setUserCourses,
+    userCourses,
+    setCurrentCourse,
+    distinctDepartments,
+    setDistinctDepartments,
+    currentRoom,
+    setCurrentRoom,
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
   };
+
+  // const userBarProps = {
+  //   innerDrawerWidth,
+  //   drawerWidth,
+  //   appBarHeight,
+  //   currentCourse,
+  // };
 
   const searchCourseProps = {
     user,
@@ -261,24 +312,25 @@ const Home = () => {
     setDistinctDepartments,
   };
 
-  const messageBoxProps = {
-    currentCourse,
-    setCurrentCourse,
-    userCourses,
-    setUserCourses,
-    currentRoom,
-    setCurrentRoom,
-    activeIcon,
-    setActiveIcon,
-    message,
-    setMessage,
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
-  };
+  // const messageBoxProps = {
+  //   currentCourse,
+  //   setCurrentCourse,
+  //   userCourses,
+  //   setUserCourses,
+  //   currentRoom,
+  //   setCurrentRoom,
+  //   activeIcon,
+  //   setActiveIcon,
+  //   message,
+  //   setMessage,
+  //   messages,
+  //   setMessages,
+  //   sendMessage,
+  //   connectToRoom,
+  //   disconnectFromRoom,
+  // };
 
+  // can try and move this into a different file to clean up this file
   const SemesterSelector = () => {
     // if the active icon is a department
     if (isCourseSelected()) {
@@ -288,11 +340,19 @@ const Home = () => {
           value={currentSemester || getMostRecentSemester(userCourses)}
           onChange={(e) => {
             setCurrentSemester(e.target.value as string);
-            const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+            const course = userCourses.find(
+              (course) => course.name === currentCourse.name && course.semester === e.target.value
+            );
             if (course) {
               setCurrentCourse(course);
               setCurrentRoom(course.rooms[0]);
             }
+          }}
+          // removes border from box
+          sx={{
+            boxShadow: "none",
+            ".MuiOutlinedInput-notchedOutline": { border: 0 },
+            color: "white",
           }}
         >
           <MenuItem disabled value="">
@@ -314,7 +374,7 @@ const Home = () => {
   };
 
   const SearchUserField = () => {
-    const [value, setValue] = React.useState<string>();
+    const [value, setValue] = useState<string>();
     const handleEnter = (e) => {
       if (e.keyCode === 13 && value != null) {
         console.log(value["username"]);
@@ -338,7 +398,15 @@ const Home = () => {
           }
         }}
         sx={{ width: drawerWidth - innerDrawerWidth }}
-        renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
+        renderInput={(params) => (
+          <TextField
+            onKeyDown={(e) => handleEnter(e)}
+            {...params}
+            variant="outlined"
+            color="info"
+            label="Search users..."
+          />
+        )}
       />
     );
   };
@@ -359,7 +427,9 @@ const Home = () => {
         </div>
         <div className="show-emoji">
           Your selected Emoji is:
-          {selectedEmojis ? <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} /> : null}
+          {selectedEmojis ? (
+            <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} />
+          ) : null}
         </div>
       </div>
     );
@@ -372,11 +442,11 @@ const Home = () => {
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ pl: `${drawerWidth}px`, width: "100%", height: "100%" }}>
+        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }}>
           <AppBar
             position="fixed"
             sx={{
@@ -391,9 +461,15 @@ const Home = () => {
                   {/* {`${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}` ||
                     activeIcon.course ||
                     "Select a course or Department"} */}
+                  {/* {currentCourse?.name
+                    ? `${currentCourse?.name}: ${currentRoom?.name.replace(
+                        currentCourse?.name,
+                        ""
+                      )}`
+                    : activeIcon.course || "Select a Department"} */}
                   {currentCourse?.name
-                    ? `${currentCourse?.name}: ${currentRoom?.name.replace(currentCourse?.name, "")}`
-                    : activeIcon.course || "Select a course or Department"}
+                    ? `${currentCourse?.name}: ${activeCourseThread}`
+                    : activeIcon.course || "Select a Department"}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -411,12 +487,11 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
-          {/* get user and see if they have warning or ban */}
-          {/* <WarningDialog/> */}
-          {/* <BanDialog/> */}
-          <Box>
-            <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px` }}>
-              {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
+          {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
+          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }} id="test">
+            {/* <Box> */}
+            <Outlet context={{ roomProps }} />
+            {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}
               {isCourseSelected() ? (
                 messages.length > 0 ? (
                   messages.map((message, index) => (
@@ -427,9 +502,9 @@ const Home = () => {
                 ) : (
                   <Typography variant="h6">No messages yet!</Typography>
                 )
-              ) : null}
-            </Box>
-            <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
+              ) : null} */}
+            {/* </Box> */}
+            {/* <Button onClick={toggleEmojiPanel}>Open emoji dialog</Button>
             {showEmojiPanel && <EmojiPanel />}
             {currentCourse && <UserBar {...userBarProps} />}
             {currentRoom && (
@@ -444,7 +519,7 @@ const Home = () => {
               >
                 <MessageBox {...messageBoxProps} />
               </Box>
-            )}
+            )} */}
           </Box>
         </Box>
       ) : (

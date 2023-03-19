@@ -20,6 +20,8 @@ type Props = {
   distinctDepartments: string[];
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  activeCourseThread: string;
 };
 
 export const CourseView = ({ ...props }: Props) => {
@@ -32,8 +34,8 @@ export const CourseView = ({ ...props }: Props) => {
 
   if (activeIcon.course === "") {
     return (
-      <List>
-        <ListItem>
+      <List sx={{ width: "100%" }}>
+        <ListItem sx={{ justifyContent: "center"}}>
           <Typography variant="h6" noWrap component="div">
             BoilerTalks Home
           </Typography>
@@ -49,7 +51,7 @@ export const CourseView = ({ ...props }: Props) => {
   // if a department is selected, show course list
   return (
     <List>
-      <ListItem>
+      <ListItem sx={{ justifyContent: "center" }}>
         <Typography variant="h6" noWrap component="div">
           {activeIcon.course} Courses
         </Typography>

@@ -1,3 +1,4 @@
+// Display for appeals
 import { useState, useEffect } from "react";
 import { Box, Typography, Grid, CardContent, CardActions, TextField } from "@mui/material";
 import { useAuth } from "../../context/context";
@@ -19,46 +20,53 @@ type Props = {
   defaultPadding: number;
 };
 
+type Appeal = {
+  username: string;
+  response: string;
+  reason: string;
+  reviewed: boolean;
+  unban: boolean;
+};
+
 const AppealsDisplay = () => {
-  // const { user } = useAuth();
   const { roomProps } = useOutletContext<{ roomProps: Props }>();
   const axiosPrivate = useAxiosPrivate();
-  // const [appeals, setAppeals] = useState([]);
+  const [appeals, setAppeals] = useState<Appeal[]>([]);
   const { courseId } = useParams();
-  const appeals = [
-    { user: "bob", response: "hello" },
-    { user: "jeff", response: "test" },
-    { user: "jay", response: "idk" },
-    { user: "who", response: "what" },
-    { user: "else", response: "where" },
-  ];
+  const [stateChange, setStateChange] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
-      // console.log(res);
+      console.log(res)
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
-          // setAppeals(res.data.data);
+          setAppeals(res.data.data.appeals);
         }
       }
     };
-    if (roomProps.currentCourse) {
+    // if (roomProps.currentCourse) {
       fetchCourseManagement();
-    }
-  }, [roomProps.currentCourse]);
+    // }
+  }, [roomProps.currentCourse, stateChange]);
 
-  const AppealBox = ({ appeal, index }) => {
+  const AppealBox = ({ appeal }) => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
-    // console.log(appeal);
 
-    const updateAppeal = async (e) => {
+    const updateAppeal = async (decision) => {
       try {
         const res = await axiosPrivate.post(updateAppealURL + courseId, {
-          descision: e.target.innerText,
+          username: appeal?.username,
+          response: appeal?.response,
+          reason: appeal?.reason,
+          reviewed: true,
+          unban: decision,
         });
+        console.log(res)
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
+            setDecisionLoading(false);
+            setStateChange(!stateChange);
           }
         }
       } catch (error) {
@@ -68,20 +76,21 @@ const AppealsDisplay = () => {
 
     const appealDecision = (e) => {
       setDecisionLoading(true);
-      // updateAppeal(e);
-      setDecisionLoading(false);
+      if (e.target.innerText === "UNBAN") {
+        updateAppeal(true);
+      } else {
+        updateAppeal(false);
+      }
     };
 
     return (
       <Grid
         item
-        key={index}
         m={2}
         xs={6}
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Box
-          key={index}
           sx={{
             width: "100%",
             // minHeight: 250,
@@ -95,19 +104,16 @@ const AppealsDisplay = () => {
           }}
         >
           <CardContent>
-            <Typography>user: {appeal.user}</Typography>
+            <Typography variant="h5">user: {appeal?.username}</Typography>
           </CardContent>
           <CardContent sx={{ width: "80%" }}>
-            {/* <Typography sx={{ wordBreak: "break-word", textAlign: "center" }}>
-              ban reason: naughty
-            </Typography> */}
             <TextField
               sx={{
                 width: "100%",
               }}
               multiline
               label="Ban Reason"
-              value="naughty"
+              value={appeal?.reason}
               maxRows={3}
               InputProps={{
                 readOnly: true,
@@ -116,44 +122,45 @@ const AppealsDisplay = () => {
             />
           </CardContent>
           <CardContent sx={{ width: "80%" }}>
-            {/* <Typography sx={{ wordBreak: "break-word", textAlign: "center" }}>
-              user appeal: naughty
-            </Typography> */}
             <TextField
               sx={{
                 width: "100%",
               }}
               multiline
               label="User Appeal"
-              value="naughty"
+              value={appeal?.response}
               rows={6}
               InputProps={{
                 readOnly: true,
               }}
             />
           </CardContent>
-          <CardActions>
-            <LoadingButton
-              variant="contained"
-              startIcon={<CloseIcon />}
-              color="error"
-              loading={decisionLoading}
-              // disabled={}
-              onClick={appealDecision}
-            >
-              Deny
-            </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              startIcon={<CheckIcon />}
-              color="success"
-              loading={decisionLoading}
-              // disabled={}
-              onClick={appealDecision}
-            >
-              Unban
-            </LoadingButton>
-          </CardActions>
+          {appeal?.reviewed ? (
+            <Typography sx={{ mb: 2 }}>
+              {appeal?.unban ? "Decision: Accepted" : "Decision: Denied"}
+            </Typography>
+          ) : (
+            <CardActions sx={{ mb: 2 }}>
+              <LoadingButton
+                variant="contained"
+                startIcon={<CloseIcon />}
+                color="error"
+                loading={decisionLoading}
+                onClick={appealDecision}
+              >
+                Deny
+              </LoadingButton>
+              <LoadingButton
+                variant="contained"
+                startIcon={<CheckIcon />}
+                color="success"
+                loading={decisionLoading}
+                onClick={appealDecision}
+              >
+                Unban
+              </LoadingButton>
+            </CardActions>
+          )}
         </Box>
       </Grid>
     );
@@ -172,13 +179,9 @@ const AppealsDisplay = () => {
       className="scrollBar"
     >
       {appeals.length !== 0 ? (
-        <Grid
-          container
-          // spacing={0}
-          sx={{ display: "flex", justifyContent: "center", mb: 6 }}
-        >
+        <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {
-            return <AppealBox appeal={appeal} index={index}/>;
+            return <AppealBox key={index} appeal={appeal}/>;
           })}
         </Grid>
       ) : (

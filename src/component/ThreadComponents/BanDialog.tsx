@@ -1,5 +1,5 @@
 // This file is used to display the ban to the user
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,31 +14,42 @@ import {
   Typography,
 } from "@mui/material";
 import DangerousIcon from "@mui/icons-material/Dangerous";
-import { useOutletContext, useParams } from "react-router-dom";
-import { Course } from "../../types/types";
+import { useParams } from "react-router-dom";
 import { addAppealURL } from "../../API/CourseManagementAPI";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useAuth } from "../../context/context";
 import { LoadingButton } from "@mui/lab";
 
-// type Props = {
-//   drawerWidth: number;
-//   innerDrawerWidth: number;
-//   appBarHeight: number;
-//   currentCourse: Course;
-// };
+type Props = {
+  // setSubmittedAppeal: React.Dispatch<React.SetStateAction<boolean>>;
+  bannedData: { username: string; reason: string };
+  appealData: {
+    username: string;
+    response: string;
+    reason: string;
+    reviewed: boolean;
+    unban: boolean;
+  };
+};
 
-const BanDialog = () => {
+const BanDialog = ({ bannedData, appealData }: Props) => {
   const [submittedAppeal, setSubmittedAppeal] = useState<boolean>(false);
+  const [keepBanned, setKeepBanned] = useState<boolean>(false);
   // const { roomProps } = useOutletContext<{ roomProps: Props }>();
   const { user } = useAuth();
   const { courseId } = useParams();
 
-  const AppealProps = {
-    setSubmittedAppeal,
-  };
+  useEffect(() => {
+    if (appealData) {
+      setSubmittedAppeal(true);
+    }
+    // if appeal has been reviewed and appeal has been denied
+    if (appealData?.reviewed && !appealData?.unban) {
+      setKeepBanned(true);
+    }
+  }, [appealData]);
 
-  const AppealForm = ({ ...AppealProps }) => {
+  const AppealForm = ({ setSubmittedAppeal }) => {
     const [openForm, setOpenForm] = useState<boolean>(false);
     const [responseError, setResponseError] = useState<boolean>(false);
     const [response, setResponse] = useState<string>("");
@@ -48,11 +59,17 @@ const BanDialog = () => {
     const sendAppeal = async () => {
       try {
         const res = await axiosPrivate.post(addAppealURL + courseId, {
-          user: user,
+          username: user?.username,
           response: response,
+          reason: bannedData?.reason,
+          reviewed: false,
+          unban: false,
         });
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
+            setSubmittedAppeal(true);
+            setOpenForm(false);
+            setSubmitLoading(false);
           }
         }
       } catch (error) {
@@ -67,10 +84,7 @@ const BanDialog = () => {
         setSubmitLoading(false);
         return;
       }
-      // sendAppeal();
-      AppealProps.setSubmittedAppeal(true);
-      setOpenForm(false);
-      setSubmitLoading(false);
+      sendAppeal();
     };
 
     const openAppealForm = () => {
@@ -148,23 +162,50 @@ const BanDialog = () => {
         <Typography variant="h4">You have been banned!</Typography>
       </CardContent>
       {submittedAppeal && (
-        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
+        <CardContent
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            overflowY: "auto",
+            flexDirection: "column",
+          }}
+        >
           <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
-            Your appeal is under review. Check back here to see your decision once it has been
-            processed.
+            {keepBanned
+              ? "Your appeal has been denied. You no longer have access to this course."
+              : "Your appeal is under review. Check back here to see your decision once it has been processed."}
           </Typography>
+          {!keepBanned && (
+            <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word", mt: 2 }}>
+              If your appeal has been accepted, you will be able to see the course threads again.
+              Please do not make the same mistake.
+            </Typography>
+          )}
         </CardContent>
       )}
       {!submittedAppeal && (
-        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
-          <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
+        <CardContent
+          sx={{ display: "flex", justifyContent: "center", overflowY: "auto", width: "80%" }}
+        >
+          <TextField
+            fullWidth
+            multiline
+            label="Reason for Ban"
+            value={bannedData?.reason}
+            maxRows={6}
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="standard"
+          />
+          {/* <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word" }}>
             Naughty
-          </Typography>
+          </Typography> */}
         </CardContent>
       )}
       {!submittedAppeal && (
         <CardActions sx={{ mb: 2 }}>
-          <AppealForm {...AppealProps} />
+          <AppealForm setSubmittedAppeal={setSubmittedAppeal} />
         </CardActions>
       )}
     </Box>

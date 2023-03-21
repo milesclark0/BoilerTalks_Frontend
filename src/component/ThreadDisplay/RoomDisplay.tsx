@@ -1,9 +1,10 @@
+// Display for messages
 import { useState, useEffect } from "react";
-import { Box, Typography, IconButton, Avatar } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Course, Room, Message } from "../../types/types";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { Course, Room, Message, CourseManagement } from "../../types/types";
+import { useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
@@ -42,6 +43,19 @@ type Props = {
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
+type WarnOrBan = {
+  username: string;
+  reason: string;
+};
+
+type Appeal = {
+  username: string;
+  response: string;
+  reason: string;
+  reviewed: boolean;
+  unban: boolean;
+};
+
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
@@ -59,7 +73,11 @@ const RoomDisplay = () => {
     roomProps: Props;
   }>();
   const [banned, setBanned] = useState<boolean>(false);
+  const [bannedData, setBannedData] = useState<WarnOrBan>();
   const [warned, setWarned] = useState<boolean>(false);
+  const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
+  const [appealData, setAppealData] = useState<Appeal>(null);
+  // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
   // get course management
@@ -69,14 +87,32 @@ const RoomDisplay = () => {
       console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
+          const resData = res.data.data;
+          // setCourseData(resData);
+          resData?.bannedUsers.forEach((item) => {
+            if (item.username === user?.username) {
+              // find if user has sent an appeal
+              resData?.appeals.forEach((appeal) => {
+                if (appeal.username === user?.username) {
+                  setAppealData(appeal);
+                }
+              });
+              setBanned(true);
+              setBannedData(item);
+            }
+          });
+          resData?.warnedUsers.forEach((item) => {
+            if (item.username === user?.username) {
+              setWarned(true);
+              setWarnedData(item);
+            }
+          });
         }
       }
-      // setBanned(true)
-      // setWarned(true)
     };
-    if (roomProps.currentCourse) {
+    // if (roomProps.currentCourse) {
       fetchCourseManagement();
-    }
+    // }
   }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
@@ -90,9 +126,6 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      // scrolls to bottom every time
-      const element = document.getElementById("messages");
-      element.scrollTop = element.scrollHeight;
     }
   }, [roomProps.currentRoom]);
 
@@ -160,11 +193,6 @@ const RoomDisplay = () => {
     setMessages(newMessages);
   };
 
-  // const userMenuProps = {
-  //   anchorEl,
-  //   setAnchorEl,
-  // };
-
   return (
     <Box sx={{ height: "100%" }}>
       {(banned || warned) && (
@@ -177,7 +205,11 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog /> : <WarningDialog setWarned={setWarned} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (
@@ -186,7 +218,7 @@ const RoomDisplay = () => {
             sx={{
               p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
-              maxHeight: "80%",
+              maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
               overflowY: "auto",
               display: "flex",
               flexDirection: "column-reverse",
@@ -205,7 +237,7 @@ const RoomDisplay = () => {
                         sx={{ display: "flex", flexDirection: "row", width: "100%" }}
                       >
                         <Box>
-                          <UserMenu username={message.username} course={roomProps.currentCourse}/>
+                          <UserMenu username={message.username} course={roomProps.currentCourse} />
                         </Box>
                         <Box sx={{ overflow: "hidden" }}>
                           <Typography

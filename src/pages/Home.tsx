@@ -101,7 +101,7 @@ const Home = () => {
   // }, [userCourses]);
 
   useEffect(() => {
-    console.log(activeIcon)
+    // console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
       // TODO: i dont think this will ever reach
       userCourses.forEach((course) => {

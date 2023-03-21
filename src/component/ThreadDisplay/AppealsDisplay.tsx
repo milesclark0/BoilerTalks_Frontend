@@ -146,7 +146,6 @@ const AppealsDisplay = () => {
                 startIcon={<CloseIcon />}
                 color="error"
                 loading={decisionLoading}
-                // disabled={}
                 onClick={appealDecision}
               >
                 Deny
@@ -156,7 +155,6 @@ const AppealsDisplay = () => {
                 startIcon={<CheckIcon />}
                 color="success"
                 loading={decisionLoading}
-                // disabled={}
                 onClick={appealDecision}
               >
                 Unban

@@ -1,6 +1,7 @@
 // This file is used to give a ban to a user
 import React, { useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -13,6 +14,8 @@ import { LoadingButton } from "@mui/lab";
 import { banUserURL } from "../../API/CourseManagementAPI";
 import { axiosPrivate } from "../../API/axios";
 import { useParams } from "react-router-dom";
+import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {
   openBanPrompt: boolean;
@@ -25,6 +28,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
   const [reason, setReason] = useState<string>("");
   const { courseId } = useParams();
   const [sendLoading, setSendLoading] = useState<boolean>(false);
+  const [sentBan, setSentBan] = useState<boolean>(false);
 
   const handleCloseBanPrompt = () => {
     setOpenBanPrompt(false);
@@ -38,6 +42,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
       });
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
+          setSentBan(true);
           setSendLoading(false);
         }
       }
@@ -54,40 +59,58 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
       return;
     }
     sendBanToUser();
-    
-    setOpenBanPrompt(false);
   };
 
   return (
-    <Dialog open={openBanPrompt} onClose={handleCloseBanPrompt}>
-      <DialogTitle>Ban {username}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Please provide a reason for banning "{username}".
-        </DialogContentText>
-        <TextField
-          autoFocus
-          multiline
-          margin="dense"
-          label="Reason for ban"
-          fullWidth
-          rows={5}
-          required
-          onChange={(e) => {
-            setReason(e.target.value);
-          }}
-          error={reasonError}
-          inputProps={{ maxLength: 250 }}
-          helperText={reasonError ? "Please enter a reason." : ""}
-          sx={{ mt: 2, width: 400 }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseBanPrompt}>Cancel</Button>
-        <LoadingButton onClick={sendBan} variant="outlined" loading={sendLoading}>
-          Send
-        </LoadingButton>
-      </DialogActions>
+    <Dialog open={openBanPrompt}>
+      {!sentBan ? (
+        <Box>
+          <DialogTitle>Ban &quot;{username}&quot;</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Please provide a reason for banning "{username}".</DialogContentText>
+            <TextField
+              autoFocus
+              multiline
+              margin="dense"
+              label="Reason for ban"
+              fullWidth
+              rows={5}
+              required
+              onChange={(e) => {
+                setReason(e.target.value);
+              }}
+              error={reasonError}
+              inputProps={{ maxLength: 250 }}
+              helperText={reasonError ? "Please enter a reason." : ""}
+              sx={{ mt: 2, width: 400 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseBanPrompt}>Cancel</Button>
+            <LoadingButton
+              onClick={sendBan}
+              variant="outlined"
+              loading={sendLoading}
+              endIcon={<SendIcon />}
+              loadingPosition="end"
+            >
+              Send
+            </LoadingButton>
+          </DialogActions>
+        </Box>
+      ) : (
+        <Box>
+          <DialogTitle>Ban Processed</DialogTitle>
+          <DialogContent>
+            <DialogContentText>You have banned "{username}".</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseBanPrompt} startIcon={<CloseIcon />} variant="outlined">
+              Exit
+            </Button>
+          </DialogActions>
+        </Box>
+      )}
     </Dialog>
   );
 };

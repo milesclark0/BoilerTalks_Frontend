@@ -168,7 +168,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                       ...threadButtonStyle(room?.name.replace(course?.name, "")),
                     }}
                     component={NavLink}
-                    to={`/home/courses/${course._id.$oid}/${room._id.$oid}`}
+                    to={`/home/courses/${course?._id.$oid}/${room?._id.$oid}`}
                     onClick={() => {
                       if (props.currentRoom?._id.$oid !== room?._id.$oid) {
                         props.setCurrentCourse(course);
@@ -194,7 +194,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               ...threadButtonStyle("Q&A"),
             }}
             component={NavLink}
-            to={`/home/courses/${course._id.$oid}/Q&A`}
+            to={`/home/courses/${course?._id.$oid}/Q&A`}
             onClick={() => {
               props.setCurrentCourse(course);
               props.setActiveCourseThread("Q&A");
@@ -211,7 +211,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   Mod Chat
                 </Typography>
               </ListItem> */}
-          {profile?.modThreads?.includes(course.name) && (
+          {profile?.modThreads?.includes(course?.name) && (
             <Button
               sx={{
                 // ...otherButtonStyle(),
@@ -219,7 +219,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 width: "100%",
               }}
               component={NavLink}
-              to={`/home/courses/${course._id.$oid}/Appeals`}
+              to={`/home/courses/${course?._id.$oid}/Appeals`}
               onClick={() => {
                 props.setCurrentCourse(course);
                 props.setActiveCourseThread("Appeals");
@@ -239,7 +239,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          {profile?.modThreads?.includes(course.name) && (
+          {profile?.modThreads?.includes(course?.name) && (
             <Button variant="outlined" onClick={handleClickNewThread}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>

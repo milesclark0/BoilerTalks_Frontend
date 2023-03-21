@@ -159,7 +159,7 @@ const RoomDisplay = () => {
     roomProps.setCurrentCourse(course);
     //if course name is in user active courses, set it as the active icon else set as the department name
     const activeCourses = getActiveCourses();
-    if (activeCourses.find((activeCourse) => activeCourse.name === course.name)) {
+    if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
       roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
     } else {
       roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });

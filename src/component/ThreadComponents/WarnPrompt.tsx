@@ -33,11 +33,13 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
   const sendWarningToUser = async () => {
     try {
       const res = await axiosPrivate.post(warnUserURL + courseId, {
-        user: username,
+        username: username,
         reason: reason,
       });
+      console.log(res)
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
+          setSendLoading(false);
         }
       }
     } catch (error) {
@@ -53,14 +55,15 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
       return;
     }
     sendWarningToUser();
-    setSendLoading(false);
+    
+    setOpenWarningPrompt(false);
   };
 
   return (
     <Dialog open={openWarningPrompt} onClose={handleCloseWarningPrompt}>
       <DialogTitle>Warn {username}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Please provide a reason for warning {username}.</DialogContentText>
+        <DialogContentText>Please provide a reason for warning "{username}".</DialogContentText>
         <TextField
           autoFocus
           multiline

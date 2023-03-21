@@ -43,6 +43,19 @@ type Props = {
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
+type WarnOrBan = {
+  username: string;
+  reason: string;
+};
+
+type Appeal = {
+  username: string;
+  response: string;
+  reason: string;
+  reviewed: boolean;
+  unban: boolean;
+};
+
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
@@ -60,8 +73,11 @@ const RoomDisplay = () => {
     roomProps: Props;
   }>();
   const [banned, setBanned] = useState<boolean>(false);
+  const [bannedData, setBannedData] = useState<WarnOrBan>();
   const [warned, setWarned] = useState<boolean>(false);
-  const [courseData, setCourseData] = useState<CourseManagement>(null);
+  const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
+  const [appealData, setAppealData] = useState<Appeal>(null);
+  // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
   // get course management
@@ -71,14 +87,32 @@ const RoomDisplay = () => {
       console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
+          const resData = res.data.data;
+          // setCourseData(resData);
+          resData?.bannedUsers.forEach((item) => {
+            if (item.username === user?.username) {
+              // find if user has sent an appeal
+              resData?.appeals.forEach((appeal) => {
+                if (appeal.username === user?.username) {
+                  setAppealData(appeal);
+                }
+              });
+              setBanned(true);
+              setBannedData(item);
+            }
+          });
+          resData?.warnedUsers.forEach((item) => {
+            if (item.username === user?.username) {
+              setWarned(true);
+              setWarnedData(item);
+            }
+          });
         }
       }
-      // setBanned(true)
-      // setWarned(true)
     };
-    if (roomProps.currentCourse) {
+    // if (roomProps.currentCourse) {
       fetchCourseManagement();
-    }
+    // }
   }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
@@ -92,9 +126,6 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      // scrolls to bottom every time
-      const element = document.getElementById("messages");
-      element.scrollTop = element.scrollHeight;
     }
   }, [roomProps.currentRoom]);
 
@@ -174,7 +205,11 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog /> : <WarningDialog setWarned={setWarned} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (

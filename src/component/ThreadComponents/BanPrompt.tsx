@@ -33,11 +33,12 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
   const sendBanToUser = async () => {
     try {
       const res = await axiosPrivate.post(banUserURL + courseId, {
-        user: username,
+        username: username,
         reason: reason,
       });
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
+          setSendLoading(false);
         }
       }
     } catch (error) {
@@ -53,14 +54,17 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
       return;
     }
     sendBanToUser();
-    setSendLoading(false);
+    
+    setOpenBanPrompt(false);
   };
 
   return (
     <Dialog open={openBanPrompt} onClose={handleCloseBanPrompt}>
       <DialogTitle>Ban {username}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Please provide a reason for banning {username}.</DialogContentText>
+        <DialogContentText>
+          Please provide a reason for banning "{username}".
+        </DialogContentText>
         <TextField
           autoFocus
           multiline
@@ -80,7 +84,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseBanPrompt}>Cancel</Button>
-        <LoadingButton onClick={sendBan} variant="outlined">
+        <LoadingButton onClick={sendBan} variant="outlined" loading={sendLoading}>
           Send
         </LoadingButton>
       </DialogActions>

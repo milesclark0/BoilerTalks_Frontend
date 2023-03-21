@@ -52,7 +52,7 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
       setSendLoading(false);
       return;
     }
-    // sendWarningToUser();
+    sendWarningToUser();
     setSendLoading(false);
   };
 

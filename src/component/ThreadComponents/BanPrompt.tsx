@@ -52,7 +52,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
       setSendLoading(false);
       return;
     }
-    // sendBanToUser();
+    sendBanToUser();
     setSendLoading(false);
   };
 

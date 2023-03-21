@@ -21,12 +21,9 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useAuth } from "../../context/context";
 import { LoadingButton } from "@mui/lab";
 
-// type Props = {
-//   drawerWidth: number;
-//   innerDrawerWidth: number;
-//   appBarHeight: number;
-//   currentCourse: Course;
-// };
+type Props = {
+  setSubmittedAppeal: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const BanDialog = () => {
   const [submittedAppeal, setSubmittedAppeal] = useState<boolean>(false);
@@ -34,11 +31,7 @@ const BanDialog = () => {
   const { user } = useAuth();
   const { courseId } = useParams();
 
-  const AppealProps = {
-    setSubmittedAppeal,
-  };
-
-  const AppealForm = ({ ...AppealProps }) => {
+  const AppealForm = ({setSubmittedAppeal}: Props) => {
     const [openForm, setOpenForm] = useState<boolean>(false);
     const [responseError, setResponseError] = useState<boolean>(false);
     const [response, setResponse] = useState<string>("");
@@ -68,7 +61,7 @@ const BanDialog = () => {
         return;
       }
       // sendAppeal();
-      AppealProps.setSubmittedAppeal(true);
+      setSubmittedAppeal(true);
       setOpenForm(false);
       setSubmitLoading(false);
     };
@@ -164,7 +157,7 @@ const BanDialog = () => {
       )}
       {!submittedAppeal && (
         <CardActions sx={{ mb: 2 }}>
-          <AppealForm {...AppealProps} />
+          <AppealForm setSubmittedAppeal={setSubmittedAppeal} />
         </CardActions>
       )}
     </Box>

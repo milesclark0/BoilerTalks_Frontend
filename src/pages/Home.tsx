@@ -101,13 +101,13 @@ const Home = () => {
   // }, [userCourses]);
 
   useEffect(() => {
-    // console.log(activeIcon)
+    console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
-      // TODO: i dont think this will ever reach
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
+          setActiveCourseThread(getRoomFromUrl()?.name.replace(getCourseFromUrl()?.name, ""));
           //navigate to home/courses/courseId
           navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, {
             replace: true,
@@ -293,6 +293,7 @@ const Home = () => {
     sendMessage,
     connectToRoom,
     disconnectFromRoom,
+    setActiveCourseThread
   };
 
   // const userBarProps = {
@@ -471,7 +472,7 @@ const Home = () => {
                     : activeIcon.course || "Select a Department"} */}
                   {currentCourse?.name
                     ? `${currentCourse?.name}: ${activeCourseThread}`
-                    : activeIcon.course || "Select a Department"}
+                    : activeIcon.course || "Select a Department or Course"}
                 </Typography>
                 <Button
                   variant="outlined"

@@ -41,6 +41,7 @@ type Props = {
   setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type WarnOrBan = {
@@ -116,16 +117,20 @@ const RoomDisplay = () => {
   }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
-  useEffect(() => {
-    if (roomProps.currentCourse) {
-      assignMessages(roomProps.currentCourse.rooms[0]);
-    }
-  }, [roomProps.currentCourse]);
+  // useEffect(() => {
+  //   if (roomProps.currentCourse) {
+  //     console.log("currentCourse")
+  //     assignMessages(roomProps.currentCourse.rooms[0]);
+  //   }
+  // }, [roomProps.currentCourse]);
 
   // when the current room changes, we want to update the messages
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
+      roomProps.setActiveCourseThread(
+        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
+      );
     }
   }, [roomProps.currentRoom]);
 
@@ -157,13 +162,13 @@ const RoomDisplay = () => {
     console.log(courseId, roomId);
     const course = getCourseFromUrl();
     roomProps.setCurrentCourse(course);
-    //if course name is in user active courses, set it as the active icon else set as the department name
-    const activeCourses = getActiveCourses();
-    if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
-      roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
-    } else {
-      roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
-    }
+    // if course name is in user active courses, set it as the active icon else set as the department name
+    // const activeCourses = getActiveCourses();
+    // if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
+    //   roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
+    // } else {
+    //   roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
+    // }
     // if (roomId) {
     const room = getRoomFromUrl();
     roomProps.setCurrentRoom(room);

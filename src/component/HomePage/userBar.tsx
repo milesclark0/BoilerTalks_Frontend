@@ -34,17 +34,17 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }:
 
   const getAllConnectedUsers = () => {
     const initialUser = { username: user?.username, profilePic: user?.profilePicture };
-    const users = [];
+    const users = new Map<string, any>();
     //if the current user username is not in the list of users connected in all rooms in the current course, add it
-    if (!currentCourse?.rooms.some((room) => room.connected.some((connectedUser) => connectedUser.username === user?.username))) {
-      users.push(initialUser);
+    if (!users.has(initialUser.username)) {
+      users.set(initialUser.username, initialUser);
     }
     currentCourse?.rooms.forEach((room) => {
       room.connected.forEach((connectedUser) => {
-        users.push(connectedUser);
+        users.set(connectedUser.username, { username: connectedUser.username, profilePic: connectedUser.profilePic });
       });
     });
-    return users.sort((a, b) => a.username.localeCompare(b.username));
+    return Array.from(users.values()).sort((a, b) => a.username.localeCompare(b.username));
   };
 
   const OnlineUser = ({ user }) => {

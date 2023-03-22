@@ -101,15 +101,17 @@ const Home = () => {
   // }, [userCourses]);
 
   useEffect(() => {
-    // console.log(activeIcon)
+    console.log(activeIcon)
     if (activeIcon.isActiveCourse) {
-      // TODO: i dont think this will ever reach
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
+          setActiveCourseThread(getRoomFromUrl()?.name.replace(getCourseFromUrl()?.name, ""));
           //navigate to home/courses/courseId
-          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, {
+            replace: true,
+          });
           // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
         }
       });
@@ -291,6 +293,7 @@ const Home = () => {
     sendMessage,
     connectToRoom,
     disconnectFromRoom,
+    setActiveCourseThread
   };
 
   // const userBarProps = {
@@ -446,7 +449,7 @@ const Home = () => {
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }}>
+        <Box sx={{ pl: `${drawerWidth}px`, width: `calc(100% - ${drawerWidth}px)` }} id="home">
           <AppBar
             position="fixed"
             sx={{
@@ -469,7 +472,7 @@ const Home = () => {
                     : activeIcon.course || "Select a Department"} */}
                   {currentCourse?.name
                     ? `${currentCourse?.name}: ${activeCourseThread}`
-                    : activeIcon.course || "Select a Department"}
+                    : activeIcon.course || "Select a Department or Course"}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -488,7 +491,15 @@ const Home = () => {
             </Toolbar>
           </AppBar>
           {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
-          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }}>
+          <Box
+            sx={{
+              mt: `${appBarHeight}px`,
+              height: `calc(100% - ${appBarHeight}px)`,
+              // width: `calc(100% - ${drawerWidth}px)`,
+              width: "100%",
+            }}
+            id="threads"
+          >
             {/* <Box> */}
             <Outlet context={{ roomProps }} />
             {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}

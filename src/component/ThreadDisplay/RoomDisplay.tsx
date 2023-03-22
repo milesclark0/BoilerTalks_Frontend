@@ -41,6 +41,7 @@ type Props = {
   setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
+  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
 };
 
 type WarnOrBan = {
@@ -118,6 +119,7 @@ const RoomDisplay = () => {
   // when the current course changes, we want to update the messages
   // useEffect(() => {
   //   if (roomProps.currentCourse) {
+  //     console.log("currentCourse")
   //     assignMessages(roomProps.currentCourse.rooms[0]);
   //   }
   // }, [roomProps.currentCourse]);
@@ -126,6 +128,9 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
+      roomProps.setActiveCourseThread(
+        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
+      );
     }
   }, [roomProps.currentRoom]);
 
@@ -157,13 +162,13 @@ const RoomDisplay = () => {
     console.log(courseId, roomId);
     const course = getCourseFromUrl();
     roomProps.setCurrentCourse(course);
-    //if course name is in user active courses, set it as the active icon else set as the department name
-    const activeCourses = getActiveCourses();
-    if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
-      roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
-    } else {
-      roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
-    }
+    // if course name is in user active courses, set it as the active icon else set as the department name
+    // const activeCourses = getActiveCourses();
+    // if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
+    //   roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
+    // } else {
+    //   roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
+    // }
     // if (roomId) {
     const room = getRoomFromUrl();
     roomProps.setCurrentRoom(room);
@@ -194,7 +199,7 @@ const RoomDisplay = () => {
   };
 
   return (
-    <Box sx={{ height: "100%" }}>
+    <Box sx={{ height: "100%", width: "100%" }} id="room">
       {(banned || warned) && (
         <Box
           sx={{
@@ -213,11 +218,11 @@ const RoomDisplay = () => {
         </Box>
       )}
       {!banned && !warned && (
-        <Box sx={{ height: "100%" }}>
+        <Box sx={{ height: "100%", width: "100%" }}>
           <Box
             sx={{
               p: roomProps.defaultPadding,
-              width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
+              width: `calc(100% - ${roomProps.drawerWidth}px)`,
               maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
               overflowY: "auto",
               display: "flex",
@@ -234,7 +239,11 @@ const RoomDisplay = () => {
                     return (
                       <Box
                         key={index}
-                        sx={{ display: "flex", flexDirection: "row", width: "100%" }}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                        }}
                       >
                         <Box>
                           <UserMenu username={message.username} course={roomProps.currentCourse} />

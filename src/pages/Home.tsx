@@ -6,17 +6,7 @@ import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import EmojiPicker, { EmojiStyle, Theme, EmojiClickData, Emoji } from "emoji-picker-react";
 import { getUserCoursesURL, getCourseUsersURL } from "../API/CoursesAPI";
 import SideBar from "../component/HomePage/sideBar";
-import {
-  AppBar,
-  Box,
-  Button,
-  MenuItem,
-  Select,
-  Toolbar,
-  Typography,
-  Autocomplete,
-  TextField,
-} from "@mui/material";
+import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography, Autocomplete, TextField } from "@mui/material";
 import { Course, Room } from "../types/types";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 // import MessageBox from "./../component/HomePage/messageBox";
@@ -42,15 +32,7 @@ const Home = () => {
   const [courseUsers, setCourseUsers] = useState([]);
   const [activeCourseThread, setActiveCourseThread] = useState<string>("");
   const navigate = useNavigate();
-  const {
-    message,
-    setMessage,
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
-  } = useSockets();
+  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
   const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
@@ -101,7 +83,7 @@ const Home = () => {
   // }, [userCourses]);
 
   useEffect(() => {
-    console.log(activeIcon)
+    console.log(activeIcon);
     if (activeIcon.isActiveCourse) {
       userCourses.forEach((course) => {
         if (course.name === activeIcon.course) {
@@ -124,6 +106,42 @@ const Home = () => {
       setActiveCourseThread(getRoomFromUrl()?.name.replace(getCourseFromUrl()?.name, ""));
     }
   }, [activeIcon]);
+
+  const getActiveCourses = () => {
+    const activeCourses = [];
+    user?.activeCourses.forEach((course) => {
+      roomProps.userCourses.forEach((userCourse) => {
+        if (course === userCourse.name) {
+          activeCourses.push(userCourse);
+        }
+      });
+    });
+    return activeCourses;
+  };
+
+  //triggered on page load, sets the current course and room based on the url
+  useEffect(() => {
+    // if (courseId) {
+    const course = getCourseFromUrl();
+    console.log(course);
+    roomProps.setCurrentCourse(course);
+    // if course name is in user active courses, set it as the active icon else set as the department name
+    const activeCourses = getActiveCourses();
+    if (course) {
+      if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
+        roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
+      } else {
+        roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
+      }
+      // if (roomId) {
+      const room = getRoomFromUrl();
+      roomProps.setCurrentRoom(room);
+    } else {
+      roomProps.setActiveIcon({ course: "", isActiveCourse: false });
+    }
+    // }
+    // }
+  }, [userCourses]);
 
   // when the current course changes, we want to update the messages
   // useEffect(() => {
@@ -226,7 +244,7 @@ const Home = () => {
 
   // returns the most recent semester for a given course
   const getMostRecentSemester = (courses: Course[]) => {
-    courses = courses.filter((course) => course.name === currentCourse.name);
+    courses = courses.filter((course) => course.name === currentCourse?.name);
 
     //sort courses by semester ex Winter 2021 < Spring 2021 < Summer 2021  < Fall 2021
     const sortedCourses = [...courses].sort((a, b) => {
@@ -293,7 +311,7 @@ const Home = () => {
     sendMessage,
     connectToRoom,
     disconnectFromRoom,
-    setActiveCourseThread
+    setActiveCourseThread,
   };
 
   // const userBarProps = {
@@ -343,9 +361,7 @@ const Home = () => {
           value={currentSemester || getMostRecentSemester(userCourses)}
           onChange={(e) => {
             setCurrentSemester(e.target.value as string);
-            const course = userCourses.find(
-              (course) => course.name === currentCourse.name && course.semester === e.target.value
-            );
+            const course = userCourses.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
             if (course) {
               setCurrentCourse(course);
               setCurrentRoom(course.rooms[0]);
@@ -361,7 +377,7 @@ const Home = () => {
           <MenuItem disabled value="">
             Select Semester
           </MenuItem>
-          {getCoursesByName(currentCourse.name).map((course) => (
+          {getCoursesByName(currentCourse?.name).map((course) => (
             <MenuItem key={course.semester} value={course.semester}>
               {course.semester}
             </MenuItem>
@@ -401,15 +417,7 @@ const Home = () => {
           }
         }}
         sx={{ width: drawerWidth - innerDrawerWidth }}
-        renderInput={(params) => (
-          <TextField
-            onKeyDown={(e) => handleEnter(e)}
-            {...params}
-            variant="outlined"
-            color="info"
-            label="Search users..."
-          />
-        )}
+        renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." />}
       />
     );
   };
@@ -430,9 +438,7 @@ const Home = () => {
         </div>
         <div className="show-emoji">
           Your selected Emoji is:
-          {selectedEmojis ? (
-            <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} />
-          ) : null}
+          {selectedEmojis ? <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} /> : null}
         </div>
       </div>
     );
@@ -470,9 +476,7 @@ const Home = () => {
                         ""
                       )}`
                     : activeIcon.course || "Select a Department"} */}
-                  {currentCourse?.name
-                    ? `${currentCourse?.name}: ${activeCourseThread}`
-                    : activeIcon.course || "Select a Department or Course"}
+                  {currentCourse?.name ? `${currentCourse?.name}: ${activeCourseThread}` : activeIcon.course || "Select a Department or Course"}
                 </Typography>
                 <Button
                   variant="outlined"

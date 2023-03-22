@@ -81,6 +81,8 @@ const MessageBox = ({
         course.rooms.forEach((room) => {
           if (room._id.$oid === currentRoom?._id.$oid) {
             room.messages.push(formattedMessage);
+            console.log("room messages", room.messages);
+            
           }
         });
       }
@@ -92,6 +94,7 @@ const MessageBox = ({
     currCourseCopy?.rooms.forEach((room) => {
       if (room._id.$oid === currentRoom?._id.$oid) {
         room.messages.push(formattedMessage);
+        console.log("room messages 2", room.messages);
       }
     });
     setCurrentCourse(currCourseCopy);

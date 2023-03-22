@@ -26,11 +26,7 @@ type Props = {
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (
-    message: { username: string; message: string; timeSent: string },
-    room: Room,
-    isSystemMessage: boolean
-  ) => void;
+  sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
   connectToRoom: (room: Room) => void;
   disconnectFromRoom: (room: Room) => void;
   drawerWidth: number;
@@ -60,15 +56,7 @@ type Appeal = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const {
-    message,
-    setMessage,
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
-  } = useSockets();
+  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
   const { courseId, roomId } = useParams();
   const { roomProps } = useOutletContext<{
     roomProps: Props;
@@ -85,7 +73,6 @@ const RoomDisplay = () => {
   useEffect(() => {
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
-      console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
@@ -112,9 +99,20 @@ const RoomDisplay = () => {
       }
     };
     // if (roomProps.currentCourse) {
-      fetchCourseManagement();
+    fetchCourseManagement();
     // }
   }, [roomProps.currentCourse]);
+
+  const getCurrentRoomMessages = () => {
+      //find room in currentCourse since currentRoom messages are not updated
+      let foundRoom: Room;
+      roomProps.currentCourse?.rooms.forEach((room) => {
+        if (room.name === roomProps.currentRoom?.name) {
+          foundRoom = room;
+        }
+      });
+      return foundRoom ? foundRoom.messages : [];
+  };
 
   // when the current course changes, we want to update the messages
   // useEffect(() => {
@@ -128,53 +126,9 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      roomProps.setActiveCourseThread(
-        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
-      );
+      roomProps.setActiveCourseThread(roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, ""));
     }
   }, [roomProps.currentRoom]);
-
-  const getCourseFromUrl = () => {
-    const course = roomProps.userCourses?.find((course) => course._id.$oid === courseId);
-    return course;
-  };
-
-  const getRoomFromUrl = () => {
-    const course = getCourseFromUrl();
-    const room = course?.rooms.find((room) => room._id.$oid === roomId);
-    return room;
-  };
-
-  const getActiveCourses = () => {
-    const activeCourses = [];
-    user?.activeCourses.forEach((course) => {
-      roomProps.userCourses.forEach((userCourse) => {
-        if (course === userCourse.name) {
-          activeCourses.push(userCourse);
-        }
-      });
-    });
-    return activeCourses;
-  };
-
-  useEffect(() => {
-    // if (courseId) {
-    console.log(courseId, roomId);
-    const course = getCourseFromUrl();
-    roomProps.setCurrentCourse(course);
-    // if course name is in user active courses, set it as the active icon else set as the department name
-    // const activeCourses = getActiveCourses();
-    // if (activeCourses.find((activeCourse) => activeCourse.name === course?.name)) {
-    //   roomProps.setActiveIcon({ course: course?.name, isActiveCourse: true });
-    // } else {
-    //   roomProps.setActiveIcon({ course: course?.department, isActiveCourse: false });
-    // }
-    // if (roomId) {
-    const room = getRoomFromUrl();
-    roomProps.setCurrentRoom(room);
-    // }
-    // }
-  }, [roomProps.userCourses]);
 
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
@@ -210,11 +164,7 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? (
-            <BanDialog bannedData={bannedData} appealData={appealData} />
-          ) : (
-            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
-          )}
+          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
         </Box>
       )}
       {!banned && !warned && (
@@ -231,11 +181,11 @@ const RoomDisplay = () => {
             className="scrollBar"
             id="messages"
           >
-            {messages?.length > 0 ? (
+            {getCurrentRoomMessages().length > 0 ? (
               <Box>
                 <Typography variant="h4">Messages</Typography>
                 <Box>
-                  {messages.map((message, index) => {
+                  {getCurrentRoomMessages().map((message, index) => {
                     return (
                       <Box
                         key={index}
@@ -249,10 +199,7 @@ const RoomDisplay = () => {
                           <UserMenu username={message.username} course={roomProps.currentCourse} />
                         </Box>
                         <Box sx={{ overflow: "hidden" }}>
-                          <Typography
-                            variant="h6"
-                            display="inline"
-                          >{`[${message.username}]: `}</Typography>
+                          <Typography variant="h6" display="inline">{`[${message.username}]: `}</Typography>
                           <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
                             {message.message}
                           </Typography>

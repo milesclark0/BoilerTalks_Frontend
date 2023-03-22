@@ -449,7 +449,7 @@ const Home = () => {
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }} id="home">
+        <Box sx={{ pl: `${drawerWidth}px`, width: `calc(100% - ${drawerWidth}px)` }} id="home">
           <AppBar
             position="fixed"
             sx={{
@@ -495,7 +495,8 @@ const Home = () => {
             sx={{
               mt: `${appBarHeight}px`,
               height: `calc(100% - ${appBarHeight}px)`,
-              width: `calc(100% - ${drawerWidth}px)`,
+              // width: `calc(100% - ${drawerWidth}px)`,
+              width: "100%",
             }}
             id="threads"
           >

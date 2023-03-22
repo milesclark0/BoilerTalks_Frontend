@@ -199,7 +199,7 @@ const RoomDisplay = () => {
   };
 
   return (
-    <Box sx={{ height: "100%" }} id="room">
+    <Box sx={{ height: "100%", width: "100%" }} id="room">
       {(banned || warned) && (
         <Box
           sx={{

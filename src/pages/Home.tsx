@@ -109,7 +109,9 @@ const Home = () => {
           setCurrentCourse(course);
           setCurrentRoom(course?.rooms[0]);
           //navigate to home/courses/courseId
-          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, { replace: true });
+          navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0]._id.$oid}`, {
+            replace: true,
+          });
           // navigate(`/home/courses/${course._id.$oid}/${course?.rooms[0].name.replace(course?.name, "").replace(/\s/g, "")}`, { replace: true });
         }
       });
@@ -446,7 +448,7 @@ const Home = () => {
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
       {!isLoading && !error && !fetchError ? (
-        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }}>
+        <Box sx={{ pl: `${drawerWidth}px`, width: "100%" }} id="home">
           <AppBar
             position="fixed"
             sx={{
@@ -488,7 +490,14 @@ const Home = () => {
             </Toolbar>
           </AppBar>
           {/* <Box sx={{ padding: defaultPadding, mt: `${appBarHeight}px`, height: "100%" }}> */}
-          <Box sx={{ mt: `${appBarHeight}px`, height: `calc(100% - ${appBarHeight}px)` }}>
+          <Box
+            sx={{
+              mt: `${appBarHeight}px`,
+              height: `calc(100% - ${appBarHeight}px)`,
+              width: `calc(100% - ${drawerWidth}px)`,
+            }}
+            id="threads"
+          >
             {/* <Box> */}
             <Outlet context={{ roomProps }} />
             {/* {isCourseSelected() && isRoomSelected() && <Typography variant="h4">Messages</Typography>}

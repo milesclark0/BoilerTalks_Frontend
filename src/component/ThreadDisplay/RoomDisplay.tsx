@@ -116,11 +116,11 @@ const RoomDisplay = () => {
   }, [roomProps.currentCourse]);
 
   // when the current course changes, we want to update the messages
-  // useEffect(() => {
-  //   if (roomProps.currentCourse) {
-  //     assignMessages(roomProps.currentCourse.rooms[0]);
-  //   }
-  // }, [roomProps.currentCourse]);
+  useEffect(() => {
+    if (roomProps.currentCourse) {
+      assignMessages(roomProps.currentCourse.rooms[0]);
+    }
+  }, [roomProps.currentCourse]);
 
   // when the current room changes, we want to update the messages
   useEffect(() => {
@@ -194,7 +194,7 @@ const RoomDisplay = () => {
   };
 
   return (
-    <Box sx={{ height: "100%" }}>
+    <Box sx={{ height: "100%" }} id="room">
       {(banned || warned) && (
         <Box
           sx={{
@@ -213,11 +213,11 @@ const RoomDisplay = () => {
         </Box>
       )}
       {!banned && !warned && (
-        <Box sx={{ height: "100%" }}>
+        <Box sx={{ height: "100%", width: "100%" }}>
           <Box
             sx={{
               p: roomProps.defaultPadding,
-              width: `calc(100% - ${roomProps.drawerWidth * 2}px)`,
+              width: `calc(100% - ${roomProps.drawerWidth}px)`,
               maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
               overflowY: "auto",
               display: "flex",
@@ -234,7 +234,11 @@ const RoomDisplay = () => {
                     return (
                       <Box
                         key={index}
-                        sx={{ display: "flex", flexDirection: "row", width: "100%" }}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                        }}
                       >
                         <Box>
                           <UserMenu username={message.username} course={roomProps.currentCourse} />

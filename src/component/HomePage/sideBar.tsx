@@ -125,6 +125,7 @@ const SideBar = ({ ...props }: Props) => {
   const SettingsMenuProps = {
     anchorEl,
     setAnchorEl,
+    currentRoom,
   };
 
   const CourseViewProps = {

@@ -38,6 +38,7 @@ type Props = {
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
+  courseUsers: [{username: string, profilePic: string}]
 };
 
 type WarnOrBan = {

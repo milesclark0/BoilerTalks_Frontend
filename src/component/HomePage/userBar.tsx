@@ -11,9 +11,10 @@ type Props = {
   innerDrawerWidth: number;
   appBarHeight: number;
   currentCourse: Course;
+  courseUsers: any[];
 };
 
-const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }: Props) => {
+const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse, courseUsers }: Props) => {
   const { user } = useAuth();
   const newWidth = drawerWidth - innerDrawerWidth + 3 * 8;
   const OuterDrawerStyles = {
@@ -47,12 +48,18 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }:
     return Array.from(users.values()).sort((a, b) => a.username.localeCompare(b.username));
   };
 
+  const getAllDisconnectedUsers = () => {
+    const connectedUsers = getAllConnectedUsers();
+    const offlineUsers = courseUsers.filter((user) => !connectedUsers.some((connectedUser) => connectedUser.username === user.username));
+    return offlineUsers.sort((a, b) => a.username.localeCompare(b.username));
+  };
+
   const OnlineUser = ({ user }) => {
     return (
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <Avatar src={user.profilePic} />
         <Link to={`/profile/${user.username}`} style={{ textDecoration: "none", color: "black" }}>
-          <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", backgroundColor: "lightgrey" } }}>{user.username}</Typography>
+          <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", color: "darkblue" } }}>{user.username}</Typography>
         </Link>
       </Box>
     );
@@ -60,19 +67,27 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse }:
 
   return (
     // <Box>
-      <Drawer sx={OuterDrawerStyles} anchor="right" variant="permanent">
-        <Box sx={{ display: "block", mt: `${appBarHeight}px`, p: 1 }}>
-          <Typography variant="h5" sx={{ mb: 1 }}>
-            Online Users
-          </Typography>
-          {getAllConnectedUsers().map((user) => (
-            <Box key={user.username} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-              <OnlineUser user={user} />
-            </Box>
-          ))}
-        </Box>
-      </Drawer>
-    // </Box> 
+    <Drawer sx={OuterDrawerStyles} anchor="right" variant="permanent">
+      <Box sx={{ display: "block", mt: `${appBarHeight}px`, p: 1 }}>
+        <Typography variant="h6" sx={{ mb: 1, }}>
+          Online - {getAllConnectedUsers().length}
+        </Typography>
+        {getAllConnectedUsers().map((user) => (
+          <Box key={user.username} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <OnlineUser user={user} />
+          </Box>
+        ))}
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          Offline - {getAllDisconnectedUsers().length}
+        </Typography>
+        {getAllDisconnectedUsers().map((user) => (
+          <Box key={user.username} sx={{ display: "flex", alignItems: "center", mb: 1, filter: "brightness(0.5)" }}>
+            <OnlineUser user={user} />
+          </Box>
+        ))}
+      </Box>
+    </Drawer>
+    // </Box>
   );
 };
 

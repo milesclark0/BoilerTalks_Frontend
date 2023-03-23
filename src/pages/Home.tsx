@@ -158,18 +158,18 @@ const Home = () => {
   // }, [currentRoom]);
 
   // TODO: i dont think this does anything for now
-  // useEffect(() => {
-  //   const fetchCourseUsers = async () => {
-  //     if (activeIcon.course === "") return;
-  //     const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
-  //     if (res.data.statusCode == 200) {
-  //       setCourseUsers(res.data.data);
-  //     }
-  //   };
-  //   if (isCourseSelected()) {
-  //     fetchCourseUsers();
-  //   }
-  // }, [activeIcon]);
+  useEffect(() => {
+    const fetchCourseUsers = async () => {
+      if (activeIcon.course === "") return;
+      const res = await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+      if (res.data.statusCode == 200) {
+        setCourseUsers(res.data.data);
+      }
+    };
+    if (isCourseSelected()) {
+      fetchCourseUsers();
+    }
+  }, [currentCourse]);
 
   const fetchCourse = async () => {
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
@@ -312,6 +312,7 @@ const Home = () => {
     connectToRoom,
     disconnectFromRoom,
     setActiveCourseThread,
+    courseUsers,
   };
 
   // const userBarProps = {

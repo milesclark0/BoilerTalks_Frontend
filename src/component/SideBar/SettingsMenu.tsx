@@ -4,13 +4,15 @@ import useLogout from "../../hooks/useLogout";
 import { StyledDivider } from "./StyledDivider";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/context";
+import { Room } from "../../types/types";
 
 type Props = {
   anchorEl: HTMLElement | null;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
+  currentRoom: Room | null;
 };
 
-export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
+export const SettingsMenu = ({ anchorEl, setAnchorEl, currentRoom }: Props) => {
   const settingsOpen = Boolean(anchorEl);
   const logout = useLogout();
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
       <StyledDivider />
       <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
       <MenuItem onClick={navigateToAbout}>About</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
+      <MenuItem onClick={() => logout(currentRoom)}>Logout</MenuItem>
     </Menu>
   );
 };

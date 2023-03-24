@@ -97,10 +97,7 @@ const SideBar = ({ ...props }: Props) => {
   }, []);
 
   const handleIconClick = (course: string, isActiveCourse: boolean) => {
-    //add delay to prevent rerendering before the button animation is done
-    setTimeout(() => {
-      setActiveIcon({ course: course, isActiveCourse: isActiveCourse });
-    }, 200);
+    setActiveIcon({ course: course, isActiveCourse: isActiveCourse });
     if (course === "") {
       navigate("/home");
     } else {

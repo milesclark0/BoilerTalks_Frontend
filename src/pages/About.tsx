@@ -1,19 +1,48 @@
 import { useAuth } from "../context/context";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useState } from "react";
-import { Alert, AppBar, Box, Button, Drawer, FormHelperText, FormLabel, IconButton, InputAdornment, Stack, Toolbar, Typography } from "@mui/material";
+import {
+  Alert,
+  AppBar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Drawer,
+  FormHelperText,
+  FormLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Modal,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import WarningIcon from "@mui/icons-material/Warning";
 import { ChangePasswordAPI } from "../API/RegisterAPI";
 import { LoadingButton } from "@mui/lab";
 import { Link, useNavigate } from "react-router-dom";
-import GitHubIcon from '@mui/icons-material/GitHub';
+import GitHubIcon from "@mui/icons-material/GitHub";
+import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { shadows } from "@mui/system";
 
 const About = () => {
   const { user } = useAuth();
   const api = useAxiosPrivate();
 
-  const [settingsPage, setSettingsPage] = useState<string>('Password');
+  const [settingsPage, setSettingsPage] = useState<string>("Password");
+
+  const [selectedId, setSelectedId] = useState(null);
+  const [selectedCaption, setSelectedCaption] = useState<string>(null);
+  const [selectedGithub, setSelectedGithub] = useState<string>(null);
 
   const defaultPadding = 4;
   const drawerWidth = 300;
@@ -33,70 +62,137 @@ const About = () => {
 
   const navigate = useNavigate();
   const navigateToHome = () => {
-    navigate("/home")
-  }
+    navigate("/home");
+  };
 
+  const devs = [
+    {
+      id: "0",
+      title: "Jeff",
+      email: "wang4621@purdue.edu",
+      caption: "My name is Jeff.",
+      github: "https://github.com/wang4621",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Jeff",
+    },
+    {
+      id: "1",
+      title: "Sam",
+      email: "sboynton@purdue.edu",
+      caption: "Senior in Software Engineering",
+      github: "https://github.com/sboynton1",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Sam",
+    },
+    {
+      id: "2",
+      title: "Chris",
+      email: "bradle82@purdue.edu",
+      caption: "Hello my name is Chris",
+      github: "https://github.com/cgbradley",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Chris",
+    },
+    {
+      id: "3",
+      title: "Katie",
+      email: "zhan3461@purdue.edu",
+      caption: "Hello my name is Katie",
+      github: "https://github.com/oneKZhang",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Katie",
+    },
+    {
+      id: "4",
+      title: "Miles",
+      email: "clark658@purdue.edu",
+      caption: "Hello my name is Miles",
+      github: "https://github.com/milesclark0",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Miles",
+    },
+  ];
 
-return (
-    <Box sx={{ display: "flex" }}>
-        <AppBar position="fixed" sx={{ width: `calc(100%)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
-          <Toolbar>
-            <Typography variant="h5" sx={{p:4}}>{"About"}</Typography>
-            <Button sx={{color: "white"}}onClick={navigateToHome}>Home</Button>
-          </Toolbar>
-        </AppBar>
-        <Box sx={{marginTop:`${appBarHeight}px` , paddingTop: '40px', paddingLeft: '40px'}}>
-          <Box sx={{display: "inline-flex"}}>
-            <Typography variant="h5">Jeff</Typography>
-            <Link to={"https://github.com/wang4621"}>
-              <IconButton sx={{paddingTop: "3px"}}><GitHubIcon /></IconButton>
-            </Link>
-          </Box>
-          <Typography variant="body2" sx={{fontStyle: 'italic', textDecorationLine: 'underline'}}>wang4621@purdue.edu</Typography>
-          <Typography sx={{paddingBottom: "30px"}} variant="body2">My name is Jeff.</Typography>
-          
-          <Box sx={{display: "inline-flex"}}>
-            <Typography variant="h5">Samuel</Typography>
-            <Link to={"https://github.com/sboynton1"}>
-              <IconButton sx={{paddingTop: "3px"}}><GitHubIcon /></IconButton>
-            </Link>
-          </Box>
-          <Typography variant="body2" sx={{fontStyle: 'italic', textDecorationLine: 'underline'}}>sboynton@purdue.edu</Typography>
-          <Typography sx={{paddingBottom: "30px"}} variant="body2">I am a senior majoring Software Engineering and I like playing basketball in my free time.</Typography>
+  return (
+    <React.Fragment>
+      <AppBar
+        position="fixed"
+        sx={{
+          width: `calc(100%)`,
+          ml: `${drawerWidth}px`,
+          height: appBarHeight,
+          alignContent: "center",
+        }}
+      >
+        <Toolbar>
+          <Typography variant="h5" sx={{ p: 4 }}>
+            {"About"}
+          </Typography>
+          <Button sx={{ color: "white" }} onClick={navigateToHome}>
+            Home
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Box flexGrow={1}>
+        <Grid
+          container
+          wrap="nowrap"
+          flexDirection="row"
+          spacing={2}
+          alignItems="center"
+        >
+          {devs.map((dev) => (
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Box sx={{ margin: "15%" }}>
+                <Card
+                  sx={{
+                    maxWidth: 345,
+                    backgroundColor: "lightgrey",
+                    marginTop: "80%",
+                    border: "1px solid grey",
+                    cursor: "pointer",
+                    ":hover": {
+                      border: "1px solid black",
+                    },
+                  }}
+                  onClick={() => {setSelectedId(dev.id); setSelectedCaption(dev.caption); setSelectedGithub(dev.github)}}>
+                  <CardMedia
+                    component="img"
+                    height="240"
+                    src={dev.picture}
+                    alt="ProfilePicture"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {dev.title}
+                    </Typography>
 
-          <Box sx={{display: "inline-flex"}}>
-            <Typography variant="h5">Katie</Typography>
-            <Link to={"https://github.com/oneKZhang"}>
-              <IconButton sx={{paddingTop: "3px"}}><GitHubIcon /></IconButton>
-            </Link>
-          </Box>
-          <Typography variant="body2" sx={{fontStyle: 'italic', textDecorationLine: 'underline'}}>zhan3461@purdue.edu</Typography>
-          <Typography sx={{paddingBottom: "30px"}} variant="body2">Hi my name is Katie and I am a senior in computer science.</Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      align="center"
+                    >
+                      Learn More
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-          <Box sx={{display: "inline-flex"}}>
-            <Typography variant="h5">Miles</Typography>
-            <Link to={"https://github.com/milesclark0"}>
-              <IconButton sx={{paddingTop: "3px"}}><GitHubIcon /></IconButton>
-            </Link>
-          </Box>
-          <Typography variant="body2" sx={{fontStyle: 'italic', textDecorationLine: 'underline'}}>clark658@purdue.edu</Typography>
-          <Typography sx={{paddingBottom: "30px"}} variant="body2">I have a deep passion for password encryption.</Typography>
-
-          <Box sx={{display: "inline-flex"}}>
-            <Typography variant="h5">Christopher</Typography>
-            <Link to={"https://github.com/cgbradley"}>
-              <IconButton sx={{paddingTop: "3px"}}><GitHubIcon /></IconButton>
-            </Link>
-          </Box>
-          <Typography variant="body2" sx={{fontStyle: 'italic', textDecorationLine: 'underline'}}>bradle82@purdue.edu</Typography>
-          <Typography sx={{paddingBottom: "30px"}} variant="body2">Hi my name is Christopher and I am a senior in computer science.</Typography>
-    
-        </Box>
-        
-    </Box>
+      <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)}>
+        <DialogTitle sx={{alignContent: 'center'}}>About Me</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{selectedCaption}</DialogContentText>
+          <Link to={selectedGithub}>
+            <IconButton><GitHubIcon /></IconButton>
+          </Link>
+        </DialogContent>
+      </Dialog>
+    </React.Fragment>
   );
-
 };
-
 
 export default About;

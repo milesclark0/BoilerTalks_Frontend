@@ -1,6 +1,6 @@
 // Display for messages
 import { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Avatar, Box, IconButton, Typography } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room, Message, CourseManagement } from "../../types/types";
@@ -12,9 +12,12 @@ import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import UserMenu from "../ThreadComponents/UserMenu";
+import SendIcon from "@mui/icons-material/Send";
 
 type Props = {
-  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
+  setActiveIcon: React.Dispatch<
+    React.SetStateAction<{ course: string; isActiveCourse: boolean }>
+  >;
   activeIcon: { course: string; isActiveCourse: boolean };
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
@@ -26,7 +29,11 @@ type Props = {
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
+  sendMessage: (
+    message: { username: string; message: string; timeSent: string },
+    room: Room,
+    isSystemMessage: boolean
+  ) => void;
   connectToRoom: (room: Room) => void;
   disconnectFromRoom: (room: Room) => void;
   drawerWidth: number;
@@ -34,11 +41,13 @@ type Props = {
   appBarHeight: number;
   defaultPadding: number;
   distinctCoursesByDepartment: Course[];
-  setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
+  setDistinctCoursesByDepartment: React.Dispatch<
+    React.SetStateAction<Course[]>
+  >;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
-  courseUsers: [{username: string, profilePic: string}]
+  courseUsers: [{ username: string; profilePic: string }];
 };
 
 type WarnOrBan = {
@@ -57,7 +66,15 @@ type Appeal = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
+  const {
+    message,
+    setMessage,
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+  } = useSockets();
   const { courseId, roomId } = useParams();
   const { roomProps } = useOutletContext<{
     roomProps: Props;
@@ -105,14 +122,14 @@ const RoomDisplay = () => {
   }, [roomProps.currentCourse]);
 
   const getCurrentRoomMessages = () => {
-      //find room in currentCourse since currentRoom messages are not updated
-      let foundRoom: Room;
-      roomProps.currentCourse?.rooms.forEach((room) => {
-        if (room.name === roomProps.currentRoom?.name) {
-          foundRoom = room;
-        }
-      });
-      return foundRoom ? foundRoom.messages : [];
+    //find room in currentCourse since currentRoom messages are not updated
+    let foundRoom: Room;
+    roomProps.currentCourse?.rooms.forEach((room) => {
+      if (room.name === roomProps.currentRoom?.name) {
+        foundRoom = room;
+      }
+    });
+    return foundRoom ? foundRoom.messages : [];
   };
 
   // when the current course changes, we want to update the messages
@@ -127,9 +144,53 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      roomProps.setActiveCourseThread(roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, ""));
+      roomProps.setActiveCourseThread(
+        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
+      );
     }
   }, [roomProps.currentRoom]);
+
+  const jpeg = "data:image/jpeg;base64,";
+  const { profile } = useAuth();
+  const GetProfilePicture = () => {
+    if (profile?.profilePicture) {
+      return (
+        <Avatar
+          sx={{ width: 35, height: 35, mr: 2 }}
+          src={jpeg + profile?.profilePicture.$binary.base64}
+        />
+      );
+    } else {
+      return (
+        <Avatar
+          sx={{ width: 35, height: 35, mr: 2 }}
+          src={user?.profilePicture}
+        />
+      );
+    }
+  };
+
+  function armyToRegTime(time: any) {
+    var clock = time.split(" ");
+    var time = clock[1];
+    var time = time.split(":");
+    var hours = Number(time[0]);
+    var minutes = Number(time[1]);
+    var seconds = Number(time[2]);
+    var timeValue;
+
+    if (hours > 0 && hours <= 12) {
+      timeValue = "" + hours;
+    } else if (hours > 12) {
+      timeValue = "" + (hours - 12);
+    } else if (hours == 0) {
+      timeValue = "12";
+    }
+
+    timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes; // get minutes
+    timeValue += hours >= 12 ? " P.M." : " A.M."; // get AM/PM
+    return timeValue;
+  }
 
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
@@ -165,7 +226,11 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (
@@ -184,7 +249,9 @@ const RoomDisplay = () => {
           >
             {getCurrentRoomMessages().length > 0 ? (
               <Box>
-                <Typography variant="h4">Messages</Typography>
+                <Typography variant="h4" paddingBottom={"5px"}>
+                  Messages
+                </Typography>
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     return (
@@ -196,15 +263,40 @@ const RoomDisplay = () => {
                           width: "100%",
                         }}
                       >
-                        <Box>
-                          <UserMenu username={message.username} course={roomProps.currentCourse} />
-                        </Box>
-                        <Box sx={{ overflow: "hidden" }}>
-                          <Typography variant="h6" display="inline">{`[${message.username}]: `}</Typography>
-                          <Typography variant="h6" sx={{ wordWrap: "break-word" }}>
+                        {/* ----MESSAGE THREAD UI */}
+
+                        <GetProfilePicture />
+                        <Box
+                          sx={{
+                            overflow: "hidden",
+                            paddingBottom: "18px",
+                            borderColor: "black",
+                            cursor: "pointer",
+                            ":hover": {
+                              backgroundColor: "lightgrey",
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            display="inline"
+                          >{`${message.username} `}</Typography>
+                          <Typography
+                            variant="body2"
+                            display="inline"
+                            sx={{ color: "black", paddingLeft: "5px" }}
+                          >
+                            {armyToRegTime(message.timeSent)}
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{ wordWrap: "break-word", paddingTop: "5px" }}
+                          >
                             {message.message}
                           </Typography>
                         </Box>
+
+                        {/* ----MESSAGE THREAD UI */}
                       </Box>
                     );
                   })}
@@ -220,7 +312,9 @@ const RoomDisplay = () => {
               height: `${roomProps.appBarHeight}px`,
               position: "absolute",
               bottom: 20,
-              right: `${roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8}px`,
+              right: `${
+                roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8
+              }px`,
               left: `${roomProps.drawerWidth}px`,
             }}
           >

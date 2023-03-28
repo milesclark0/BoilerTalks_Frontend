@@ -1,6 +1,6 @@
 // Display for messages
 import { useState, useEffect } from "react";
-import { Avatar, Box, IconButton, Typography } from "@mui/material";
+import { Avatar, Box, Grid, IconButton, Typography } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room, Message, CourseManagement } from "../../types/types";
@@ -11,8 +11,8 @@ import MessageBox from "../HomePage/messageBox";
 import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
-import UserMenu from "../ThreadComponents/UserMenu";
-import SendIcon from "@mui/icons-material/Send";
+import AddReactionIcon from "@mui/icons-material/AddReaction";
+import ReplyIcon from "@mui/icons-material/Reply";
 
 type Props = {
   setActiveIcon: React.Dispatch<
@@ -84,6 +84,7 @@ const RoomDisplay = () => {
   const [warned, setWarned] = useState<boolean>(false);
   const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
   const [appealData, setAppealData] = useState<Appeal>(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string>("");
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
@@ -261,7 +262,15 @@ const RoomDisplay = () => {
                           display: "flex",
                           flexDirection: "row",
                           width: "100%",
+                          cursor: "pointer",
+                          ":hover": {
+                            backgroundColor: "lightgrey",
+                          },
                         }}
+                        onMouseEnter={() => {
+                          setHoveredMessageId(index);
+                        }}
+                        onMouseLeave={() => setHoveredMessageId(null)}
                       >
                         {/* ----MESSAGE THREAD UI */}
 
@@ -271,10 +280,6 @@ const RoomDisplay = () => {
                             overflow: "hidden",
                             paddingBottom: "18px",
                             borderColor: "black",
-                            cursor: "pointer",
-                            ":hover": {
-                              backgroundColor: "lightgrey",
-                            },
                           }}
                         >
                           <Typography
@@ -288,6 +293,31 @@ const RoomDisplay = () => {
                           >
                             {armyToRegTime(message.timeSent)}
                           </Typography>
+                          {hoveredMessageId === index && (
+                            <Grid
+                              container
+                              sx={{
+                                padding: "0",
+                                margin: "0",
+                                display: "inline",
+                              }}
+                            >
+                              <Grid
+                                item
+                                xs={6}
+                                sx={{ display: "inline", marginRight: "-5px" }}
+                              >
+                                <IconButton>
+                                  <AddReactionIcon />
+                                </IconButton>
+                              </Grid>
+                              <Grid item xs={6} sx={{ display: "inline" }}>
+                                <IconButton>
+                                  <ReplyIcon />
+                                </IconButton>
+                              </Grid>
+                            </Grid>
+                          )}
                           <Typography
                             variant="body1"
                             sx={{ wordWrap: "break-word", paddingTop: "5px" }}

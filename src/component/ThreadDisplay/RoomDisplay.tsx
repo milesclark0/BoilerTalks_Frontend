@@ -1,6 +1,14 @@
 // Display for messages
 import { useState, useEffect } from "react";
-import { Avatar, Box, Grid, IconButton, Typography } from "@mui/material";
+import {
+  alertTitleClasses,
+  Avatar,
+  Box,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room, Message, CourseManagement } from "../../types/types";
@@ -193,6 +201,37 @@ const RoomDisplay = () => {
     return timeValue;
   }
 
+  const HandleLineBreak = ({ index }) => {
+    if (
+      getCurrentRoomMessages().length - 1 === index ||
+      getCurrentRoomMessages().length === 0
+    ) {
+      return null;
+    }
+    let messages = getCurrentRoomMessages();
+    //alert(getCurrentRoomMessages()[index].timeSent);
+    // alert(armyToRegTime(getCurrentRoomMessages()[index]?.timeSent));
+    let messageTime = armyToRegTime(messages[index]?.timeSent)?.split(" ")[1];
+    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(
+      " "
+    )[1];
+
+    if (messageTime === "P.M." && messageTime2 === "A.M.") {
+      return (
+        <Divider
+          sx={{
+            paddingBottom: "10px",
+            textAlign: "center",
+          }}
+        >
+          {messages[index]?.timeSent.split(" ")[0]}
+        </Divider>
+      );
+    }
+
+    return null;
+  };
+
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
@@ -256,77 +295,83 @@ const RoomDisplay = () => {
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     return (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          cursor: "pointer",
-                          ":hover": {
-                            backgroundColor: "lightgrey",
-                          },
-                        }}
-                        onMouseEnter={() => {
-                          setHoveredMessageId(index);
-                        }}
-                        onMouseLeave={() => setHoveredMessageId(null)}
-                      >
-                        {/* ----MESSAGE THREAD UI */}
-
-                        <GetProfilePicture />
+                      <Box>
                         <Box
+                          key={index}
                           sx={{
-                            overflow: "hidden",
-                            paddingBottom: "18px",
-                            borderColor: "black",
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            cursor: "pointer",
+                            ":hover": {
+                              backgroundColor: "lightgrey",
+                            },
                           }}
+                          onMouseEnter={() => {
+                            setHoveredMessageId(index);
+                          }}
+                          onMouseLeave={() => setHoveredMessageId(null)}
                         >
-                          <Typography
-                            variant="h6"
-                            display="inline"
-                          >{`${message.username} `}</Typography>
-                          <Typography
-                            variant="body2"
-                            display="inline"
-                            sx={{ color: "black", paddingLeft: "5px" }}
-                          >
-                            {armyToRegTime(message.timeSent)}
-                          </Typography>
-                          {hoveredMessageId === index && (
-                            <Grid
-                              container
-                              sx={{
-                                padding: "0",
-                                margin: "0",
-                                display: "inline",
-                              }}
-                            >
-                              <Grid
-                                item
-                                xs={6}
-                                sx={{ display: "inline", marginRight: "-5px" }}
-                              >
-                                <IconButton>
-                                  <AddReactionIcon />
-                                </IconButton>
-                              </Grid>
-                              <Grid item xs={6} sx={{ display: "inline" }}>
-                                <IconButton>
-                                  <ReplyIcon />
-                                </IconButton>
-                              </Grid>
-                            </Grid>
-                          )}
-                          <Typography
-                            variant="body1"
-                            sx={{ wordWrap: "break-word", paddingTop: "5px" }}
-                          >
-                            {message.message}
-                          </Typography>
-                        </Box>
+                          {/* ----MESSAGE THREAD UI */}
 
-                        {/* ----MESSAGE THREAD UI */}
+                          <GetProfilePicture />
+                          <Box
+                            sx={{
+                              overflow: "hidden",
+                              paddingBottom: "18px",
+                              borderColor: "black",
+                            }}
+                          >
+                            <Typography
+                              variant="h6"
+                              display="inline"
+                            >{`${message.username} `}</Typography>
+                            <Typography
+                              variant="body2"
+                              display="inline"
+                              sx={{ color: "black", paddingLeft: "5px" }}
+                            >
+                              {armyToRegTime(message.timeSent)}
+                            </Typography>
+                            {hoveredMessageId === index && (
+                              <Grid
+                                container
+                                sx={{
+                                  padding: "0",
+                                  margin: "0",
+                                  display: "inline",
+                                }}
+                              >
+                                <Grid
+                                  item
+                                  xs={6}
+                                  sx={{
+                                    display: "inline",
+                                    marginRight: "-5px",
+                                  }}
+                                >
+                                  <IconButton>
+                                    <AddReactionIcon />
+                                  </IconButton>
+                                </Grid>
+                                <Grid item xs={6} sx={{ display: "inline" }}>
+                                  <IconButton>
+                                    <ReplyIcon />
+                                  </IconButton>
+                                </Grid>
+                              </Grid>
+                            )}
+                            <Typography
+                              variant="body1"
+                              sx={{ wordWrap: "break-word", paddingTop: "5px" }}
+                            >
+                              {message.message}
+                            </Typography>
+                          </Box>
+
+                          {/* ----MESSAGE THREAD UI */}
+                        </Box>
+                        <HandleLineBreak index={index} />
                       </Box>
                     );
                   })}

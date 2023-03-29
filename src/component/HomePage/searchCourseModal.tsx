@@ -35,8 +35,8 @@ const emptyCourse: Course = {
       _id: { $oid: "" },
       name: "",
       courseId: { $oid: "" },
-      connected: [{ username: "", sid: "" }],
-      messages: [{ username: "", message: "", timeSent: { $date: "" } }],
+      connected: [{ username: "", sid: "", profilePic: "" }],
+      messages: [{ username: "", message: "", timeSent: "" }],
     },
   ],
   owner: "",
@@ -223,7 +223,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
             options={getUniqueDepartments()}
             getOptionLabel={(option) => option}
             value={userAddedCourses[index].department}
-            renderOption={(props, option) => <li {...props}>{option}</li>}
+            renderOption={(props, option) => <li {...props}>{option ? option : "None"}</li>}
             onChange={(event, value) => {
               handleCourseDepartmentChange(index, value);
             }}
@@ -239,7 +239,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
             options={filterCourses(index)}
             value={userAddedCourses[index]}
             getOptionLabel={(option) => option.name}
-            renderOption={(props, option) => <li {...props}>{option.name}</li>}
+            renderOption={(props, option) => <li {...props}>{option.name ? option.name : "None"}</li>}
             onChange={(event, value) => {
               if (value) {
                 handleCourseNameChange(index, value.name);

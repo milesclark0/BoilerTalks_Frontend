@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const SearchUserBox = ({ courseUsers, isCourseSelected, drawerWidth, innerDrawerWidth }: Props) => {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(null);
   const navigate = useNavigate();
 
   const navigateToProfile = (username: string) => {

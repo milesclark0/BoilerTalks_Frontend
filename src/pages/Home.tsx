@@ -27,7 +27,6 @@ const Home = () => {
   const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
   const navigate = useNavigate();
-  const { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom } = useSockets();
   const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
@@ -136,13 +135,6 @@ const Home = () => {
     setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
-    message,
-    setMessage,
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
     setActiveCourseThread,
     courseUsers,
   };

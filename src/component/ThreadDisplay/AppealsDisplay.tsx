@@ -18,6 +18,7 @@ type Props = {
   appBarHeight: number;
   currentCourse: Course;
   defaultPadding: number;
+  courseUsers: any[];
 };
 
 type Appeal = {

@@ -13,6 +13,8 @@ import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import ReplyIcon from "@mui/icons-material/Reply";
+import BlockIcon from "@mui/icons-material/Block";
+import { blockUserUrl } from "../../API/BlockingAPI";
 
 type Props = {
   setActiveIcon: React.Dispatch<
@@ -215,6 +217,11 @@ const RoomDisplay = () => {
     setMessages(newMessages);
   };
 
+  const handleBlockUser = async (userToBlock) => {
+    console.log("blocking user " + userToBlock);
+    return await axiosPrivate.post(blockUserUrl, {toBlock: userToBlock, username: user.username});
+  };
+
   return (
     <Box sx={{ height: "100%", width: "100%" }} id="room">
       {(banned || warned) && (
@@ -255,7 +262,7 @@ const RoomDisplay = () => {
                 </Typography>
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
-                    return (
+                    return (user?.blockedUsers.includes(message.username)) ? null : (
                       <Box
                         key={index}
                         sx={{
@@ -316,6 +323,12 @@ const RoomDisplay = () => {
                                   <ReplyIcon />
                                 </IconButton>
                               </Grid>
+                              {user?.username != message.username && (<Grid item xs={6} sx={{ display: "inline" }}>
+                                <IconButton>
+                                  <BlockIcon 
+                                  onClick={() => handleBlockUser(message.username)}/>
+                                </IconButton>
+                              </Grid>)}
                             </Grid>
                           )}
                           <Typography

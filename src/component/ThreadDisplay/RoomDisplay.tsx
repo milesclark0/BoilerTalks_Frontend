@@ -1,9 +1,9 @@
 // Display for messages
 import { useState, useEffect } from "react";
-import { Avatar, Box, Grid, IconButton, Typography } from "@mui/material";
+import { Box, Divider, Typography } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Course, Room, Message, CourseManagement } from "../../types/types";
+import { Course, Room } from "../../types/types";
 import { useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
@@ -16,11 +16,10 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
 import { blockUserUrl } from "../../API/BlockingAPI";
 import BlockUserModal from "../HomePage/blockUserModal";
+import { MessageEntry } from "../ThreadComponents/MessageEntry";
 
 type Props = {
-  setActiveIcon: React.Dispatch<
-    React.SetStateAction<{ course: string; isActiveCourse: boolean }>
-  >;
+  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
   activeIcon: { course: string; isActiveCourse: boolean };
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
@@ -28,25 +27,12 @@ type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
-  message: string;
-  setMessage: React.Dispatch<React.SetStateAction<string>>;
-  messages: Message[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (
-    message: { username: string; message: string; timeSent: string },
-    room: Room,
-    isSystemMessage: boolean
-  ) => void;
-  connectToRoom: (room: Room) => void;
-  disconnectFromRoom: (room: Room) => void;
   drawerWidth: number;
   innerDrawerWidth: number;
   appBarHeight: number;
   defaultPadding: number;
   distinctCoursesByDepartment: Course[];
-  setDistinctCoursesByDepartment: React.Dispatch<
-    React.SetStateAction<Course[]>
-  >;
+  setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
@@ -56,6 +42,21 @@ type Props = {
 type WarnOrBan = {
   username: string;
   reason: string;
+}; // date to String representation of date (Monday, 12:00 PM)
+const dateStringify = (dateTime: string) => {
+  let date = new Date(dateTime);
+  let day = date.toLocaleString("en-us", { weekday: "long" });
+  let time = date.toLocaleString("en-us", { hour: "numeric", minute: "numeric", hour12: true });
+  return day + ", " + time;
+};
+
+const armyToRegTime = (time: any) => {
+  const clock = time.split(" ");
+  const [hours, minutes, seconds] = clock[1].split(":").map(Number);
+  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
+  timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
+  timeValue += hours >= 12 ? " P.M." : " A.M.";
+  return timeValue;
 };
 
 type Appeal = {
@@ -69,15 +70,14 @@ type Appeal = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const {
-    message,
-    setMessage,
+  const { messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom, isConnected } = useSockets();
+  const messageBoxProps = {
     messages,
     setMessages,
     sendMessage,
     connectToRoom,
     disconnectFromRoom,
-  } = useSockets();
+  };
   const { courseId, roomId } = useParams();
   const { roomProps } = useOutletContext<{
     roomProps: Props;
@@ -87,7 +87,6 @@ const RoomDisplay = () => {
   const [warned, setWarned] = useState<boolean>(false);
   const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
   const [appealData, setAppealData] = useState<Appeal>(null);
-  const [hoveredMessageId, setHoveredMessageId] = useState<string>("");
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
   const [userToBlock, setUserToBlock] = useState<string>("");
@@ -127,6 +126,17 @@ const RoomDisplay = () => {
     // }
   }, [roomProps.currentCourse]);
 
+  // whens messages change, scroll to bottom
+  useEffect(() => {
+    const messageContainer = document.getElementById("message-container");
+    if (messageContainer) {
+      //if scroll is close to bottom, scroll to bottom
+      if (messageContainer.scrollHeight - messageContainer.scrollTop < messageContainer.clientHeight + 100) {
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
+
   const getCurrentRoomMessages = () => {
     //find room in currentCourse since currentRoom messages are not updated
     let foundRoom: Room;
@@ -138,72 +148,45 @@ const RoomDisplay = () => {
     return foundRoom ? foundRoom.messages : [];
   };
 
-  // when the current course changes, we want to update the messages
-  // useEffect(() => {
-  //   if (roomProps.currentCourse) {
-  //     console.log("currentCourse")
-  //     assignMessages(roomProps.currentCourse.rooms[0]);
-  //   }
-  // }, [roomProps.currentCourse]);
-
-  // when the current room changes, we want to update the messages
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      roomProps.setActiveCourseThread(
-        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
-      );
+      roomProps.setActiveCourseThread(roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, ""));
     }
   }, [roomProps.currentRoom]);
 
-  const jpeg = "data:image/jpeg;base64,";
-  const { profile } = useAuth();
-  const GetProfilePicture = () => {
-    if (profile?.profilePicture) {
+  const HandleLineBreak = ({ index }) => {
+    let messages = getCurrentRoomMessages();
+    if (messages.length - 1 === index || messages.length === 0) {
+      return null;
+    }
+    const messageDate = dateStringify(messages[index + 1]?.timeSent);
+
+    let messageTime = armyToRegTime(messages[index]?.timeSent)?.split(" ")[1];
+    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(" ")[1];
+
+    if (messageTime === "P.M." && messageTime2 === "A.M.") {
       return (
-        <Avatar
-          sx={{ width: 35, height: 35, mr: 2 }}
-          src={jpeg + profile?.profilePicture.$binary.base64}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          sx={{ width: 35, height: 35, mr: 2 }}
-          src={user?.profilePicture}
-        />
+        <Divider
+          sx={{
+            paddingBottom: "10px",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="overline">{messageDate}</Typography>
+        </Divider>
       );
     }
+
+    return null;
   };
-
-  function armyToRegTime(time: any) {
-    var clock = time.split(" ");
-    var time = clock[1];
-    var time = time.split(":");
-    var hours = Number(time[0]);
-    var minutes = Number(time[1]);
-    var seconds = Number(time[2]);
-    var timeValue;
-
-    if (hours > 0 && hours <= 12) {
-      timeValue = "" + hours;
-    } else if (hours > 12) {
-      timeValue = "" + (hours - 12);
-    } else if (hours == 0) {
-      timeValue = "12";
-    }
-
-    timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes; // get minutes
-    timeValue += hours >= 12 ? " P.M." : " A.M."; // get AM/PM
-    return timeValue;
-  }
 
   const assignMessages = (room: Room) => {
     //find room in userCourses since currentRoom messages are not updated
     let foundRoom: Room;
     roomProps.userCourses?.forEach((course) => {
       course.rooms.forEach((room) => {
-        if (room.name === roomProps.currentRoom?.name) {
+        if (room._id.$oid === roomProps.currentRoom?._id.$oid) {
           foundRoom = room;
         }
       });
@@ -214,6 +197,7 @@ const RoomDisplay = () => {
         username: message.username,
         message: message.message,
         timeSent: message.timeSent,
+        profilePic: message.profilePic,
       };
       return newMessage;
     });
@@ -245,16 +229,13 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? (
-            <BanDialog bannedData={bannedData} appealData={appealData} />
-          ) : (
-            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
-          )}
+          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
         </Box>
       )}
       {!banned && !warned && (
         <Box sx={{ height: "100%", width: "100%" }}>
           <Box
+            id="message-container"
             sx={{
               p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth}px)`,
@@ -262,9 +243,9 @@ const RoomDisplay = () => {
               overflowY: "auto",
               display: "flex",
               flexDirection: "column-reverse",
+              scrollBehavior: "smooth",
             }}
             className="scrollBar"
-            id="messages"
           >
             {getCurrentRoomMessages().length > 0 ? (
               <Box>
@@ -273,87 +254,11 @@ const RoomDisplay = () => {
                 </Typography>
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
-                    return (user?.blockedUsers.includes(message.username)) ? null : (
-                      <Box
-                        key={index}
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          cursor: "pointer",
-                          ":hover": {
-                            backgroundColor: "lightgrey",
-                          },
-                        }}
-                        onMouseEnter={() => {
-                          setHoveredMessageId(index);
-                        }}
-                        onMouseLeave={() => setHoveredMessageId(null)}
-                      >
-                        {/* ----MESSAGE THREAD UI */}
-
-                        <GetProfilePicture />
-                        <Box
-                          sx={{
-                            overflow: "hidden",
-                            paddingBottom: "18px",
-                            borderColor: "black",
-                          }}
-                        >
-                          <Typography
-                            variant="h6"
-                            display="inline"
-                          >{`${message.username} `}</Typography>
-                          <Typography
-                            variant="body2"
-                            display="inline"
-                            sx={{ color: "black", paddingLeft: "5px" }}
-                          >
-                            {armyToRegTime(message.timeSent)}
-                          </Typography>
-                          {hoveredMessageId === index && (
-                            <Grid
-                              container
-                              sx={{
-                                padding: "0",
-                                margin: "0",
-                                display: "inline",
-                              }}
-                            >
-                              <Grid
-                                item
-                                xs={6}
-                                sx={{ display: "inline", marginRight: "-5px" }}
-                              >
-                                <IconButton>
-                                  <AddReactionIcon />
-                                </IconButton>
-                              </Grid>
-                              <Grid item xs={6} sx={{ display: "inline" }}>
-                                <IconButton>
-                                  <ReplyIcon />
-                                </IconButton>
-                              </Grid>
-                              {user?.username != message.username && (<Grid item xs={6} sx={{ display: "inline" }}>
-                                <IconButton>
-                                  <BlockIcon 
-                                  onClick={() => {
-                                    setUserToBlock(message.username);
-                                    setShowBlockUser(true);
-                                  }}/>
-                                </IconButton>
-                              </Grid>)}
-                            </Grid>
-                          )}
-                          <Typography
-                            variant="body1"
-                            sx={{ wordWrap: "break-word", paddingTop: "5px" }}
-                          >
-                            {message.message}
-                          </Typography>
-                        </Box>
-
-                        {/* ----MESSAGE THREAD UI */}
+                    //displays messages
+                    return (
+                      <Box key={index}>
+                        <MessageEntry message={message} index={index} />
+                        <HandleLineBreak index={index} />
                       </Box>
                     );
                   })}
@@ -369,13 +274,12 @@ const RoomDisplay = () => {
               height: `${roomProps.appBarHeight}px`,
               position: "absolute",
               bottom: 20,
-              right: `${
-                roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8
-              }px`,
+              right: `${roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8}px`,
               left: `${roomProps.drawerWidth}px`,
             }}
           >
-            <MessageBox {...roomProps} />
+            {/** Message box only renders once socket is connected */}
+            {isConnected ? <MessageBox {...roomProps} {...messageBoxProps} /> : <Typography variant="h6">Loading...</Typography>}
           </Box>
         </Box>
       )}

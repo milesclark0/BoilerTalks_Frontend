@@ -6,11 +6,10 @@ import { Message, Room } from "../types/types";
 let endpoint = "http://127.0.0.1:5000/chat";
 const namespace = { connect: "connect", disconnect: "disconnect", message: "send_message", join: "join", leave: "leave" };
 
-
 const useSockets = () => {
-  const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -19,11 +18,13 @@ const useSockets = () => {
     } else {
       socket.on(namespace.connect, () => {
         console.log("connected");
+        setIsConnected(true);
       });
 
       // listens for disconnect event
       socket.on(namespace.disconnect, () => {
         console.log("disconnected");
+        setIsConnected(false);
       });
 
       // listen for message
@@ -44,7 +45,7 @@ const useSockets = () => {
   }, [socket]);
 
   // sends a message to the server to be broadcasted to all users in the room
-  const sendMessage = (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => {
+  const sendMessage = (message: Message, room: Room, isSystemMessage: boolean) => {
     //TODO: send profile picture with message
     if (socket !== null) {
       if (message.message.trim() !== "") {
@@ -68,10 +69,16 @@ const useSockets = () => {
       let ret;
       if (room !== null) {
         ret = await new Promise((resolve) =>
-          socket.emit(namespace.join, { roomID: room?._id.$oid, username: user?.username, profilePic: user?.profilePicture }, (response: string | Room) => resolve(response))
+          socket.emit(
+            namespace.join,
+            { roomID: room?._id.$oid, username: user?.username, profilePic: user?.profilePicture },
+            (response: string | Room) => resolve(response)
+          )
         );
       }
       return ret;
+    } else {
+      console.log("socket is null");
     }
   };
 
@@ -87,7 +94,7 @@ const useSockets = () => {
     }
   };
 
-  return { message, setMessage, messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom };
+  return { messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom, socket, isConnected };
 };
 
 export default useSockets;

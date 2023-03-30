@@ -10,6 +10,7 @@ type Props = {
   innerDrawerWidth: number;
   appBarHeight: number;
   currentCourse: Course;
+  courseUsers: any[];
 };
 
 const QADisplay = () => {

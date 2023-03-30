@@ -11,3 +11,5 @@ export const banUserURL = "/courseManagement/banUser/";
 export const warnUserURL = "/courseManagement/warnUser/"
 
 export const updateWarnListURL = "/courseManagement/updateWarnList/";
+
+export const updateCourseRulesURL = "/courseManagement/updateCourseRules/";

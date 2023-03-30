@@ -3,33 +3,60 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Dialo
 import { useAuth } from "../../../../context/context";
 import { Course, Room } from "../../../../types/types";
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import { getCourseManagementURL, updateCourseRulesURL } from "./../../../../API/CourseManagementAPI";
+import { useQuery } from "react-query";
 
 type RulesProps = {
-  RulesText: string;
+  RulesList: string[];
   RulesOpen: boolean;
   setRulesOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setRulesText: React.Dispatch<React.SetStateAction<string>>;
+  setRulesList: React.Dispatch<React.SetStateAction<string[]>>;
   course: Course;
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   userCourses: Course[];
 };
 
-const RulesModal = ({ RulesText, RulesOpen, setRulesText, setRulesOpen, course, setUserCourses, userCourses }: RulesProps) => {
+const RulesModal = ({ RulesList, RulesOpen, setRulesList, setRulesOpen, course, setUserCourses, userCourses }: RulesProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseRules = () => {
     setRulesOpen(false);
-    setRulesText(""); //wipe the text field
   };
+
+  const handleRulesChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newRulesList = [...RulesList];
+    newRulesList[index] = e.target.value;
+    setRulesList(newRulesList);
+  };
+
+  const handleAddRule = () => {
+    setRulesList([...RulesList, ""]);
+  };
+
+  const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
+    onSuccess: (data) => {
+      console.log(data.data.data);
+      setRulesList(data.data.data.rules);
+    },
+  });
 
   const SaveRules = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newRules = event.target[0].value;
-    console.log(newRules);
-
+    //fetch course management api
+    const res = await api.post(updateCourseRulesURL + course?._id.$oid, {
+      rules: RulesList,
+    });
+    if (res.data.statusCode === 200) {
+      console.log(res.data.data);
+    } else {
+      console.log(res.data.message);
+    }
     setRulesOpen(false);
-    setRulesText(newRules);
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Dialog open={RulesOpen} onClose={handleCloseRules}>
@@ -37,25 +64,18 @@ const RulesModal = ({ RulesText, RulesOpen, setRulesText, setRulesOpen, course, 
         <DialogTitle>Rules</DialogTitle>
         <DialogContent>
           <DialogContentText>Rules for this course discussion:</DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="rulesdialog"
-            label="Rules"
-            type="text"
-            variant="outlined"
-            fullWidth
-            rows={10}
-            multiline
-            value={RulesText}
-            onChange={(e) => setRulesText(e.target.value)}
-            sx={{
-              width: 500,
-              display: "flex",
-            }}
-          />
+          {RulesList?.map((rule, index) => {
+            return (
+              <Box key={index}>
+                <RuleEntry rule={rule} index={index} handleRulesChange={handleRulesChange} key={index} />
+              </Box>
+            );
+          })}
         </DialogContent>
         <DialogActions>
+          <Button variant="outlined" onClick={handleAddRule}>
+            Add Rule
+          </Button>
           <Button onClick={handleCloseRules}>Cancel</Button>
           <Button variant="outlined" type="submit">
             Save
@@ -63,6 +83,35 @@ const RulesModal = ({ RulesText, RulesOpen, setRulesText, setRulesOpen, course, 
         </DialogActions>
       </Box>
     </Dialog>
+  );
+};
+
+const RuleEntry = ({
+  rule,
+  index,
+  handleRulesChange,
+}: {
+  rule: string;
+  index: number;
+  handleRulesChange: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
+}) => {
+  return (
+      <TextField
+        autoFocus
+        margin="dense"
+        id="rulesdialog"
+        label="Rules"
+        type="text"
+        variant="outlined"
+        fullWidth
+        multiline
+        value={rule}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRulesChange(e, index)}
+        sx={{
+          width: 500,
+          display: "flex",
+        }}
+      />
   );
 };
 export default RulesModal;

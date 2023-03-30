@@ -38,7 +38,7 @@ type Props = {
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
-  const [RulesText, setRulesText] = useState(""); //import backend rules text
+  const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const axiosPrivate = useAxiosPrivate();
@@ -68,10 +68,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   };
 
   const RulesProps = {
-    RulesText,
+    RulesList,
     RulesOpen,
     setRulesOpen,
-    setRulesText,
+    setRulesList,
     setUserCourses: props.setUserCourses,
     userCourses: props.userCourses,
     course: course,

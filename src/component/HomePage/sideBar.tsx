@@ -25,22 +25,18 @@ type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   userCourses: Course[];
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
-  distinctDepartments: string[];
-  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
   activeCourseThread: string;
+  distinctDepartments: string[];
+  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const SideBar = ({ ...props }: Props) => {
   const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const selectedIconColor = "#7e7e7e";
-  const AvatarSize = { width: 50, height: 50 };
-  const jpeg = "data:image/jpeg;base64,";
-  const { profile } = useAuth();
   const navigate = useNavigate();
   const {
     user,
@@ -54,12 +50,12 @@ const SideBar = ({ ...props }: Props) => {
     setUserCourses,
     userCourses,
     setCurrentCourse,
-    distinctDepartments,
-    setDistinctDepartments,
     currentRoom,
     setCurrentRoom,
     setActiveCourseThread,
     activeCourseThread,
+    distinctDepartments,
+    setDistinctDepartments,
   } = props;
 
   const OuterDrawerStyles = {
@@ -111,18 +107,17 @@ const SideBar = ({ ...props }: Props) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const CourseIconProps = {
-    activeIcon,
-    setActiveIcon,
-    handleIconClick,
-    selectedIconColor,
-    AvatarSize,
-  };
-
   const SettingsMenuProps = {
     anchorEl,
     setAnchorEl,
     currentRoom,
+  };
+
+  const CourseListProps = {
+    activeIcon,
+    distinctDepartments,
+    handleIconClick,
+    setActiveIcon,
   };
 
   const CourseViewProps = {
@@ -143,30 +138,6 @@ const SideBar = ({ ...props }: Props) => {
     setCurrentRoom,
     setActiveCourseThread,
     activeCourseThread,
-  };
-
-  const BoilerTalksIcon = () => {
-    const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
-    const outlineStyle = activeIcon.course === "" ? "solid" : "";
-    return (
-      <ListItem>
-        <IconButton onClick={() => handleIconClick("", false)}>
-          <Avatar sx={{ ...AvatarSize, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
-            <Typography sx={{ marginTop: "5px" }}>
-              <HomeIcon />
-            </Typography>
-          </Avatar>
-        </IconButton>
-      </ListItem>
-    );
-  };
-
-  const GetProfilePicture = () => {
-    if (profile?.profilePicture) {
-      return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={jpeg + profile?.profilePicture.$binary.base64} />;
-    } else {
-      return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture} />;
-    }
   };
 
   return (
@@ -194,24 +165,71 @@ const SideBar = ({ ...props }: Props) => {
           <CourseView {...CourseViewProps} />
         </Box>
         <Drawer sx={InnerDrawerStyles} variant="permanent" anchor="left">
-          <List>
-            <BoilerTalksIcon />
-            <StyledDivider />
-            {user.activeCourses?.map((course: string) => (
-              <React.Fragment key={course}>
-                <CourseIcon labelText={course} isActiveCourse={true} {...CourseIconProps} />
-              </React.Fragment>
-            ))}
-            {user.activeCourses.length > 0 && <StyledDivider />}
-            {distinctDepartments.map((course: string) => (
-              <React.Fragment key={course}>
-                <CourseIcon labelText={course} isActiveCourse={false} {...CourseIconProps} />
-              </React.Fragment>
-            ))}
-          </List>
+          <CourseIconsList {...CourseListProps} />
         </Drawer>
       </Drawer>
     </Box>
+  );
+};
+const GetProfilePicture = () => {
+  const { profile, user } = useAuth();
+  const jpeg = "data:image/jpeg;base64,";
+  if (profile?.profilePicture) {
+    return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={jpeg + profile?.profilePicture.$binary.base64} />;
+  } else {
+    return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture} />;
+  }
+};
+
+type CourseListProps = {
+  activeIcon: { course: string; isActiveCourse: boolean };
+  handleIconClick: (course: string, isActiveCourse: boolean) => void;
+  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
+  distinctDepartments: string[];
+};
+
+type CourseIconProps = CourseListProps & {
+  selectedIconColor: string;
+  distinctDepartments: string[];
+  AvatarSize: { width: number; height: number };
+};
+
+const BoilerTalksIcon = ({ ...props }: CourseIconProps) => {
+  const outLineColor = props.activeIcon.course === "" ? props.selectedIconColor : "";
+  const outlineStyle = props.activeIcon.course === "" ? "solid" : "";
+  return (
+    <ListItem>
+      <IconButton onClick={() => props.handleIconClick("", false)}>
+        <Avatar sx={{ ...props.AvatarSize, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
+          <Typography sx={{ marginTop: "5px" }}>
+            <HomeIcon />
+          </Typography>
+        </Avatar>
+      </IconButton>
+    </ListItem>
+  );
+};
+
+const CourseIconsList = ({ ...props }: CourseListProps) => {
+  const { user } = useAuth();
+  const selectedIconColor = "#7e7e7e";
+  const AvatarSize = { width: 50, height: 50 };
+  return (
+    <List>
+      <BoilerTalksIcon {...props} selectedIconColor={selectedIconColor} AvatarSize={AvatarSize} />
+      <StyledDivider />
+      {user.activeCourses?.map((course: string) => (
+        <React.Fragment key={course}>
+          <CourseIcon labelText={course} isActiveCourse={true} {...props} selectedIconColor={selectedIconColor} AvatarSize={AvatarSize} />
+        </React.Fragment>
+      ))}
+      {user.activeCourses.length > 0 && <StyledDivider />}
+      {props.distinctDepartments.map((course: string) => (
+        <React.Fragment key={course}>
+          <CourseIcon labelText={course} isActiveCourse={false} {...props} selectedIconColor={selectedIconColor} AvatarSize={AvatarSize} />
+        </React.Fragment>
+      ))}
+    </List>
   );
 };
 

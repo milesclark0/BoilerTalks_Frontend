@@ -13,37 +13,21 @@ type Props = {
   setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   currentRoom: Room | null;
   setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
-  message: string;
-  setMessage: React.Dispatch<React.SetStateAction<string>>;
+  connectToRoom: (room: Room) => Promise<void>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
-  connectToRoom: (room: Room) => void;
-  disconnectFromRoom: (room: Room) => void;
+
 };
 
-const MessageBox = ({
-  currentCourse,
-  setCurrentCourse,
-  userCourses,
-  setUserCourses,
-  currentRoom,
-  setCurrentRoom,
-  message,
-  setMessage,
-  messages,
-  setMessages,
-  sendMessage,
-  connectToRoom,
-  disconnectFromRoom,
-}: Props) => {
+const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCourses, currentRoom, setCurrentRoom, connectToRoom, messages, setMessages, sendMessage }: Props) => {
   const { user } = useAuth();
-
+  const [message, setMessage] = useState<string>("");
   useEffect(() => {
     //when the current room changes, connect to the room and set the messages to the messages in the room
     const connect = async (room: Room) => {
-      console.log("connecting to room", room?.name);
       if (room) {
+        console.log("connecting to room", room?.name);
         await connectToRoom(room);
       }
     };
@@ -51,8 +35,8 @@ const MessageBox = ({
   }, [currentRoom]);
 
   useEffect(() => {
-    //on message received, update the messages
-    if (message !== "") {     
+    //on message received, update the messages and scroll to the bottom of the message box
+    if (message !== "") {
       updateMessageFields(message);
       setMessage("");
     }
@@ -72,7 +56,7 @@ const MessageBox = ({
 
   const updateMessageFields = (message: any) => {
     console.log("updating message fields");
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}` };
+    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
     //update message fields in userCourses and currentCourse and currentRoom
     const userCourseCopy = structuredClone(userCourses);
     userCourseCopy?.forEach((course) => {
@@ -81,8 +65,6 @@ const MessageBox = ({
         course.rooms.forEach((room) => {
           if (room._id.$oid === currentRoom?._id.$oid) {
             room.messages.push(formattedMessage);
-            console.log("room messages", room.messages);
-            
           }
         });
       }
@@ -94,15 +76,24 @@ const MessageBox = ({
     currCourseCopy?.rooms.forEach((room) => {
       if (room._id.$oid === currentRoom?._id.$oid) {
         room.messages.push(formattedMessage);
-        console.log("room messages 2", room.messages);
       }
     });
     setCurrentCourse(currCourseCopy);
   };
 
   const handleSendMessage = () => {
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}` };
+    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
     sendMessage(formattedMessage, currentRoom, false);
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const handleEnterKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
   };
 
   return (
@@ -119,12 +110,8 @@ const MessageBox = ({
         sx={{
           width: "100%",
         }}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSendMessage();
-          }
-        }}
+        onChange={handleMessageChange}
+        onKeyDown={handleEnterKeyPress}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

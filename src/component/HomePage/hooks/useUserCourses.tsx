@@ -61,9 +61,10 @@ export const useUserCourses = ({setCurrentCourse, setCurrentRoom, setActiveIcon,
     return await axiosPrivate.get(getUserCoursesURL + user?.username);
   };
 
-  const { isLoading, error, isSuccess } = useQuery("user_courses: " + user?.username, fetchCourse, {
+  const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
     refetchInterval: 1000 * 60 * 2, //2 minutes
+    staleTime: 1000 * 60 * 2, //2 minutes
     refetchOnMount: "always",
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
@@ -74,7 +75,6 @@ export const useUserCourses = ({setCurrentCourse, setCurrentRoom, setActiveIcon,
         });
 
         setUserCourses(courses);
-        console.log("init course from url");
       } else setFetchError(data.data.data);
     },
     onError: (error: string) => console.log(error),

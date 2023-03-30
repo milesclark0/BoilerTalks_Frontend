@@ -1,7 +1,11 @@
 import { Box, Typography, Grid, Tooltip, IconButton } from "@mui/material";
 import { Message } from "../../types/types";
 import ReplyIcon from "@mui/icons-material/Reply";
+import BlockIcon from"@mui/icons-material/Block";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
+import BlockUserModal from "../HomePage/blockUserModal";
+import { useState } from "react";
+import { useAuth } from "../../context/context";
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -18,8 +22,20 @@ const armyToRegTime = (time: any) => {
 };
 
 export const MessageHeader = ({ hoveredMessageId, message, index }: MessageHeaderProps) => {
+  const { user } = useAuth();
+  const [userToBlock, setUserToBlock] = useState<string>("");
+  const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
+
+  const blockUserProps = {
+    requestUsername: user.username,
+    userToBlock, 
+    showBlockUser,
+    setShowBlockUser,
+  };
+
   return (
     <Box>
+      <BlockUserModal {...blockUserProps} />
       <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
       <Typography variant="overline" display="inline" sx={{ color: "black", paddingLeft: "5px" }}>
         {armyToRegTime(message.timeSent)}
@@ -57,6 +73,15 @@ export const MessageHeader = ({ hoveredMessageId, message, index }: MessageHeade
               </IconButton>
             </Tooltip>
           </Grid>
+          {user?.username != message.username && (<Grid item xs={6} sx={{ display: "inline" }}>
+              <IconButton>
+                <BlockIcon 
+                  onClick={() => {
+                    setUserToBlock(message.username);
+                    setShowBlockUser(true);
+                  }}/>
+              </IconButton>
+            </Grid>)}
         </Grid>
       </Box>
     </Box>

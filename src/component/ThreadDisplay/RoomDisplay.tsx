@@ -11,11 +11,6 @@ import MessageBox from "../HomePage/messageBox";
 import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
-import AddReactionIcon from "@mui/icons-material/AddReaction";
-import ReplyIcon from "@mui/icons-material/Reply";
-import BlockIcon from "@mui/icons-material/Block";
-import { blockUserUrl } from "../../API/BlockingAPI";
-import BlockUserModal from "../HomePage/blockUserModal";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
 
 type Props = {
@@ -204,21 +199,8 @@ const RoomDisplay = () => {
     setMessages(newMessages);
   };
 
-  // const handleBlockUser = async (userToBlock) => {
-  //   console.log("blocking user " + userToBlock);
-  //   return await axiosPrivate.post(blockUserUrl, {toBlock: userToBlock, username: user.username});
-  // };
-
-  const blockUserProps = {
-    requestUsername: user.username,
-    userToBlock, 
-    showBlockUser,
-    setShowBlockUser,
-  };
-
   return (
     <Box sx={{ height: "100%", width: "100%" }} id="room">
-      <BlockUserModal {...blockUserProps} />
       {(banned || warned) && (
         <Box
           sx={{
@@ -255,7 +237,7 @@ const RoomDisplay = () => {
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     //displays messages
-                    return (
+                    return (user?.blockedUsers.includes(message.username)) ? null :(
                       <Box key={index}>
                         <MessageEntry message={message} index={index} />
                         <HandleLineBreak index={index} />

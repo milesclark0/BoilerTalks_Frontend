@@ -1,7 +1,7 @@
 import { Box, Typography, Grid, Tooltip, IconButton } from "@mui/material";
 import { Message } from "../../types/types";
 import ReplyIcon from "@mui/icons-material/Reply";
-import BlockIcon from"@mui/icons-material/Block";
+import BlockIcon from "@mui/icons-material/Block";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import BlockUserModal from "../HomePage/blockUserModal";
 import { useState } from "react";
@@ -11,33 +11,50 @@ type MessageHeaderProps = {
   hoveredMessageId: number;
   message: Message;
   index: number;
+  isReply: (newValue: boolean) => void;
 };
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
   const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
+  let timeValue =
+    hours > 0 && hours <= 12
+      ? "" + hours
+      : hours > 12
+      ? "" + (hours - 12)
+      : "12";
   timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
   timeValue += hours >= 12 ? " P.M." : " A.M.";
   return timeValue;
 };
 
-export const MessageHeader = ({ hoveredMessageId, message, index }: MessageHeaderProps) => {
+export const MessageHeader = ({
+  hoveredMessageId,
+  message,
+  index,
+  isReply,
+}: MessageHeaderProps) => {
   const { user } = useAuth();
   const [userToBlock, setUserToBlock] = useState<string>("");
   const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
 
   const blockUserProps = {
     requestUsername: user.username,
-    userToBlock, 
+    userToBlock,
     showBlockUser,
     setShowBlockUser,
   };
 
   return (
     <Box>
-      <BlockUserModal {...blockUserProps} />
-      <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
-      <Typography variant="overline" display="inline" sx={{ color: "black", paddingLeft: "5px" }}>
+      <Typography
+        variant="h6"
+        display="inline"
+      >{`${message.username} `}</Typography>
+      <Typography
+        variant="overline"
+        display="inline"
+        sx={{ color: "black", paddingLeft: "5px" }}
+      >
         {armyToRegTime(message.timeSent)}
       </Typography>
       <Box
@@ -68,20 +85,27 @@ export const MessageHeader = ({ hoveredMessageId, message, index }: MessageHeade
           </Grid>
           <Grid item xs={6} sx={{ display: "inline" }}>
             <Tooltip title="Reply" placement="bottom-start">
-              <IconButton>
+              <IconButton
+                onClick={() => {
+                  isReply(true);
+                }}
+              >
                 <ReplyIcon />
               </IconButton>
             </Tooltip>
           </Grid>
-          {user?.username != message.username && (<Grid item xs={6} sx={{ display: "inline" }}>
+          {user?.username != message.username && (
+            <Grid item xs={6} sx={{ display: "inline" }}>
               <IconButton>
-                <BlockIcon 
+                <BlockIcon
                   onClick={() => {
                     setUserToBlock(message.username);
                     setShowBlockUser(true);
-                  }}/>
+                  }}
+                />
               </IconButton>
-            </Grid>)}
+            </Grid>
+          )}
         </Grid>
       </Box>
     </Box>

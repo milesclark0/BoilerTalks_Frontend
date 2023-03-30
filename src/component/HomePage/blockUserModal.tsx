@@ -28,15 +28,15 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
         setShowBlockUser(false);
     };
 
-    const blockUser = async () => {
-        return await api.post(blockUserUrl, {toBlock: userToBlock, username: requestUsername});
-    };
+    const handleSubmit = async (event) => {
+        const res = await api.post(blockUserUrl, {toBlock: userToBlock, username: requestUsername});
 
-    const handleSubmit = (event) => {
-        const res = blockUser();
+        if (res.data.statusCode === 200) {
+          event.preventDefault();
+          handleClose(event.hide, "close");
+          window.location.reload();
+        }
 
-        event.preventDefault();
-        handleClose(event.hide, "close");
         //DOM update needed
     };
 

@@ -34,6 +34,10 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl, currentRoom }: Props) => {
     navigate("/profile/" + user.username);
   };
 
+  const navigateToBlocklist = () => {
+    navigate("/blocklist");
+  };
+
   return (
     <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose} sx={{pt:0}}>
       <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m:0 }}>
@@ -41,6 +45,7 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl, currentRoom }: Props) => {
       </MenuItem>
       <StyledDivider />
       <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
+      <MenuItem onClick={navigateToBlocklist}>Blocked Users</MenuItem>
       <MenuItem onClick={navigateToAbout}>About</MenuItem>
       <MenuItem onClick={() => logout(currentRoom)}>Logout</MenuItem>
     </Menu>

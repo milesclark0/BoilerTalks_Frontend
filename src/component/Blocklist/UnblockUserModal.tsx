@@ -1,14 +1,14 @@
 import { Button, Box, Typography, Modal } from "@mui/material";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { blockUserUrl } from "../../API/BlockingAPI";
+import { blockUserUrl, unblockUserUrl } from "../../API/BlockingAPI";
 
 type Props = {
     requestUsername: string;
-    userToBlock: string;
-    showBlockUser: boolean;
-    setShowBlockUser: (value: boolean) => void;
+    userToUnblock: string;
+    showUnblockUser: boolean;
+    setShowUnblockUser: (value: boolean) => void;
 };
-const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBlockUser }: Props) => {
+const UnblockUserModal = ({ requestUsername, userToUnblock, showUnblockUser, setShowUnblockUser }: Props) => {
     const api = useAxiosPrivate();
   
     // handles modal close
@@ -16,23 +16,21 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
         /*if (reason === "backdropClick") {
         return;
         }*/
-        setShowBlockUser(false);
+        setShowUnblockUser(false);
     };
 
     const handleSubmit = async (event) => {
-        const res = await api.post(blockUserUrl, {toBlock: userToBlock, username: requestUsername});
+        const res = await api.post(unblockUserUrl, {toUnblock: userToUnblock, username: requestUsername});
 
         if (res.data.statusCode === 200) {
           event.preventDefault();
           handleClose(event.hide, "close");
           window.location.reload();
         }
-
-        //DOM update needed
     };
 
     return (
-        <Modal open={showBlockUser} onClose={handleClose}>
+        <Modal open={showUnblockUser} onClose={handleClose}>
           <Box
             sx={{
               position: "absolute",
@@ -52,13 +50,13 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
             }}
           >
             <Typography variant = "h4">
-              Are you sure you want to block {userToBlock}? You can unblock them at any time.
+              Are you sure you want to unblock {userToUnblock}? You can block them again at any time.
             </Typography>
             <br></br>
-            <Button type="submit" variant="outlined" onClick={handleSubmit}>Block</Button>
+            <Button type="submit" variant="outlined" onClick={handleSubmit}>Unblock</Button>
             <Button type="button" variant="outlined" onClick={handleClose}>Cancel</Button>
           </Box>
         </Modal>
       );
 };
-export default BlockUserModal;
+export default UnblockUserModal;

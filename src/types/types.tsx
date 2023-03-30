@@ -45,7 +45,13 @@ export type CourseManagement = {
   bannedUsers: [{ username: string; reason: string }];
   warnedUsers: [{ username: string; reason: string }];
   appeals: [
-    { username: string; response: string; reason: string; reviewed: boolean; unban: boolean }
+    {
+      username: string;
+      response: string;
+      reason: string;
+      reviewed: boolean;
+      unban: boolean;
+    }
   ];
   requests: string[];
   moderators: string[];
@@ -66,4 +72,6 @@ export type Message = {
   message: string;
   timeSent: string;
   profilePic: string;
+  replyID: string;
+  reactions: [{ username: string; reaction: string }];
 };

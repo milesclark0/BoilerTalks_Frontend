@@ -84,8 +84,6 @@ const RoomDisplay = () => {
   const [appealData, setAppealData] = useState<Appeal>(null);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
-  const [userToBlock, setUserToBlock] = useState<string>("");
-  const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
 
   // get course management
   useEffect(() => {
@@ -140,6 +138,10 @@ const RoomDisplay = () => {
         foundRoom = room;
       }
     });
+
+    if (roomProps.currentCourse?.modRoom._id.$oid === roomProps.currentRoom?._id.$oid) {
+      foundRoom = roomProps.currentCourse?.modRoom;
+    }
     return foundRoom ? foundRoom.messages : [];
   };
 
@@ -185,6 +187,9 @@ const RoomDisplay = () => {
           foundRoom = room;
         }
       });
+      if (course.modRoom._id.$oid === roomProps.currentRoom?._id.$oid) {
+        foundRoom = course.modRoom;
+      }
     });
 
     const newMessages = foundRoom?.messages.map((message) => {

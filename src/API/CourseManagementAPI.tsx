@@ -13,3 +13,7 @@ export const warnUserURL = "/courseManagement/warnUser/"
 export const updateWarnListURL = "/courseManagement/updateWarnList/";
 
 export const updateCourseRulesURL = "/courseManagement/updateCourseRules/";
+
+export const addReportURL = "/courseManagement/addReport/"
+
+export const removeReportURL = "/courseManagement/removeReport/"

@@ -50,6 +50,7 @@ export type CourseManagement = {
   requests: string[];
   moderators: string[];
   announcement: string[];
+  reports: [{ username: string; reason: string }];
 };
 
 export type Room = {

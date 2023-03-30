@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import RoomDisplay from "./component/ThreadDisplay/RoomDisplay";
 import AppealsDisplay from "./component/ThreadDisplay/AppealsDisplay";
 import QADisplay from "./component/ThreadDisplay/QADisplay";
+import Blocklist from "./pages/Blocklist";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
               <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
             </Route>
+           <Route path="/blocklist" element={<Blocklist />} /> 
           </Route>
         </Route>
 

@@ -77,7 +77,7 @@ const ProfilePage = () => {
   };
 
   const GetProfilePicture = () => {
-    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={viewedUser?.profilePicture} />;
+    return <Avatar sx={{ width: 50, height: 50, m: 2 }} src={viewedUser?.profilePicture + `?${Date.now()}`} />;
   };
 
   //add a back button

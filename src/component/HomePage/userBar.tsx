@@ -57,7 +57,7 @@ const UserBar = ({ drawerWidth, innerDrawerWidth, appBarHeight, currentCourse, c
   const OnlineUser = ({ user }) => {
     return (
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-        <Avatar src={user.profilePic} />
+        <Avatar src={user.profilePic + `?${Date.now()}`} />
         <Link to={`/profile/${user.username}`} style={{ textDecoration: "none", color: "black" }}>
           <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", color: "darkblue" } }}>{user.username}</Typography>
         </Link>

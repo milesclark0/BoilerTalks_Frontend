@@ -13,7 +13,7 @@ export const MessageEntry = ({ message, index }: MessageEntryProps) => {
 
   const GetProfilePicture = (message) => {
     if (message.profilePic) {
-      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic} />;
+      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic + `?${Date.now()}`} />;
     } else {
       //returns default profile picture if not set
       return <Avatar sx={{ width: 35, height: 35, mr: 2 }} />;

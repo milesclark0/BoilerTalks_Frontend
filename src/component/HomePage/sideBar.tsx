@@ -172,13 +172,8 @@ const SideBar = ({ ...props }: Props) => {
   );
 };
 const GetProfilePicture = () => {
-  const { profile, user } = useAuth();
-  const jpeg = "data:image/jpeg;base64,";
-  if (profile?.profilePicture) {
-    return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={jpeg + profile?.profilePicture.$binary.base64} />;
-  } else {
-    return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture} />;
-  }
+  const { user } = useAuth();
+  return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture + `?${Date.now()}`} />;
 };
 
 type CourseListProps = {

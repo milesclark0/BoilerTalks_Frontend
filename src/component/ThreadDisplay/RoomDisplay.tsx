@@ -222,6 +222,7 @@ const RoomDisplay = () => {
               p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth}px)`,
               maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
+              minHeight: "800px",
               overflowY: "auto",
               display: "flex",
               flexDirection: "column-reverse",
@@ -230,7 +231,7 @@ const RoomDisplay = () => {
             className="scrollBar"
           >
             {getCurrentRoomMessages().length > 0 ? (
-              <Box>
+              <Box sx={{ height: "100vh", width: "100%" }}>
                 <Typography variant="h4" paddingBottom={"5px"}>
                   Messages
                 </Typography>

@@ -2,7 +2,7 @@ import { useAuth } from "../context/context";
 import { useState, useEffect } from "react";
 import SearchCourseModal from "../component/HomePage/searchCourseModal";
 import SideBar from "../component/HomePage/sideBar";
-import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Paper, Toolbar, Typography } from "@mui/material";
 import { Course, Room } from "../types/types";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import useSockets from "../hooks/useSockets";
@@ -167,6 +167,7 @@ const Home = () => {
   };
 
   return (
+    <Paper>
     <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
@@ -211,7 +212,9 @@ const Home = () => {
             id="threads"
           >
             {/* renders display for the current room/thread etc */}
-            <Outlet context={{ roomProps }} />
+            <Paper>
+              <Outlet context={{ roomProps }} />
+            </Paper>
           </Box>
         </Box>
       ) : (
@@ -227,6 +230,7 @@ const Home = () => {
         </Box>
       )}
     </Box>
+    </Paper>
   );
 };
 

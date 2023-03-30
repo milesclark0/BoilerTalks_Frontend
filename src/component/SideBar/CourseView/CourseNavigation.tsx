@@ -95,9 +95,9 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const buttonStyle = () => {
     const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
     const color = "black";
-    const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "white";
+    const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "brown";
     const hoverColor = "lightblue";
-    return { pointerEvents, color, backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+    return { pointerEvents,  };
   };
 
   // const roomButtonStyle = (room: Room) => {
@@ -108,15 +108,11 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const threadButtonStyle = (threadName: string) => {
     // console.log("props: " + props.activeCourseThread + "\nthreadName: " + threadName);
-    const backgroundColor =
-      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
-        ? "lightblue"
-        : "white";
-    const hoverColor =
-      props.activeCourseThread === threadName && props.currentCourse?.name === course?.name
-        ? "lightblue"
-        : "lightgrey";
-    return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+    const filterAmnt =
+      props.activeCourseThread === threadName
+        ? "0"
+        : "0";
+    return { "&:hover": { filter: `sepia(${filterAmnt})` } };
   };
 
   const otherButtonStyle = () => {
@@ -145,7 +141,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   return (
     <List>
       <ListItem>
-        <Button onClick={handleClickCourse} sx={buttonStyle()}>
+        <Button onClick={handleClickCourse} variant="outlined" sx={buttonStyle()}>
           <Typography variant="body1" noWrap component="div">
             {course?.name}
           </Typography>
@@ -190,6 +186,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           <Button
             sx={{
               width: "100%",
+              vairant: "outlined",
               // ...otherButtonStyle(),
               ...threadButtonStyle("Q&A"),
             }}

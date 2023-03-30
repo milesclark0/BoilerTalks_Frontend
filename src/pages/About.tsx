@@ -97,7 +97,7 @@ const About = () => {
       id: "3",
       title: "Katie",
       email: "zhan3461@purdue.edu",
-      caption: "Hello my name is Katie",
+      caption: "Graphic design is my passion",
       github: "https://github.com/oneKZhang",
       picture:
         "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Katie",

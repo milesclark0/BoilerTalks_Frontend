@@ -7,13 +7,23 @@ import { MessageHeader } from "./MessageHeader";
 type MessageEntryProps = {
   message: Message;
   index: number;
+  isReply: (newValue: boolean) => void;
 };
-export const MessageEntry = ({ message, index }: MessageEntryProps) => {
+export const MessageEntry = ({
+  message,
+  index,
+  isReply,
+}: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
 
   const GetProfilePicture = (message) => {
     if (message.profilePic) {
-      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic + `?${Date.now()}`} />;
+      return (
+        <Avatar
+          sx={{ width: 35, height: 35, mr: 2 }}
+          src={message.profilePic + `?${Date.now()}`}
+        />
+      );
     } else {
       //returns default profile picture if not set
       return <Avatar sx={{ width: 35, height: 35, mr: 2 }} />;
@@ -45,7 +55,12 @@ export const MessageEntry = ({ message, index }: MessageEntryProps) => {
           borderColor: "black",
         }}
       >
-        <MessageHeader message={message} index={index} hoveredMessageId={hoveredMessageId} />
+        <MessageHeader
+          message={message}
+          index={index}
+          hoveredMessageId={hoveredMessageId}
+          isReply={isReply}
+        />
         <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
           {message.message}
         </Typography>

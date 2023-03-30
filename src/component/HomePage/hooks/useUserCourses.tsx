@@ -63,7 +63,7 @@ export const useUserCourses = ({setCurrentCourse, setCurrentRoom, setActiveIcon,
 
   const { isLoading, error, data } = useQuery("user_courses: " + user?.username, fetchCourse, {
     enabled: true,
-    refetchInterval: 1000 * 60 * 2, //2 minutes
+    //refetchInterval: 1000 * 60 * 2, //2 minutes
     staleTime: 1000 * 60 * 2, //2 minutes
     refetchOnMount: "always",
     onSuccess: (data) => {

@@ -38,7 +38,7 @@ type Props = {
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
-  const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
+  const [RulesText, setRulesText] = useState(""); //import backend rules text
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const axiosPrivate = useAxiosPrivate();
@@ -68,10 +68,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   };
 
   const RulesProps = {
-    RulesList,
+    RulesText,
     RulesOpen,
     setRulesOpen,
-    setRulesList,
+    setRulesText,
     setUserCourses: props.setUserCourses,
     userCourses: props.userCourses,
     course: course,
@@ -203,11 +203,25 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               </Typography>
             </ListItem>
           </Button>
-          {/* <ListItem>
-                <Typography variant="body1" noWrap component="div">
-                  Mod Chat
-                </Typography>
-              </ListItem> */}
+          {profile?.modThreads?.includes(course?.name) && (
+            <Button
+              sx={{
+                // ...otherButtonStyle(),
+                ...threadButtonStyle("Mod Chat"),
+                width: "100%",
+              }}
+              component={NavLink}
+              to={`/home/courses/${course?._id.$oid}/${course?.modRoom._id.$oid}`}
+              onClick={() => {
+                props.setCurrentCourse(course);
+                props.setCurrentRoom(course?.modRoom);
+                props.setActiveCourseThread(course?.modRoom.name.replace(course?.name, ""));
+              }}
+            >
+              <ListItem>
+                <Typography variant="body2">Mod Chat</Typography>
+              </ListItem>
+            </Button>)}
           {profile?.modThreads?.includes(course?.name) && (
             <Button
               sx={{

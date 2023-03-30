@@ -105,8 +105,7 @@ const RoomDisplay = () => {
   const [appealData, setAppealData] = useState<Appeal>(null);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
-  const [userToBlock, setUserToBlock] = useState<string>("");
-  const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
+
 
   // get course management
   useEffect(() => {

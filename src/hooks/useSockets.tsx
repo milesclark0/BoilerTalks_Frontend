@@ -45,7 +45,7 @@ const useSockets = () => {
   }, [socket]);
 
   // sends a message to the server to be broadcasted to all users in the room
-  const sendMessage = (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => {
+  const sendMessage = (message: Message, room: Room, isSystemMessage: boolean) => {
     //TODO: send profile picture with message
     if (socket !== null) {
       if (message.message.trim() !== "") {

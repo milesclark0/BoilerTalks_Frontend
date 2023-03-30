@@ -75,7 +75,6 @@ export const useUserCourses = ({setCurrentCourse, setCurrentRoom, setActiveIcon,
         });
 
         setUserCourses(courses);
-        console.log("init course from url");
       } else setFetchError(data.data.data);
     },
     onError: (error: string) => console.log(error),

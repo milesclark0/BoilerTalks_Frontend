@@ -190,6 +190,7 @@ const RoomDisplay = () => {
         username: message.username,
         message: message.message,
         timeSent: message.timeSent,
+        profilePic: message.profilePic,
       };
       return newMessage;
     });

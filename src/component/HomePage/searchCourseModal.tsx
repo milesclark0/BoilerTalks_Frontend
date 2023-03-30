@@ -36,7 +36,7 @@ const emptyCourse: Course = {
       name: "",
       courseId: { $oid: "" },
       connected: [{ username: "", sid: "", profilePic: "" }],
-      messages: [{ username: "", message: "", timeSent: "" }],
+      messages: [{ username: "", message: "", timeSent: "", profilePic: "" }],
     },
   ],
   owner: "",

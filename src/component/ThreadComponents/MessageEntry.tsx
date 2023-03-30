@@ -11,13 +11,12 @@ type MessageEntryProps = {
 export const MessageEntry = ({ message, index }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
 
-  const GetProfilePicture = () => {
-    const jpeg = "data:image/jpeg;base64,";
-    const { profile, user } = useAuth();
-    if (profile?.profilePicture) {
-      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={jpeg + profile?.profilePicture.$binary.base64} />;
+  const GetProfilePicture = (message) => {
+    if (message.profilePic) {
+      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic} />;
     } else {
-      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={user?.profilePicture} />;
+      //returns default profile picture if not set
+      return <Avatar sx={{ width: 35, height: 35, mr: 2 }} />;
     }
   };
   return (
@@ -39,7 +38,7 @@ export const MessageEntry = ({ message, index }: MessageEntryProps) => {
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture />
+      {GetProfilePicture(message)}
       <Box
         sx={{
           overflow: "hidden",

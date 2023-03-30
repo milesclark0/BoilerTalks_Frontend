@@ -56,7 +56,7 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
 
   const updateMessageFields = (message: any) => {
     console.log("updating message fields");
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}` };
+    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
     //update message fields in userCourses and currentCourse and currentRoom
     const userCourseCopy = structuredClone(userCourses);
     userCourseCopy?.forEach((course) => {
@@ -82,7 +82,7 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
   };
 
   const handleSendMessage = () => {
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}` };
+    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
     sendMessage(formattedMessage, currentRoom, false);
   };
 

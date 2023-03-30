@@ -57,11 +57,12 @@ export type Room = {
   name: string;
   courseId: { $oid: string };
   connected: [{ username: string; sid: string; profilePic: string }];
-  messages: [{ username: string; message: string; timeSent: string }];
+  messages: Message[];
 };
 
 export type Message = {
   username: string;
   message: string;
   timeSent: string;
+  profilePic: string;
 };

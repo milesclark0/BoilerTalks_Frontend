@@ -6,12 +6,15 @@ import AddReactionIcon from "@mui/icons-material/AddReaction";
 import BlockUserModal from "../HomePage/blockUserModal";
 import { useState } from "react";
 import { useAuth } from "../../context/context";
+import GavelIcon from "@mui/icons-material/Gavel";
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
   message: Message;
   index: number;
   isReply: (newValue: boolean) => void;
+  isRoomMod: boolean;
+  promoteUser: (username: string) => void;
 };
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
@@ -32,6 +35,8 @@ export const MessageHeader = ({
   message,
   index,
   isReply,
+  isRoomMod,
+  promoteUser,
 }: MessageHeaderProps) => {
   const { user } = useAuth();
   const [userToBlock, setUserToBlock] = useState<string>("");
@@ -107,6 +112,19 @@ export const MessageHeader = ({
               </IconButton>
             </Grid>
           )}
+          {isRoomMod ? (
+            <Grid item xs={6} sx={{ display: "inline" }}>
+              <Tooltip title="Promote To Moderator" placement="bottom-start">
+                <IconButton
+                  onClick={() => {
+                    promoteUser(message.username);
+                  }}
+                >
+                  <GavelIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          ) : null}
         </Grid>
       </Box>
     </Box>

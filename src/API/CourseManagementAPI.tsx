@@ -8,7 +8,7 @@ export const updateAppealURL = "/courseManagement/updateAppeal/";
 
 export const banUserURL = "/courseManagement/banUser/";
 
-export const warnUserURL = "/courseManagement/warnUser/"
+export const warnUserURL = "/courseManagement/warnUser/";
 
 export const updateWarnListURL = "/courseManagement/updateWarnList/";
 
@@ -17,3 +17,7 @@ export const updateCourseRulesURL = "/courseManagement/updateCourseRules/";
 export const addReportURL = "/courseManagement/addReport/";
 
 export const removeReportURL = "/courseManagement/removeReport/";
+
+export const addCourseModsURL = "/courseManagement/addCourseMods/";
+
+export const getCourseModsURL = "/courseManagement/getCourseMods/";

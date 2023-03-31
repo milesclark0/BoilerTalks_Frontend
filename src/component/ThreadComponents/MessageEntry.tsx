@@ -10,12 +10,16 @@ type MessageEntryProps = {
   messages: Message[];
   index: number;
   isReply: (newValue: boolean) => void;
+  isRoomMod: boolean;
+  promoteUser: (username: string) => void;
 };
 export const MessageEntry = ({
   message,
   messages,
   index,
   isReply,
+  isRoomMod,
+  promoteUser,
 }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
 
@@ -79,6 +83,8 @@ export const MessageEntry = ({
           index={index}
           hoveredMessageId={hoveredMessageId}
           isReply={isReply}
+          isRoomMod={isRoomMod}
+          promoteUser={promoteUser}
         />
         <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
           {message.message}

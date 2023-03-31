@@ -111,11 +111,26 @@ const RoomDisplay = () => {
   const [appealData, setAppealData] = useState<Appeal>(null);
   const { profile } = useAuth();
   const [emojiShow, setEmojiShow] = useState<boolean>(false);
+  const [roomMods, setRoomMods] = useState<String[]>([]);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
   // get course management
   useEffect(() => {
+    // const getCurrentRoomMods = async () => {
+    //   try {
+    //     // alert(courseId);
+    //     const response = await axiosPrivate.get(getCourseModsURL + courseId);
+    //     console.log(response);
+    //     if (response.data.statusCode === 200) {
+    //       setRoomMods(response.data.data);
+    //       // alert(response.data.data);
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
       if (res.status == 200) {
@@ -145,6 +160,7 @@ const RoomDisplay = () => {
     };
     // if (roomProps.currentCourse) {
     fetchCourseManagement();
+    // getCurrentRoomMods();
     // }
   }, [roomProps.currentCourse]);
 
@@ -232,19 +248,18 @@ const RoomDisplay = () => {
     );
   };
 
-  const getCurrentRoomMods = async (courseId: any) => {
-    // const res = await api.post(blockUserUrl, {
-    //   toBlock: userToBlock,
-    //   username: requestUsername,
-    // });
+  // const res = await api.post(blockUserUrl, {
+  //   toBlock: userToBlock,
+  //   username: requestUsername,
+  // });
 
-    // if (res.data.statusCode === 200) {
-    //   event.preventDefault();
-    //   handleClose();
-    //   window.location.reload();
-    // }
-    return await axiosPrivate.get(getCourseModsURL + courseId);
-  };
+  // if (res.data.statusCode === 200) {
+  //   event.preventDefault();
+  //   handleClose();
+  //   window.location.reload();
+  //   // }
+  //   return await axiosPrivate.get(getCourseModsURL + courseId);
+  // };
 
   function handleReply(isReplying, index) {
     setIsReplying(isReplying);

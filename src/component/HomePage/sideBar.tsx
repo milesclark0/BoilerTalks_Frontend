@@ -79,7 +79,7 @@ const SideBar = ({ ...props }: Props) => {
     },
     position: "fixed",
   };
-
+  
   const InnerDrawerStyles = {
     width: innerDrawerWidth,
     flexShrink: 0,

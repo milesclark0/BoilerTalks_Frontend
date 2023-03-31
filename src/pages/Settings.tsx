@@ -1,7 +1,7 @@
 import { useAuth } from "../context/context";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useState } from "react";
-import { Alert, AppBar, Box, Button, Drawer, FormHelperText, FormLabel, IconButton, InputAdornment, Stack, Toolbar, Typography } from "@mui/material";
+import { Alert, AppBar, Box, Button, Drawer, FormHelperText, FormLabel, IconButton, InputAdornment, Paper, Stack, Toolbar, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import WarningIcon from "@mui/icons-material/Warning";
 import { ChangePasswordAPI } from "../API/RegisterAPI";
@@ -33,11 +33,11 @@ const PasswordReset = (e) => {
       try {
         const res = await ChangePasswordAPI(user?.username, password);
         console.log(res);
-        if (res.data.statusCode === 200) {     
+        if (res.data.statusCode === 200) {
           setResetStatus(true);
-          setPassword('');
-          setConfirmPassword('');
-        } 
+          setPassword("");
+          setConfirmPassword("");
+        }
       } catch (error) {
         console.log(error);
       }
@@ -46,12 +46,21 @@ const PasswordReset = (e) => {
   };
 
   return (
-      <Box>
-      {resetSuccessful == true && (<Alert onClose={ () =>{setResetStatus(false)}} severity="success">Successful Password Reset!</Alert>)}
+    <Box>
+      {resetSuccessful == true && (
+        <Alert
+          onClose={() => {
+            setResetStatus(false);
+          }}
+          severity="success"
+        >
+          Successful Password Reset!
+        </Alert>
+      )}
       <Typography variant="h5">Password Reset</Typography>
       <Typography variant="body2">Passwords must contain one uppercase letter, one special character, and one numerical value.</Typography>
-      <Box sx={{display: 'inline-flex', paddingTop: '10px'}} onSubmit={tryResetPassword} component="form">
-      <TextField
+      <Box sx={{ display: "inline-flex", paddingTop: "10px" }} onSubmit={tryResetPassword} component="form">
+        <TextField
           label="Password"
           type="password"
           id="password"
@@ -65,7 +74,7 @@ const PasswordReset = (e) => {
           helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
           onChange={(e) => {
             setPassword(e.target.value);
-            setPasswordError(false)
+            setPasswordError(false);
           }}
           sx={{ width: "70%" }}
         />
@@ -82,7 +91,7 @@ const PasswordReset = (e) => {
           error={passwordError}
           helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
           onChange={(e) => {
-            setConfirmPassword(e.target.value); 
+            setConfirmPassword(e.target.value);
             setPasswordError(false);
           }}
           sx={{ width: "70%" }}
@@ -97,22 +106,19 @@ const PasswordReset = (e) => {
         >
           Change Password
         </LoadingButton>
-
-
       </Box>
-  </Box> 
+    </Box>
   );
 };
-
 
 const Settings = () => {
   const { user } = useAuth();
   const api = useAxiosPrivate();
 
-  const [settingsPage, setSettingsPage] = useState<string>('Password');
+  const [settingsPage, setSettingsPage] = useState<string>("Password");
 
   const defaultPadding = 4;
-  const drawerWidth = 300;
+  const drawerWidth = 200;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
 
@@ -129,42 +135,40 @@ const Settings = () => {
 
   const navigate = useNavigate();
   const navigateToHome = () => {
-    navigate("/home")
-  }
+    navigate("/home");
+  };
 
-
-return (
-    <Box sx={{ display: "flex" }}>
-        <AppBar position="fixed" sx={{ width: `calc(100%)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center"}}>
-          <Toolbar>
-            <Typography variant="h5" sx={{p:4}}>{"Settings"}</Typography>
-            <Button sx={{color: "white"}}onClick={navigateToHome}>Home</Button>
-          </Toolbar>
-        </AppBar>
-        <Drawer sx={OuterDrawerStyles} variant="permanent" anchor="left">
-            <Box
-            sx={{
-                display: "flex",
-                paddingLeft: `${innerDrawerWidth}px`,
-                paddingTop: `${appBarHeight}px`,
-            }}
-            >
-            </Box>
-            <Stack
-             sx={{alignItems: "center", paddingTop: "15px" }}>
-                <Button onClick={() => setSettingsPage('Password')} sx={{textTransform: 'none'}}>
-                    <Typography variant="body1">Password</Typography>   
-                </Button>
-            </Stack>
-        </Drawer>
-        <Box sx={{marginTop:`${appBarHeight}px` , marginLeft: `${drawerWidth}px`, paddingTop: '40px', paddingLeft: '40px'}}>
-            <PasswordReset />  
-        </Box>
-        
-    </Box>
+  return (
+    <Paper sx={{ display: "flex", height: "100vh" }}>
+      <AppBar position="fixed" sx={{ width: `calc(100%)`, ml: `${drawerWidth}px`, height: appBarHeight, alignContent: "center" }}>
+        <Toolbar>
+          <Typography variant="h5" sx={{ p: 4 }}>
+            {"Settings"}
+          </Typography>
+          <Button sx={{ color: "white" }} onClick={navigateToHome}>
+            Home
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Drawer sx={OuterDrawerStyles} variant="permanent" anchor="left">
+        <Box
+          sx={{
+            display: "flex",
+            paddingLeft: `${innerDrawerWidth}px`,
+            paddingTop: `${appBarHeight}px`,
+          }}
+        ></Box>
+        <Stack sx={{ alignItems: "center", paddingTop: "15px" }}>
+          <Button onClick={() => setSettingsPage("Password")} fullWidth sx={{ textTransform: "none" }}>
+            <Typography variant="body1">Password</Typography>
+          </Button>
+        </Stack>
+      </Drawer>
+      <Box sx={{ marginTop: `${appBarHeight}px`, marginLeft: `${drawerWidth}px`, paddingTop: "40px", paddingLeft: "40px" }}>
+        <PasswordReset />
+      </Box>
+    </Paper>
   );
-
 };
-
 
 export default Settings;

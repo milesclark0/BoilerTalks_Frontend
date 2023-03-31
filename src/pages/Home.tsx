@@ -30,7 +30,7 @@ const Home = () => {
   const { courseId, roomId } = useParams();
 
   const defaultPadding = 4;
-  const drawerWidth = 300;
+  const drawerWidth = 320;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
 
@@ -167,7 +167,6 @@ const Home = () => {
   };
 
   return (
-    <Paper>
     <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar {...sideBarProps} />
       <SearchCourseModal {...searchCourseProps} />
@@ -202,7 +201,7 @@ const Home = () => {
               </Box>
             </Toolbar>
           </AppBar>
-          <Box
+          <Paper
             sx={{
               mt: `${appBarHeight}px`,
               height: `calc(100% - ${appBarHeight}px)`,
@@ -212,10 +211,8 @@ const Home = () => {
             id="threads"
           >
             {/* renders display for the current room/thread etc */}
-            <Paper>
               <Outlet context={{ roomProps }} />
-            </Paper>
-          </Box>
+          </Paper>
         </Box>
       ) : (
         <Box
@@ -230,7 +227,6 @@ const Home = () => {
         </Box>
       )}
     </Box>
-    </Paper>
   );
 };
 

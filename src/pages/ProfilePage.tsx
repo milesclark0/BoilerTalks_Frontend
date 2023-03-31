@@ -23,12 +23,12 @@ const ProfilePage = () => {
   const location = useLocation();
 
   const defaultPadding = 4;
-  const drawerWidth = 300;
+  const drawerWidth = 320;
   const innerDrawerWidth = 85;
   const appBarHeight = 64;
 
   console.log(location);
-  
+
   const fetchProfile = async () => {
     console.log(requestUsername);
     return await axiosPrivate.get(getProfileURL + requestUsername);

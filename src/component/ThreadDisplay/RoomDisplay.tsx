@@ -13,11 +13,10 @@ import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
+import { Paper } from "@mui/material";
 
 type Props = {
-  setActiveIcon: React.Dispatch<
-    React.SetStateAction<{ course: string; isActiveCourse: boolean }>
-  >;
+  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
   activeIcon: { course: string; isActiveCourse: boolean };
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
@@ -30,9 +29,7 @@ type Props = {
   appBarHeight: number;
   defaultPadding: number;
   distinctCoursesByDepartment: Course[];
-  setDistinctCoursesByDepartment: React.Dispatch<
-    React.SetStateAction<Course[]>
-  >;
+  setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
@@ -57,12 +54,7 @@ const dateStringify = (dateTime: string) => {
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
   const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue =
-    hours > 0 && hours <= 12
-      ? "" + hours
-      : hours > 12
-      ? "" + (hours - 12)
-      : "12";
+  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
   timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
   timeValue += hours >= 12 ? " P.M." : " A.M.";
   return timeValue;
@@ -79,14 +71,7 @@ type Appeal = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    connectToRoom,
-    disconnectFromRoom,
-    isConnected,
-  } = useSockets();
+  const { messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom, isConnected } = useSockets();
   const messageBoxProps = {
     messages,
     setMessages,
@@ -145,10 +130,7 @@ const RoomDisplay = () => {
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
       //if scroll is close to bottom, scroll to bottom
-      if (
-        messageContainer.scrollHeight - messageContainer.scrollTop <
-        messageContainer.clientHeight + 100
-      ) {
+      if (messageContainer.scrollHeight - messageContainer.scrollTop < messageContainer.clientHeight + 100) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
       }
     }
@@ -172,9 +154,12 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      roomProps.setActiveCourseThread(
-        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
-      );
+      roomProps.setActiveCourseThread(roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, ""));
+      //scroll to bottom
+      const messageContainer = document.getElementById("message-container");
+      if (messageContainer) {
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+      }
     }
   }, [roomProps.currentRoom]);
 
@@ -186,9 +171,7 @@ const RoomDisplay = () => {
     const messageDate = dateStringify(messages[index + 1]?.timeSent);
 
     let messageTime = armyToRegTime(messages[index]?.timeSent)?.split(" ")[1];
-    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(
-      " "
-    )[1];
+    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(" ")[1];
 
     if (messageTime === "P.M." && messageTime2 === "A.M.") {
       return (
@@ -256,11 +239,7 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? (
-            <BanDialog bannedData={bannedData} appealData={appealData} />
-          ) : (
-            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
-          )}
+          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
         </Box>
       )}
       {!banned && !warned && (
@@ -271,7 +250,6 @@ const RoomDisplay = () => {
               p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth}px)`,
               maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
-              minHeight: "800px",
               overflowY: "auto",
               display: "flex",
               flexDirection: "column-reverse",
@@ -280,24 +258,20 @@ const RoomDisplay = () => {
             className="scrollBar"
           >
             {getCurrentRoomMessages().length > 0 ? (
-              <Box sx={{ height: "100vh", width: "100%" }}>
+              <Box>
                 <Typography variant="h4" paddingBottom={"5px"}>
                   Messages
                 </Typography>
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     //displays messages
-                    return user?.blockedUsers.includes(
-                      message.username
-                    ) ? null : (
+                    return user?.blockedUsers.includes(message.username) ? null : (
                       <Box key={index} sx={{ paddingBottom: "12px" }}>
                         <MessageEntry
                           messages={getCurrentRoomMessages()}
                           message={message}
                           index={index}
-                          isReply={(isReplying) =>
-                            handleReply(isReplying, index)
-                          }
+                          isReply={(isReplying) => handleReply(isReplying, index)}
                         />
                         <HandleLineBreak index={index} />
                         {/* {isReplying ? setReplyIndex(index) : null} */}
@@ -316,9 +290,7 @@ const RoomDisplay = () => {
               height: `${roomProps.appBarHeight}px`,
               position: "absolute",
               bottom: 20,
-              right: `${
-                roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8
-              }px`,
+              right: `${roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8}px`,
               left: `${roomProps.drawerWidth}px`,
             }}
           >
@@ -339,19 +311,11 @@ const RoomDisplay = () => {
                     </IconButton>
                     <Typography variant="overline">
                       {/* <ReplyIcon /> */}
-                      {`replying to ` +
-                        getCurrentRoomMessages()[replyIndex].username +
-                        `: ` +
-                        getCurrentRoomMessages()[replyIndex].message}
+                      {`replying to ` + getCurrentRoomMessages()[replyIndex].username + `: ` + getCurrentRoomMessages()[replyIndex].message}
                     </Typography>
                   </Box>
                 ) : null}
-                <MessageBox
-                  {...roomProps}
-                  {...messageBoxProps}
-                  replyIndex={replyIndex}
-                  handleReply={handleReply}
-                />
+                <MessageBox {...roomProps} {...messageBoxProps} replyIndex={replyIndex} handleReply={handleReply} />
               </>
             ) : (
               <Typography variant="h6">Loading...</Typography>

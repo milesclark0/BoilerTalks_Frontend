@@ -30,14 +30,14 @@ export const light = {
   palette: {
     type: "light",
     primary: {
-      main: "#000000",
+      main: "#ffffff",
     },
     secondary: {
-      main: "#000000",
+      main: "#f0f0f0",
     },
     background: {
       default: "#2d2c2c",
-      paper: "#333333",
+      paper: "#f3f3f3",
     },
     text: {
       primary: "rgba(22,22,22,0.87)",

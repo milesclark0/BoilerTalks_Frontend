@@ -117,20 +117,6 @@ const RoomDisplay = () => {
 
   // get course management
   useEffect(() => {
-    // const getCurrentRoomMods = async () => {
-    //   try {
-    //     // alert(courseId);
-    //     const response = await axiosPrivate.get(getCourseModsURL + courseId);
-    //     console.log(response);
-    //     if (response.data.statusCode === 200) {
-    //       setRoomMods(response.data.data);
-    //       // alert(response.data.data);
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
       if (res.status == 200) {
@@ -160,8 +146,6 @@ const RoomDisplay = () => {
     };
     // if (roomProps.currentCourse) {
     fetchCourseManagement();
-    // getCurrentRoomMods();
-    // }
   }, [roomProps.currentCourse]);
 
   // whens messages change, scroll to bottom
@@ -247,19 +231,6 @@ const RoomDisplay = () => {
       addCourseModsURL + username + "/" + courseId
     );
   };
-
-  // const res = await api.post(blockUserUrl, {
-  //   toBlock: userToBlock,
-  //   username: requestUsername,
-  // });
-
-  // if (res.data.statusCode === 200) {
-  //   event.preventDefault();
-  //   handleClose();
-  //   window.location.reload();
-  //   // }
-  //   return await axiosPrivate.get(getCourseModsURL + courseId);
-  // };
 
   function handleReply(isReplying, index) {
     setIsReplying(isReplying);

@@ -45,6 +45,11 @@ export const MessageEntry = ({
 }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
   const [emojiPanelShow, setEmojiPanelShow] = useState<boolean>(false);
+
+  function handleEmojiPanelChange() {
+    setEmojiPanelShow(!emojiPanelShow);
+  }
+
   const [reactingIndex, setReactingIndex] = useState<number>(null);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -143,7 +148,7 @@ export const MessageEntry = ({
           isReply={isReply}
           isRoomMod={isRoomMod}
           promoteUser={promoteUser}
-          isReacting={setEmojiPanelShow}
+          isReacting={handleEmojiPanelChange}
           setReactingIndex={setReactingIndex}
         />
         <Typography variant="body1" sx={{ wordWrap: "break-word" }}>

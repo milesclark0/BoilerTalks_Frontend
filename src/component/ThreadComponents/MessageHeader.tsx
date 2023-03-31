@@ -16,7 +16,7 @@ type MessageHeaderProps = {
   isReply: (newValue: boolean) => void;
   isRoomMod: boolean;
   promoteUser: (username: string) => void;
-  isReacting: (newValue: boolean) => void;
+  isReacting: () => void;
   setReactingIndex: (newValue: number) => void;
 };
 const armyToRegTime = (time: any) => {
@@ -92,7 +92,7 @@ export const MessageHeader = ({
               <IconButton>
                 <AddReactionIcon
                   onClick={() => {
-                    isReacting(true);
+                    isReacting();
                     setReactingIndex(index);
                   }}
                 />

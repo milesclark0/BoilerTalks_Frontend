@@ -40,10 +40,10 @@ export const SearchUserBox = ({ courseUsers, isCourseSelected, drawerWidth, inne
           return option?.username;
         }
       }}
-      sx={{ width: drawerWidth - innerDrawerWidth, "& .Mui-focused": { color: "black"}}}
+      sx={{ color: "white", width: drawerWidth - innerDrawerWidth, "& .Mui-focused": { color: "white"}}}
       renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." size="small" sx={{
         input: {
-          color: "black",
+          color: "white",
         }
       }} />}
     />

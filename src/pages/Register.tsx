@@ -212,6 +212,7 @@ const Register = () => {
             }}
             sx={{ width: "70%" }}
           />
+          <Typography sx={{ margin: "-10px", marginBottom: "-50px" }} >Password must contain an uppercase character (A), a number (4) and a special character (!@#$%^*)</Typography>
           <TextField
             margin="dense"
             label="Password"

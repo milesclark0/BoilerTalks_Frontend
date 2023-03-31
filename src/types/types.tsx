@@ -73,5 +73,6 @@ export type Message = {
   timeSent: string;
   profilePic: string;
   replyIndex?: number;
+  replyID?: string;//unused? maybe delete this?
   reactions?: [{ username: string; reaction: string }];
 };

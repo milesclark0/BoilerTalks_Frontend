@@ -1,4 +1,4 @@
-import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip } from "@mui/material";
+import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
@@ -361,7 +361,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
 
   return (
     <Modal open={showCourses} onClose={handleClose}>
-      <Box
+      <Paper
         sx={{
           position: "absolute",
           top: "50%",
@@ -378,7 +378,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
         }}
       >
         {!loading ? <CourseSelection /> : <Typography variant="h4">Loading Courses...</Typography>}
-      </Box>
+      </Paper>
     </Modal>
   );
 };

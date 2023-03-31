@@ -212,6 +212,8 @@ const Register = () => {
             }}
             sx={{ width: "70%" }}
           />
+          <Typography>Password must contain a special character</Typography>
+          <FormControl margin="dense" sx={{ width: "100%" }}>
           <TextField
             margin="dense"
             label="Password"
@@ -225,7 +227,10 @@ const Register = () => {
             helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
             onChange={(e) => setPassword(e.target.value)}
             sx={{ width: "70%" }}
-          />
+          /><FormHelperText id="component-helper-text">
+          Some important helper text
+          </FormHelperText>
+          </FormControl>
           <TextField
             margin="dense"
             label="Confirm Password"

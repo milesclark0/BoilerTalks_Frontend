@@ -2,6 +2,8 @@ import { List, ListItem, Typography, Button } from "@mui/material";
 import React, { useState } from "react";
 import { Course, Room } from "../../../types/types";
 import AddThreadModal from "./CourseNavigation/addThreadModal";
+import SendReportModal from "./CourseNavigation/SendReportModal";
+import ViewReportModal from "./CourseNavigation/ViewReportModal";
 import { MoreIcon } from "./CourseNavigation/MoreIcon";
 import { PinIcon } from "./CourseNavigation/PinIcon";
 import RulesModal from "./CourseNavigation/RulesModal";
@@ -38,7 +40,9 @@ type Props = {
 
 export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
-  const [RulesText, setRulesText] = useState(""); //import backend rules text
+  const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
+  const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
+  const [NewReportText, setNewReportText] = useState("");
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const axiosPrivate = useAxiosPrivate();
@@ -68,12 +72,27 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   };
 
   const RulesProps = {
-    RulesText,
+    RulesList,
     RulesOpen,
     setRulesOpen,
-    setRulesText,
+    setRulesList,
     setUserCourses: props.setUserCourses,
     userCourses: props.userCourses,
+    course: course,
+  };
+
+  const SendReportsProps = {
+    setNewReportText,
+    NewReportText,
+    setReportsOpen,
+    ReportsOpen,
+    course: course,
+  };
+  const ViewReportProps = {
+    ReportsList,
+    ReportsOpen,
+    setReportsOpen,
+    setReportsList,
     course: course,
   };
 
@@ -83,6 +102,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const handleClickNewThread = () => {
     props.setNewThreadOpen(true);
+  };
+
+  const handleClickReport = () => {
+    setReportsOpen(true);
   };
 
   const handleClickCourse = () => {
@@ -241,6 +264,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               </ListItem>
             </Button>
           )}
+          
           <Button
             variant="text"
             onClick={handleClickRules}
@@ -248,6 +272,15 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           >
             <ListItem>
               <Typography variant="body2">Rules</Typography>
+            </ListItem>
+          </Button>
+          <Button
+            variant="text"
+            onClick={handleClickReport}
+            sx={{ ...otherButtonStyle(), width: "100%" }}
+          >
+            <ListItem>
+              <Typography variant="body2">Create Report</Typography>
             </ListItem>
           </Button>
           {profile?.modThreads?.includes(course?.name) && (
@@ -259,6 +292,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           )}
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
+          <SendReportModal {...SendReportsProps} />
+          {profile?.modThreads?.includes(course?.name) && (
+            <ViewReportModal {...ViewReportProps} />
+          )}
         </List>
       </ListItem>
     </List>

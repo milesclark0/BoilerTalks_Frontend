@@ -240,7 +240,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             </ListItem>
           </Button>
           {profile?.modThreads?.includes(course?.name) && (
-            <Button variant="outlined" onClick={handleClickNewThread}>
+            <Button variant="outlined" onClick={handleClickNewThread} sx={buttonStyle()}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>
               </ListItem>

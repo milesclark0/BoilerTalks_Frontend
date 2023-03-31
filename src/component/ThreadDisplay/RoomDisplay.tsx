@@ -359,6 +359,7 @@ const RoomDisplay = () => {
                           promoteUser={setCurrentRoomMods}
                           room={roomProps.currentRoom}
                           addReaction={addReaction}
+                          course={roomProps.currentCourse}
                         />
                         <HandleLineBreak index={index} />
                         {/* {isReplying ? setReplyIndex(index) : null} */}

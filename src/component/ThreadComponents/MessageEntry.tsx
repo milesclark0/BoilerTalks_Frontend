@@ -7,7 +7,6 @@ import MessageIcon from "@mui/icons-material/Message";
 import { EmojiPanel } from "../HomePage/emojiPanel";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import React from "react";
-import UserMenu from "./UserMenu";
 import { useNavigate } from "react-router-dom";
 import { StyledDivider } from "../SideBar/StyledDivider";
 import { Course } from "../../types/types";

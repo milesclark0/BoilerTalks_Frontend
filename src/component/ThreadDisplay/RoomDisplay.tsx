@@ -90,6 +90,7 @@ const RoomDisplay = () => {
     sendMessage,
     connectToRoom,
     disconnectFromRoom,
+    addReaction,
     isConnected,
   } = useSockets();
   const messageBoxProps = {
@@ -109,6 +110,7 @@ const RoomDisplay = () => {
   const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
   const [appealData, setAppealData] = useState<Appeal>(null);
   const { profile } = useAuth();
+  const [emojiShow, setEmojiShow] = useState<boolean>(false);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
@@ -337,16 +339,20 @@ const RoomDisplay = () => {
                           isRoomMod={
                             profile?.modThreads?.includes(
                               roomProps.currentCourse?.name
-                            ) ||
-                            profile?.username == "user2" ||
-                            getCurrentRoomMods(courseId).includes(
-                              profile?.username
-                            )
+                            ) || profile?.username == "user2"
                           }
                           promoteUser={setCurrentRoomMods}
+                          room={roomProps.currentRoom}
+                          addReaction={addReaction}
                         />
                         <HandleLineBreak index={index} />
                         {/* {isReplying ? setReplyIndex(index) : null} */}
+                        {/* room={roomProps.currentRoom} 
+                        
+                        ||
+                            getCurrentRoomMods(courseId).includes(
+                              profile?.username
+                            ) */}
                       </Box>
                     );
                   })}

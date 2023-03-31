@@ -7,6 +7,7 @@ import BlockUserModal from "../HomePage/blockUserModal";
 import { useState } from "react";
 import { useAuth } from "../../context/context";
 import GavelIcon from "@mui/icons-material/Gavel";
+import { EmojiPanel } from "../HomePage/emojiPanel";
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -15,6 +16,8 @@ type MessageHeaderProps = {
   isReply: (newValue: boolean) => void;
   isRoomMod: boolean;
   promoteUser: (username: string) => void;
+  isReacting: (newValue: boolean) => void;
+  setReactingIndex: (newValue: number) => void;
 };
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
@@ -37,6 +40,8 @@ export const MessageHeader = ({
   isReply,
   isRoomMod,
   promoteUser,
+  isReacting,
+  setReactingIndex,
 }: MessageHeaderProps) => {
   const { user } = useAuth();
   const [userToBlock, setUserToBlock] = useState<string>("");
@@ -85,7 +90,12 @@ export const MessageHeader = ({
           >
             <Tooltip title="React" placement="bottom-start">
               <IconButton>
-                <AddReactionIcon />
+                <AddReactionIcon
+                  onClick={() => {
+                    isReacting(true);
+                    setReactingIndex(index);
+                  }}
+                />
               </IconButton>
             </Tooltip>
           </Grid>
@@ -102,14 +112,16 @@ export const MessageHeader = ({
           </Grid>
           {user?.username != message.username && (
             <Grid item xs={6} sx={{ display: "inline" }}>
-              <IconButton>
-                <BlockIcon
-                  onClick={() => {
-                    setUserToBlock(message.username);
-                    setShowBlockUser(true);
-                  }}
-                />
-              </IconButton>
+              <Tooltip title="Block" placement="bottom-start">
+                <IconButton>
+                  <BlockIcon
+                    onClick={() => {
+                      setUserToBlock(message.username);
+                      setShowBlockUser(true);
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
             </Grid>
           )}
           {isRoomMod ? (

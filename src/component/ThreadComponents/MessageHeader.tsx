@@ -46,6 +46,7 @@ export const MessageHeader = ({
 
   return (
     <Box>
+      <BlockUserModal {...blockUserProps} />
       <Typography
         variant="h6"
         display="inline"

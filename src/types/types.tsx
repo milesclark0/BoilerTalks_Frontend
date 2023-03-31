@@ -20,7 +20,7 @@ export type Course = {
   department: string;
   owner: string;
   rooms: Room[];
-  modRoom: { $oid: string };
+  modRoom: Room;
   userThread: { $oid: string };
   instructor: string | null;
   memberCount: number;
@@ -56,6 +56,7 @@ export type CourseManagement = {
   requests: string[];
   moderators: string[];
   announcement: string[];
+  reports: [{ username: string; reason: string }];
 };
 
 export type Room = {

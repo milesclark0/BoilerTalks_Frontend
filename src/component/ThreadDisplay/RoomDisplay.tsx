@@ -105,8 +105,6 @@ const RoomDisplay = () => {
   const [appealData, setAppealData] = useState<Appeal>(null);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
-  const [userToBlock, setUserToBlock] = useState<string>("");
-  const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
 
   // get course management
   useEffect(() => {
@@ -164,6 +162,10 @@ const RoomDisplay = () => {
         foundRoom = room;
       }
     });
+
+    if (roomProps.currentCourse?.modRoom._id.$oid === roomProps.currentRoom?._id.$oid) {
+      foundRoom = roomProps.currentCourse?.modRoom;
+    }
     return foundRoom ? foundRoom.messages : [];
   };
 
@@ -225,6 +227,9 @@ const RoomDisplay = () => {
           foundRoom = room;
         }
       });
+      if (course.modRoom._id.$oid === roomProps.currentRoom?._id.$oid) {
+        foundRoom = course.modRoom;
+      }
     });
 
     const newMessages = foundRoom?.messages.map((message) => {
@@ -266,6 +271,7 @@ const RoomDisplay = () => {
               p: roomProps.defaultPadding,
               width: `calc(100% - ${roomProps.drawerWidth}px)`,
               maxHeight: `calc(100% - ${roomProps.appBarHeight * 2 + 30}px)`,
+              minHeight: "800px",
               overflowY: "auto",
               display: "flex",
               flexDirection: "column-reverse",
@@ -274,7 +280,7 @@ const RoomDisplay = () => {
             className="scrollBar"
           >
             {getCurrentRoomMessages().length > 0 ? (
-              <Box>
+              <Box sx={{ height: "100vh", width: "100%" }}>
                 <Typography variant="h4" paddingBottom={"5px"}>
                   Messages
                 </Typography>

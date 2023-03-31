@@ -15,10 +15,19 @@ import RoomDisplay from "./component/ThreadDisplay/RoomDisplay";
 import AppealsDisplay from "./component/ThreadDisplay/AppealsDisplay";
 import QADisplay from "./component/ThreadDisplay/QADisplay";
 import Blocklist from "./pages/Blocklist";
+import { useEffect, useState } from "react";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { darkTheme, lightTheme } from "./assets/theme";
+import { useAuth } from "./context/context";
 
 function App() {
+  const {themeSetting} = useAuth();
+  var themeObject = lightTheme;
+  if (themeSetting == 'dark') {
+    themeObject = darkTheme;
+  }
   return (
-    // <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themeObject}>
     <div className="appDisplay">
       <Routes>
         {/* public routes */}
@@ -49,7 +58,7 @@ function App() {
       </Routes>
     </div>
 
-    //</ThemeProvider>
+    </ThemeProvider>
   );
 }
 

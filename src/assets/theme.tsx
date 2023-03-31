@@ -3,9 +3,9 @@ import {createTheme} from "@mui/material/styles";
 
 import { ThemeOptions } from "@mui/material/styles";
 
-export const themeOptions = {
+export const dark = {
   palette: {
-    type: "light",
+    type: "dark",
     primary: {
       main: "#3fb5b1",
     },
@@ -26,5 +26,29 @@ export const themeOptions = {
   },
 };
 
-export const theme = createTheme(themeOptions);
+export const light = {
+  palette: {
+    type: "light",
+    primary: {
+      main: "#000000",
+    },
+    secondary: {
+      main: "#000000",
+    },
+    background: {
+      default: "#2d2c2c",
+      paper: "#333333",
+    },
+    text: {
+      primary: "rgba(22,22,22,0.87)",
+      secondary: "rgba(22,22,22,0.44)",
+      disabled: "rgba(22,22,22,0.44)",
+      hint: "rgba(22,22,22,0.44)",
+    },
+    divider: "rgba(195,195,195,0.12)",
+  },
+};
 
+export const darkTheme = createTheme(dark);
+
+export const lightTheme = createTheme(light);

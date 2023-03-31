@@ -14,6 +14,8 @@ type AuthProviderType = {
   signOut: () => void;
   setUser: (user: User) => void;
   setProfile: (profile: Profile) => void;
+  themeSetting: string;
+  handleThemeSettingChange: () => void;
 };
 
 const AuthContext = createContext<AuthProviderType>({
@@ -25,6 +27,8 @@ const AuthContext = createContext<AuthProviderType>({
   setUser: (user: User) => {},
   profile: undefined,
   setProfile: (profile: Profile) => {},
+  themeSetting: localStorage.getItem('themeSetting') || 'light',
+  handleThemeSettingChange: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
@@ -35,6 +39,19 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [profile, setProfile] = useState<Profile>(undefined);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [themeSetting, setThemeSetting] = useState(
+        localStorage.getItem('themeSetting') || 'light'
+      );
+
+  const handleThemeSettingChange = () => { 
+    var setTo = 'light';
+    if(themeSetting == 'light') {
+      setTo = 'dark';
+    }
+    setThemeSetting(setTo);
+    localStorage.setItem('themeSetting', setTo);
+  };
 
   const signOut = () => {
     setUser(undefined);
@@ -56,7 +73,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     navigate(from, { replace: true });
   };
 
-  return <AuthContext.Provider value={{ user, signIn, isLoggedIn, setIsLoggedIn, signOut, setUser, profile, setProfile }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, signIn, isLoggedIn, setIsLoggedIn, signOut, setUser, profile, setProfile, themeSetting, handleThemeSettingChange}}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

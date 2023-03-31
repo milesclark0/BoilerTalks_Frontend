@@ -90,6 +90,10 @@ const MessageBox = ({
             room.messages.push(formattedMessage);
           }
         });
+
+        if (currentRoom?._id.$oid === course?.modRoom._id.$oid){
+          course?.modRoom.messages.push(formattedMessage); 
+        }
       }
     });
     setUserCourses(userCourseCopy);
@@ -101,6 +105,10 @@ const MessageBox = ({
         room.messages.push(formattedMessage);
       }
     });
+
+    if (currentRoom?._id.$oid === currCourseCopy?.modRoom._id.$oid){
+      currCourseCopy?.modRoom.messages.push(formattedMessage);
+    }
     setCurrentCourse(currCourseCopy);
   };
 

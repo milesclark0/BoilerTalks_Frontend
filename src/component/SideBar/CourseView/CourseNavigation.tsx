@@ -208,6 +208,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 props.setCurrentRoom(course?.modRoom);
                 props.setActiveCourseThread(course?.modRoom.name.replace(course?.name, ""));
               }}
+              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Mod Chat</Typography>

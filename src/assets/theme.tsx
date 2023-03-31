@@ -18,7 +18,7 @@ export const dark = {
     },
     text: {
       primary: "rgba(255,255,255,0.87)",
-      secondary: "rgba(255,255,255,0.44)",
+      secondary: "rgba(128,128,128,0.44)",
       disabled: "rgba(255,255,255,0.44)",
       hint: "rgba(255,255,255,0.44)",
     },

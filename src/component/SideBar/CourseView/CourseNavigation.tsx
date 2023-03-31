@@ -43,6 +43,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
   const [NewReportText, setNewReportText] = useState("");
+  const [ReportsList, setReportsList] = useState<{username: string, reason: string}[]>();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const axiosPrivate = useAxiosPrivate();

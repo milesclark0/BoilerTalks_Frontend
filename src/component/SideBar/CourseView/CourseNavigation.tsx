@@ -40,7 +40,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesText, setRulesText] = useState(""); //import backend rules text
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, themeSetting } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [fetchError, setFetchError] = useState("");
   // const [profileInfo, setProfileInfo] = useState<Profile>(null);
@@ -93,11 +93,11 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
   };
 
   const buttonStyle = () => {
-    const pointerEvents = props.activeIcon?.isActiveCourse ? "none" : "auto";
-    const color = "black";
-    const backgroundColor = props.currentCourse?.name === course?.name ? "lightblue" : "brown";
+    const color = themeSetting === "light" ? "black" : "";
+    const filterAmnt = "0";
+
     const hoverColor = "lightblue";
-    return { pointerEvents,  };
+    return { "&:hover": { filter: `sepia(${filterAmnt})` }, color, borderColor: color, mb: 1 };
   };
 
   // const roomButtonStyle = (room: Room) => {
@@ -108,17 +108,10 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
 
   const threadButtonStyle = (threadName: string) => {
     // console.log("props: " + props.activeCourseThread + "\nthreadName: " + threadName);
-    const filterAmnt =
-      props.activeCourseThread === threadName
-        ? "0"
-        : "0";
-    return { "&:hover": { filter: `sepia(${filterAmnt})` } };
-  };
-
-  const otherButtonStyle = () => {
-    const backgroundColor = "white";
-    const hoverColor = "lightgrey";
-    return { backgroundColor, "&:hover": { backgroundColor: hoverColor } };
+    const color = themeSetting === "light" ? "black" : "";
+    const filterAmnt = "0";
+    const hoverColor = "lightblue";
+    return { "&:hover": { filter: `sepia(${filterAmnt})` }, color, borderColor: color, mb: 1};
   };
 
   // const fetchProfile = async () => {
@@ -160,8 +153,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                   <Button
                     sx={{
                       width: "100%",
-                      // ...roomButtonStyle(room),
-                      ...threadButtonStyle(room?.name.replace(course?.name, "")),
+                      ...buttonStyle(),
                     }}
                     component={NavLink}
                     to={`/home/courses/${course?._id.$oid}/${room?._id.$oid}`}
@@ -173,6 +165,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                         // navigate(`/home/courses/${course._id.$oid}/${room._id.$oid}`, { replace: true });
                       }
                     }}
+                    variant="outlined"
                   >
                     <ListItem>
                       <Typography variant="body2" noWrap>
@@ -184,10 +177,9 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
               );
             })}
           <Button
+            variant="outlined"
             sx={{
               width: "100%",
-              vairant: "outlined",
-              // ...otherButtonStyle(),
               ...threadButtonStyle("Q&A"),
             }}
             component={NavLink}
@@ -206,7 +198,6 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
           {profile?.modThreads?.includes(course?.name) && (
             <Button
               sx={{
-                // ...otherButtonStyle(),
                 ...threadButtonStyle("Mod Chat"),
                 width: "100%",
               }}
@@ -217,15 +208,16 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 props.setCurrentRoom(course?.modRoom);
                 props.setActiveCourseThread(course?.modRoom.name.replace(course?.name, ""));
               }}
+              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Mod Chat</Typography>
               </ListItem>
-            </Button>)}
+            </Button>
+          )}
           {profile?.modThreads?.includes(course?.name) && (
             <Button
               sx={{
-                // ...otherButtonStyle(),
                 ...threadButtonStyle("Appeals"),
                 width: "100%",
               }}
@@ -235,23 +227,20 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 props.setCurrentCourse(course);
                 props.setActiveCourseThread("Appeals");
               }}
+              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Appeals</Typography>
               </ListItem>
             </Button>
           )}
-          <Button
-            variant="text"
-            onClick={handleClickRules}
-            sx={{ ...otherButtonStyle(), width: "100%" }}
-          >
+          <Button variant="outlined" onClick={handleClickRules} sx={{ ...buttonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
           {profile?.modThreads?.includes(course?.name) && (
-            <Button variant="outlined" onClick={handleClickNewThread}>
+            <Button variant="outlined" onClick={handleClickNewThread} sx={buttonStyle()}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>
               </ListItem>

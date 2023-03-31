@@ -39,7 +39,6 @@ export const EmojiPanel = ({ message, room, index, addReaction }: any) => {
         />
       </div>
       <div className="show-emoji">
-        Your selected Emoji is:
         {selectedEmojis ? (
           <Emoji
             unified={selectedEmojis}

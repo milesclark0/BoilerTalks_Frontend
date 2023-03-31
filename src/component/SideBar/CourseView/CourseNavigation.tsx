@@ -232,6 +232,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
                 props.setCurrentRoom(course?.modRoom);
                 props.setActiveCourseThread(course?.modRoom.name.replace(course?.name, ""));
               }}
+              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Mod Chat</Typography>
@@ -272,7 +273,7 @@ export const CourseNavigation = ({ course, ...props }: Props) => {
             </ListItem>
           </Button>
           {profile?.modThreads?.includes(course?.name) && (
-            <Button variant="outlined" onClick={handleClickNewThread}>
+            <Button variant="outlined" onClick={handleClickNewThread} sx={buttonStyle()}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>
               </ListItem>

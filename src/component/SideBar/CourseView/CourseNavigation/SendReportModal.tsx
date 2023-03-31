@@ -47,7 +47,7 @@ const SendReportModal = ({
         <DialogTitle>Send a new report</DialogTitle>
         <DialogContent>
           <DialogContentText>Specify what you would like to report to moderators.</DialogContentText>
-          <TextField onChange={(e) => setNewReportText(e.target.value)} autoFocus margin="dense" id="newThreadName" label="New Thread Name" type="text" variant="outlined" fullWidth />
+          <TextField onChange={(e) => setNewReportText(e.target.value)} autoFocus margin="dense" id="newThreadName" label="Report Message" type="text" variant="outlined" fullWidth />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseNewReport}>Cancel</Button>

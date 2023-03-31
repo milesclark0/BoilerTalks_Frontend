@@ -8,7 +8,11 @@ import { useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/userBar";
 import MessageBox from "../HomePage/messageBox";
-import { getCourseManagementURL } from "../../API/CourseManagementAPI";
+import {
+  addCourseModsURL,
+  getCourseManagementURL,
+  getCourseModsURL,
+} from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
@@ -16,7 +20,9 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Paper } from "@mui/material";
 
 type Props = {
-  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
+  setActiveIcon: React.Dispatch<
+    React.SetStateAction<{ course: string; isActiveCourse: boolean }>
+  >;
   activeIcon: { course: string; isActiveCourse: boolean };
   currentCourse: Course | null;
   setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
@@ -29,7 +35,9 @@ type Props = {
   appBarHeight: number;
   defaultPadding: number;
   distinctCoursesByDepartment: Course[];
-  setDistinctCoursesByDepartment: React.Dispatch<React.SetStateAction<Course[]>>;
+  setDistinctCoursesByDepartment: React.Dispatch<
+    React.SetStateAction<Course[]>
+  >;
   distinctDepartments: string[];
   setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
   setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
@@ -54,7 +62,12 @@ const dateStringify = (dateTime: string) => {
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
   const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
+  let timeValue =
+    hours > 0 && hours <= 12
+      ? "" + hours
+      : hours > 12
+      ? "" + (hours - 12)
+      : "12";
   timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
   timeValue += hours >= 12 ? " P.M." : " A.M.";
   return timeValue;
@@ -71,7 +84,15 @@ type Appeal = {
 const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const { messages, setMessages, sendMessage, connectToRoom, disconnectFromRoom, isConnected } = useSockets();
+  const {
+    messages,
+    setMessages,
+    sendMessage,
+    connectToRoom,
+    disconnectFromRoom,
+    addReaction,
+    isConnected,
+  } = useSockets();
   const messageBoxProps = {
     messages,
     setMessages,
@@ -88,6 +109,8 @@ const RoomDisplay = () => {
   const [warned, setWarned] = useState<boolean>(false);
   const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
   const [appealData, setAppealData] = useState<Appeal>(null);
+  const { profile } = useAuth();
+  const [emojiShow, setEmojiShow] = useState<boolean>(false);
   // const [courseData, setCourseData] = useState<CourseManagement>(null);
   // const navigate = useNavigate();
 
@@ -130,7 +153,10 @@ const RoomDisplay = () => {
     const messageContainer = document.getElementById("message-container");
     if (messageContainer) {
       //if scroll is close to bottom, scroll to bottom
-      if (messageContainer.scrollHeight - messageContainer.scrollTop < messageContainer.clientHeight + 100) {
+      if (
+        messageContainer.scrollHeight - messageContainer.scrollTop <
+        messageContainer.clientHeight + 100
+      ) {
         messageContainer.scrollTop = messageContainer.scrollHeight;
       }
     }
@@ -145,7 +171,10 @@ const RoomDisplay = () => {
       }
     });
 
-    if (roomProps.currentCourse?.modRoom._id.$oid === roomProps.currentRoom?._id.$oid) {
+    if (
+      roomProps.currentCourse?.modRoom._id.$oid ===
+      roomProps.currentRoom?._id.$oid
+    ) {
       foundRoom = roomProps.currentCourse?.modRoom;
     }
     return foundRoom ? foundRoom.messages : [];
@@ -154,7 +183,9 @@ const RoomDisplay = () => {
   useEffect(() => {
     if (roomProps.currentRoom) {
       assignMessages(roomProps.currentRoom);
-      roomProps.setActiveCourseThread(roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, ""));
+      roomProps.setActiveCourseThread(
+        roomProps.currentRoom?.name.replace(roomProps.currentCourse?.name, "")
+      );
       //scroll to bottom
       const messageContainer = document.getElementById("message-container");
       if (messageContainer) {
@@ -171,7 +202,9 @@ const RoomDisplay = () => {
     const messageDate = dateStringify(messages[index + 1]?.timeSent);
 
     let messageTime = armyToRegTime(messages[index]?.timeSent)?.split(" ")[1];
-    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(" ")[1];
+    let messageTime2 = armyToRegTime(messages[index + 1]?.timeSent)?.split(
+      " "
+    )[1];
 
     if (messageTime === "P.M." && messageTime2 === "A.M.") {
       return (
@@ -191,6 +224,27 @@ const RoomDisplay = () => {
 
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyIndex, setReplyIndex] = useState<number>(null);
+
+  const setCurrentRoomMods = async (username: string) => {
+    // return await axiosPrivate.get(getCourseModsURL + courseId);
+    return await axiosPrivate.post(
+      addCourseModsURL + username + "/" + courseId
+    );
+  };
+
+  const getCurrentRoomMods = async (courseId: any) => {
+    // const res = await api.post(blockUserUrl, {
+    //   toBlock: userToBlock,
+    //   username: requestUsername,
+    // });
+
+    // if (res.data.statusCode === 200) {
+    //   event.preventDefault();
+    //   handleClose();
+    //   window.location.reload();
+    // }
+    return await axiosPrivate.get(getCourseModsURL + courseId);
+  };
 
   function handleReply(isReplying, index) {
     setIsReplying(isReplying);
@@ -239,7 +293,11 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (
@@ -265,16 +323,36 @@ const RoomDisplay = () => {
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     //displays messages
-                    return user?.blockedUsers.includes(message.username) ? null : (
+
+                    return user?.blockedUsers.includes(
+                      message.username
+                    ) ? null : (
                       <Box key={index} sx={{ paddingBottom: "12px" }}>
                         <MessageEntry
                           messages={getCurrentRoomMessages()}
                           message={message}
                           index={index}
-                          isReply={(isReplying) => handleReply(isReplying, index)}
+                          isReply={(isReplying) =>
+                            handleReply(isReplying, index)
+                          }
+                          //SamNote: Return Here
+                          isRoomMod={
+                            profile?.modThreads?.includes(
+                              roomProps.currentCourse?.name
+                            ) || profile?.username == "user2"
+                          }
+                          promoteUser={setCurrentRoomMods}
+                          room={roomProps.currentRoom}
+                          addReaction={addReaction}
                         />
                         <HandleLineBreak index={index} />
                         {/* {isReplying ? setReplyIndex(index) : null} */}
+                        {/* room={roomProps.currentRoom} 
+                        
+                        ||
+                            getCurrentRoomMods(courseId).includes(
+                              profile?.username
+                            ) */}
                       </Box>
                     );
                   })}
@@ -290,7 +368,9 @@ const RoomDisplay = () => {
               height: `${roomProps.appBarHeight}px`,
               position: "absolute",
               bottom: 20,
-              right: `${roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8}px`,
+              right: `${
+                roomProps.drawerWidth - roomProps.innerDrawerWidth + 3 * 8
+              }px`,
               left: `${roomProps.drawerWidth}px`,
             }}
           >
@@ -311,11 +391,19 @@ const RoomDisplay = () => {
                     </IconButton>
                     <Typography variant="overline">
                       {/* <ReplyIcon /> */}
-                      {`replying to ` + getCurrentRoomMessages()[replyIndex].username + `: ` + getCurrentRoomMessages()[replyIndex].message}
+                      {`replying to ` +
+                        getCurrentRoomMessages()[replyIndex].username +
+                        `: ` +
+                        getCurrentRoomMessages()[replyIndex].message}
                     </Typography>
                   </Box>
                 ) : null}
-                <MessageBox {...roomProps} {...messageBoxProps} replyIndex={replyIndex} handleReply={handleReply} />
+                <MessageBox
+                  {...roomProps}
+                  {...messageBoxProps}
+                  replyIndex={replyIndex}
+                  handleReply={handleReply}
+                />
               </>
             ) : (
               <Typography variant="h6">Loading...</Typography>

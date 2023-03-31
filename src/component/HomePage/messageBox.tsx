@@ -17,7 +17,14 @@ type Props = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   sendMessage: (
-    message: { username: string; message: string; timeSent: string, profilePic: string, replyIndex?: number, reactions?: any[] },
+    message: {
+      username: string;
+      message: string;
+      timeSent: string;
+      profilePic: string;
+      replyIndex?: number;
+      reactions?: any[];
+    },
     room: Room,
     isSystemMessage: boolean
   ) => void;
@@ -41,6 +48,9 @@ const MessageBox = ({
 }: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
+
+  const [reactionChange, setReactionChange] = useState<boolean>(false);
+
   useEffect(() => {
     //when the current room changes, connect to the room and set the messages to the messages in the room
     const connect = async (room: Room) => {
@@ -79,7 +89,7 @@ const MessageBox = ({
       message,
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
-      replyIndex: messages[messages.length - 1]?.replyIndex //set the reply index to the reply index of the last message
+      replyIndex: messages[messages.length - 1]?.replyIndex, //set the reply index to the reply index of the last message
     };
     //update message fields in userCourses and currentCourse and currentRoom
     const userCourseCopy = structuredClone(userCourses);
@@ -92,8 +102,8 @@ const MessageBox = ({
           }
         });
 
-        if (currentRoom?._id.$oid === course?.modRoom._id.$oid){
-          course?.modRoom.messages.push(formattedMessage); 
+        if (currentRoom?._id.$oid === course?.modRoom._id.$oid) {
+          course?.modRoom.messages.push(formattedMessage);
         }
       }
     });
@@ -107,7 +117,7 @@ const MessageBox = ({
       }
     });
 
-    if (currentRoom?._id.$oid === currCourseCopy?.modRoom._id.$oid){
+    if (currentRoom?._id.$oid === currCourseCopy?.modRoom._id.$oid) {
       currCourseCopy?.modRoom.messages.push(formattedMessage);
     }
     setCurrentCourse(currCourseCopy);

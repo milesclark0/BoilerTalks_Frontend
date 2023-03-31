@@ -16,11 +16,29 @@ type Props = {
   connectToRoom: (room: Room) => Promise<void>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (message: { username: string; message: string; timeSent: string }, room: Room, isSystemMessage: boolean) => void;
-
+  sendMessage: (
+    message: { username: string; message: string; timeSent: string },
+    room: Room,
+    isSystemMessage: boolean
+  ) => void;
+  replyIndex: any;
+  handleReply: (index: number, isReplying: any) => void;
 };
 
-const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCourses, currentRoom, setCurrentRoom, connectToRoom, messages, setMessages, sendMessage }: Props) => {
+const MessageBox = ({
+  currentCourse,
+  setCurrentCourse,
+  userCourses,
+  setUserCourses,
+  currentRoom,
+  setCurrentRoom,
+  connectToRoom,
+  messages,
+  setMessages,
+  sendMessage,
+  replyIndex,
+  handleReply,
+}: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
   useEffect(() => {
@@ -56,7 +74,12 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
 
   const updateMessageFields = (message: any) => {
     console.log("updating message fields");
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
+    const formattedMessage = {
+      username: user?.username,
+      message,
+      timeSent: `${getDateTime()}`,
+      profilePic: user?.profilePicture,
+    };
     //update message fields in userCourses and currentCourse and currentRoom
     const userCourseCopy = structuredClone(userCourses);
     userCourseCopy?.forEach((course) => {
@@ -82,8 +105,15 @@ const MessageBox = ({ currentCourse, setCurrentCourse, userCourses, setUserCours
   };
 
   const handleSendMessage = () => {
-    const formattedMessage = { username: user?.username, message, timeSent: `${getDateTime()}`, profilePic: user?.profilePicture };
+    const formattedMessage = {
+      username: user?.username,
+      message,
+      timeSent: `${getDateTime()}`,
+      profilePic: user?.profilePicture,
+      replyIndex,
+    };
     sendMessage(formattedMessage, currentRoom, false);
+    handleReply(null, false);
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

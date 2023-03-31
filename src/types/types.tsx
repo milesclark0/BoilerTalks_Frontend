@@ -71,6 +71,6 @@ export type Message = {
   message: string;
   timeSent: string;
   profilePic: string;
-  replyID: string;
+  replyIndex: string;
   reactions: [{ username: string; reaction: string }];
 };

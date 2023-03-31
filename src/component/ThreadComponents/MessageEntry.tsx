@@ -3,14 +3,17 @@ import { useState } from "react";
 import { useAuth } from "../../context/context";
 import { Message } from "../../types/types";
 import { MessageHeader } from "./MessageHeader";
+import MessageIcon from "@mui/icons-material/Message";
 
 type MessageEntryProps = {
   message: Message;
+  messages: Message[];
   index: number;
   isReply: (newValue: boolean) => void;
 };
 export const MessageEntry = ({
   message,
+  messages,
   index,
   isReply,
 }: MessageEntryProps) => {
@@ -55,6 +58,22 @@ export const MessageEntry = ({
           borderColor: "black",
         }}
       >
+        {Number.isInteger(message.replyIndex) ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
+            <Typography sx={{ fontSize: "12px" }}>
+              {`Replied To: ` +
+                messages[message.replyIndex].username +
+                `: ` +
+                messages[message.replyIndex].message}
+            </Typography>
+          </Box>
+        ) : null}
         <MessageHeader
           message={message}
           index={index}

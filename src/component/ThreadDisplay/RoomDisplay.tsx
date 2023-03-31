@@ -281,9 +281,12 @@ const RoomDisplay = () => {
                 <Box>
                   {getCurrentRoomMessages().map((message, index) => {
                     //displays messages
-                    return (user?.blockedUsers.includes(message.username)) ? null :(
-                      <Box key={index}>
+                    return user?.blockedUsers.includes(
+                      message.username
+                    ) ? null : (
+                      <Box key={index} sx={{ paddingBottom: "12px" }}>
                         <MessageEntry
+                          messages={getCurrentRoomMessages()}
                           message={message}
                           index={index}
                           isReply={(isReplying) =>
@@ -337,7 +340,12 @@ const RoomDisplay = () => {
                     </Typography>
                   </Box>
                 ) : null}
-                <MessageBox {...roomProps} {...messageBoxProps} />
+                <MessageBox
+                  {...roomProps}
+                  {...messageBoxProps}
+                  replyIndex={replyIndex}
+                  handleReply={handleReply}
+                />
               </>
             ) : (
               <Typography variant="h6">Loading...</Typography>

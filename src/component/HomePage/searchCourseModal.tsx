@@ -29,14 +29,20 @@ const emptyCourse: Course = {
   instructor: "",
   memberCount: 0,
   userThread: { $oid: "" },
-  modRoom: { $oid: "" },
+  modRoom: {
+    _id: { $oid: "" },
+    name: "",
+    courseId: { $oid: "" },
+    connected: [{ username: "", sid: "", profilePic: "" }],
+    messages: [{ username: "", message: "", timeSent: "", profilePic: "" }],
+  },
   rooms: [
     {
       _id: { $oid: "" },
       name: "",
       courseId: { $oid: "" },
       connected: [{ username: "", sid: "", profilePic: "" }],
-      messages: [{ username: "", message: "", timeSent: "", profilePic: "" }],
+      messages: [{ username: "", message: "", timeSent: "", profilePic: ""}],
     },
   ],
   owner: "",

@@ -17,7 +17,7 @@ type Props = {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   sendMessage: (
-    message: { username: string; message: string; timeSent: string },
+    message: { username: string; message: string; timeSent: string, profilePic: string, replyIndex?: number, reactions?: any[] },
     room: Room,
     isSystemMessage: boolean
   ) => void;
@@ -79,6 +79,7 @@ const MessageBox = ({
       message,
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
+      replyIndex: messages[messages.length - 1]?.replyIndex //set the reply index to the reply index of the last message
     };
     //update message fields in userCourses and currentCourse and currentRoom
     const userCourseCopy = structuredClone(userCourses);

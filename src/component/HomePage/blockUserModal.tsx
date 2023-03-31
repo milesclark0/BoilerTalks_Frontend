@@ -12,7 +12,7 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
     const api = useAxiosPrivate();
   
     // handles modal close
-    const handleClose = (event: Event, reason: string) => {
+    const handleClose = () => {
         /*if (reason === "backdropClick") {
         return;
         }*/
@@ -24,7 +24,7 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
 
         if (res.data.statusCode === 200) {
           event.preventDefault();
-          handleClose(event.hide, "close");
+          handleClose();
           window.location.reload();
         }
 

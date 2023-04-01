@@ -183,13 +183,16 @@ const Home = () => {
             <Toolbar sx={{ padding: 0 }}>
               <Box sx={{ display: "flex", flexGrow: 1, height: appBarHeight }}>
                 <Typography variant="h5" sx={{ p: 2 }}>
-                  {currentCourse?.name ? `${currentCourse?.name}: ${activeCourseThread}` : activeIcon.course || "Select a Department or Course"}
+                  {currentCourse?.name
+                    ? `${currentCourse?.name}: ${activeCourseThread}`
+                    : activeIcon.course || "Select a Department or Course"}
                 </Typography>
                 <Button
                   variant="contained"
                   onClick={() => setShowCourses(true)}
                   sx={{
-                    
+                    boxShadow: "none",
+                    ".MuiOutlinedInput-notchedOutline": { border: 0 },
                   }}
                 >
                   Add Courses
@@ -211,7 +214,7 @@ const Home = () => {
             id="threads"
           >
             {/* renders display for the current room/thread etc */}
-              <Outlet context={{ roomProps }} />
+            <Outlet context={{ roomProps }} />
           </Paper>
         </Box>
       ) : (

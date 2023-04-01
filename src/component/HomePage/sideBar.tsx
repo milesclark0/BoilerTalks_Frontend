@@ -232,7 +232,9 @@ const SideBar = ({ ...props }: Props) => {
             display: "flex",
             paddingLeft: `${innerDrawerWidth}px`,
             paddingTop: `${appBarHeight}px`,
+            overflowY: "scroll"
           }}
+          className="scrollBar"
         >
           <CourseView {...CourseViewProps} />
         </Box>
@@ -243,6 +245,7 @@ const SideBar = ({ ...props }: Props) => {
     </Box>
   );
 };
+
 const GetProfilePicture = () => {
   const { user } = useAuth();
   return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture + `?${Date.now()}`} />;

@@ -185,7 +185,6 @@ const Home = () => {
                 <Typography variant="h5" sx={{ p: 2 }}>
                   {currentCourse?.name ? `${currentCourse?.name}: ${activeCourseThread}` : activeIcon.course || "Select a Department or Course"}
                 </Typography>
-                
                 <Button
                   variant="contained"
                   onClick={() => setShowCourses(true)}
@@ -195,7 +194,6 @@ const Home = () => {
                 >
                   Add Courses
                 </Button>
-                
                 <SemesterSelector {...semesterSelectorProps} />
               </Box>
               <Box>

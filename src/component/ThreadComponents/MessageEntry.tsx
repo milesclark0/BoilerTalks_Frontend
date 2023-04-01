@@ -1,17 +1,13 @@
 import { Avatar, Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
-import { useAuth } from "../../context/context";
 import { Message, Room } from "../../types/types";
 import { MessageHeader } from "./MessageHeader";
 import MessageIcon from "@mui/icons-material/Message";
 import { EmojiPanel } from "../HomePage/emojiPanel";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { StyledDivider } from "../SideBar/StyledDivider";
 import { Course } from "../../types/types";
-import WarnPrompt from "./WarnPrompt";
-import BanPrompt from "./BanPrompt";
+import UserMenu from "./UserMenu";
 
 type MessageEntryProps = {
   message: Message;
@@ -40,7 +36,7 @@ export const MessageEntry = ({
   promoteUser,
   room,
   addReaction,
-  course
+  course,
 }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
   const [emojiPanelShow, setEmojiPanelShow] = useState<boolean>(false);
@@ -50,48 +46,32 @@ export const MessageEntry = ({
   }
 
   const [reactingIndex, setReactingIndex] = useState<number>(null);
-  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openUserMenu = Boolean(anchorEl);
-  const { profile } = useAuth();
-  const [openWarningPrompt, setOpenWarningPrompt] = useState<boolean>(false);
-  const [openBanPrompt, setOpenBanPrompt] = useState<boolean>(false);
 
-  const GetProfilePicture = (message) => {
-    if (message.profilePic) {
-      return (
-        <IconButton onClick={handleUserClick} size="small">
-          <Avatar
-            sx={{ width: 35, height: 35, mr: 2 }}
-            src={message.profilePic + `?${Date.now()}`}
-          />
-        </IconButton>
-      );
-    } else {
-      //returns default profile picture if not set
-      return (
-        <IconButton onClick={handleUserClick} size="small">
-          <Avatar sx={{ width: 35, height: 35, mr: 2 }} />
-        </IconButton>
-      );
-    }
-  };
-
-  const handleUserMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navigateToProfile = () => {
-    // console.log(username);
-    navigate("/profile/" + message.username);
-  };
-
-  const handleOpenWarningPrompt = () => {
-    setOpenWarningPrompt(true);
-  };
-
-  const handleOpenBanPrompt = () => {
-    setOpenBanPrompt(true);
+  const GetProfilePicture = (message: Message) => {
+    // if (message.profilePic) {
+    //   return (
+    //     <IconButton onClick={handleUserClick}>
+    //       <Avatar
+    //         sx={{ width: 35, height: 35, mr: 2 }}
+    //         src={message.profilePic + `?${Date.now()}`}
+    //       />
+    //     </IconButton>
+    //   );
+    // } else {
+    //   //returns default profile picture if not set
+    //   return (
+    //     <IconButton onClick={handleUserClick}>
+    //       <Avatar sx={{ width: 35, height: 35, mr: 2 }} />
+    //     </IconButton>
+    //   );
+    // }
+    return (
+      <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3 }}>
+        <Avatar src={message.profilePic + `?${Date.now()}`} />
+      </IconButton>
+    );
   };
 
   const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -116,8 +96,7 @@ export const MessageEntry = ({
       onMouseLeave={() => setHoveredMessageId(null)}
     >
       {/* ----MESSAGE THREAD UI */}
-
-      {GetProfilePicture(message)}
+      <Box sx={{ display: "flex", alignItems: "center" }}>{GetProfilePicture(message)}</Box>
       <Box
         sx={{
           overflow: "hidden",
@@ -165,39 +144,12 @@ export const MessageEntry = ({
           <EmojiPanel message={message} room={room} index={index} addReaction={addReaction} />
         ) : null}
       </Box>
-      <Menu
-        open={openUserMenu}
+      <UserMenu
+        username={message.username}
+        course={course}
+        openUserMenu={openUserMenu}
         anchorEl={anchorEl}
-        onClose={handleUserMenuClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: "visible",
-            filter: "drop-shadow(0px 0px 0px rgba(0,0,0,0.32))",
-            outline: "2px solid black",
-          },
-        }}
-      >
-        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
-          Profile
-        </MenuItem>
-        {profile?.modThreads.includes(course?.name) && profile.username !== message.username && (
-          <Box>
-            <StyledDivider />
-            <MenuItem onClick={handleOpenWarningPrompt}>Warn</MenuItem>
-            <MenuItem onClick={handleOpenBanPrompt}>Ban</MenuItem>
-          </Box>
-        )}
-      </Menu>
-      <WarnPrompt
-        openWarningPrompt={openWarningPrompt}
-        setOpenWarningPrompt={setOpenWarningPrompt}
-        username={message.username}
-      />
-      <BanPrompt
-        openBanPrompt={openBanPrompt}
-        setOpenBanPrompt={setOpenBanPrompt}
-        username={message.username}
+        setAnchorEl={setAnchorEl}
       />
     </Box>
   );

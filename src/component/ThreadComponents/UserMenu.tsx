@@ -11,12 +11,13 @@ import BanPrompt from "./BanPrompt";
 type Props = {
   username: string;
   course: Course | null;
+  openUserMenu: boolean;
+  anchorEl: null | HTMLElement;
+  setAnchorEl: React.Dispatch<React.SetStateAction<null | HTMLElement>>;
 };
 
-const UserMenu = ({ username, course }: Props) => {
+const UserMenu = ({ username, course, openUserMenu, anchorEl, setAnchorEl }: Props) => {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openUserMenu = Boolean(anchorEl);
   const { profile } = useAuth();
   const [openWarningPrompt, setOpenWarningPrompt] = useState<boolean>(false);
   const [openBanPrompt, setOpenBanPrompt] = useState<boolean>(false);
@@ -38,16 +39,8 @@ const UserMenu = ({ username, course }: Props) => {
     setOpenBanPrompt(true);
   };
 
-  const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   return (
     <React.Fragment>
-      <IconButton onClick={handleUserClick} size="small">
-        {/* get specific user profile picture */}
-        <Avatar />
-      </IconButton>
       <Menu
         open={openUserMenu}
         anchorEl={anchorEl}

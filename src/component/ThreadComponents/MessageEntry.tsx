@@ -1,17 +1,14 @@
 import { Avatar, Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useAuth } from "../../context/context";
+import { useState } from "react";
 import { Message, Room } from "../../globals/types";
 import { MessageHeader } from "./MessageHeader";
 import MessageIcon from "@mui/icons-material/Message";
 import { EmojiPanel } from "./emojiPanel";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { StyledDivider } from "../SideBar/components/StyledDivider";
 import { Course } from "../../globals/types";
-import WarnPrompt from "./WarnPrompt";
-import BanPrompt from "./BanPrompt";
+import UserMenu from "./UserMenu";
+import { useAuth } from "../../context/context";
 
 type MessageEntryProps = {
   message: Message;
@@ -44,45 +41,9 @@ export const MessageEntry = ({
   }
 
   const [reactingIndex, setReactingIndex] = useState<number>(null);
-  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { profile } = useAuth();
-  const [openWarningPrompt, setOpenWarningPrompt] = useState<boolean>(false);
-  const [openBanPrompt, setOpenBanPrompt] = useState<boolean>(false);
-
-  const GetProfilePicture = () => {
-    if (message.profilePic) {
-      return (
-        <IconButton onClick={handleUserClick} size="small">
-          <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic + `?${profilePicLastUpdated}`} />
-        </IconButton>
-      );
-    } else {
-      //returns default profile picture if not set
-      return (
-        <IconButton onClick={handleUserClick} size="small">
-          <Avatar sx={{ width: 35, height: 35, mr: 2 }} />
-        </IconButton>
-      );
-    }
-  };
-
-  const handleUserMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navigateToProfile = () => {
-    // console.log(username);
-    navigate("/profile/" + message.username);
-  };
-
-  const handleOpenWarningPrompt = () => {
-    setOpenWarningPrompt(true);
-  };
-
-  const handleOpenBanPrompt = () => {
-    setOpenBanPrompt(true);
-  };
+  const openUserMenu = Boolean(anchorEl);
+  const {themeSetting} = useAuth();
 
   const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -97,7 +58,7 @@ export const MessageEntry = ({
         pt: 1,
         width: "100%",
         ":hover": {
-          backgroundColor: "lightgrey",
+          backgroundColor: themeSetting === "dark" ? "#2f2f2f" : "#e0e0e0",
         },
       }}
       onMouseEnter={() => {
@@ -107,7 +68,7 @@ export const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture />
+      <GetProfilePicture message={message} handleUserClick={handleUserClick} />
       <Box
         sx={{
           overflow: "hidden",
@@ -151,32 +112,14 @@ export const MessageEntry = ({
         })}
         {reactingIndex === index && emojiPanelShow ? <EmojiPanel message={message} index={index} addReaction={addReaction} /> : null}
       </Box>
-      <Menu
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleUserMenuClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: "visible",
-            filter: "drop-shadow(0px 0px 0px rgba(0,0,0,0.32))",
-            outline: "2px solid black",
-          },
-        }}
-      >
-        <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
-          Profile
-        </MenuItem>
-        {profile?.modThreads.includes(course?.name) && profile.username !== message.username && (
-          <Box>
-            <StyledDivider />
-            <MenuItem onClick={handleOpenWarningPrompt}>Warn</MenuItem>
-            <MenuItem onClick={handleOpenBanPrompt}>Ban</MenuItem>
-          </Box>
-        )}
-      </Menu>
-      <WarnPrompt openWarningPrompt={openWarningPrompt} setOpenWarningPrompt={setOpenWarningPrompt} username={message.username} />
-      <BanPrompt openBanPrompt={openBanPrompt} setOpenBanPrompt={setOpenBanPrompt} username={message.username} />
+      <UserMenu username={message.username} course={course} openUserMenu={openUserMenu} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
     </Box>
+  );
+};
+const GetProfilePicture = ({ message, handleUserClick }) => {
+  return (
+    <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3 }}>
+      <Avatar src={message.profilePic + `?${Date.now()}`} />
+    </IconButton>
   );
 };

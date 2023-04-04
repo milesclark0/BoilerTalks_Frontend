@@ -22,3 +22,5 @@ export const setCourseActiveURL = "/courses/setActiveCourse";
 export const addRoomToCourseURL = "/courses/addRoomToCourse";
 
 export const getUserCoursesAndRoomsURL = "/courses/getUserCoursesAndRooms/";
+
+export const getRoomURL = "/courses/getRoom/";

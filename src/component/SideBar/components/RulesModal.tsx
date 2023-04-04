@@ -1,9 +1,9 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
 //import { addRoomToCourseURL } from "../../API/CoursesAPI";
-import { useAuth } from "../../../../context/context";
-import { Course, Room } from "../../../../types/types";
-import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import { getCourseManagementURL, updateCourseRulesURL } from "./../../../../API/CourseManagementAPI";
+import { useAuth } from "../../../context/context";
+import { Course, Room } from "../../../globals/types";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { getCourseManagementURL, updateCourseRulesURL } from "../../../API/CourseManagementAPI";
 import { useQuery } from "react-query";
 
 type RulesProps = {
@@ -12,11 +12,9 @@ type RulesProps = {
   setRulesOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setRulesList: React.Dispatch<React.SetStateAction<string[]>>;
   course: Course;
-  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
-  userCourses: Course[];
 };
 
-const RulesModal = ({ RulesList, RulesOpen, setRulesList, setRulesOpen, course, setUserCourses, userCourses }: RulesProps) => {
+const RulesModal = ({ RulesList, RulesOpen, setRulesList, setRulesOpen, course }: RulesProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseRules = () => {
@@ -35,7 +33,6 @@ const RulesModal = ({ RulesList, RulesOpen, setRulesList, setRulesOpen, course, 
 
   const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
     onSuccess: (data) => {
-      console.log(data.data.data);
       setRulesList(data.data.data.rules);
     },
   });
@@ -96,22 +93,22 @@ const RuleEntry = ({
   handleRulesChange: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void;
 }) => {
   return (
-      <TextField
-        autoFocus
-        margin="dense"
-        id="rulesdialog"
-        label="Rules"
-        type="text"
-        variant="outlined"
-        fullWidth
-        multiline
-        value={rule}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRulesChange(e, index)}
-        sx={{
-          width: 500,
-          display: "flex",
-        }}
-      />
+    <TextField
+      autoFocus
+      margin="dense"
+      id="rulesdialog"
+      label="Rules"
+      type="text"
+      variant="outlined"
+      fullWidth
+      multiline
+      value={rule}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRulesChange(e, index)}
+      sx={{
+        width: 500,
+        display: "flex",
+      }}
+    />
   );
 };
 export default RulesModal;

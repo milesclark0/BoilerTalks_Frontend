@@ -1,41 +1,40 @@
 import { List, ListItem, Typography } from "@mui/material";
-import React from "react";
-import { Course, Room } from "../../types/types";
-import { CourseNavigation } from "./CourseView/CourseNavigation";
-import { StyledDivider } from "./StyledDivider";
+import React, { useEffect, useState } from "react";
+import { Course, Room } from "../../globals/types";
+import { CourseNavigation } from "./CourseNavigation";
+import { StyledDivider } from "./components/StyledDivider";
+import useStore from "../../store/store";
 
-type Props = {
-  activeIcon: { course: string; isActiveCourse: boolean };
-  distinctCoursesByDepartment: Course[];
-  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
-  userCourses: Course[];
-  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
-  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: String; isActiveCourse: boolean }>>;
-  newThreadOpen: boolean;
-  setNewThreadOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  newThreadValue: string;
-  setNewThreadValue: React.Dispatch<React.SetStateAction<string>>;
-  currentCourse: Course | null;
-  setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
-  distinctDepartments: string[];
-  currentRoom: Room | null;
-  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
-  setActiveCourseThread: React.Dispatch<React.SetStateAction<string>>;
-  activeCourseThread: string;
-};
-
-export const CourseView = ({ ...props }: Props) => {
+export const CourseView = () => {
   // if no course is selected, show boilertalks home
-  const { activeIcon, currentCourse, distinctCoursesByDepartment } = props;
+  const [activeIcon, userCourseList, distinctCoursesByDepartment, setDistinctCoursesByDepartment] = useStore((state) => [
+    state.activeIcon,
+    state.userCourseList,
+    state.distinctCoursesByDepartment,
+    state.setDistinctCoursesByDepartment,
+  ]);
 
-  const CourseNavigationProps = {
-    ...props,
+  useEffect(() => {
+    if (activeIcon.course !== "" && !activeIcon.isActiveCourse) {
+      setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
+    }
+  }, [activeIcon]);
+
+  // gets the distinct courses for a department
+  const getDistinctCoursesByDepartment = (department: string) => {
+    const courses = userCourseList?.filter((course) => course.name.split(" ")[0] === department);
+    //distinct named courses
+    const distinctCourses = new Map<string, Course>();
+    courses?.forEach((course) => {
+      if (!distinctCourses.has(course.name)) distinctCourses.set(course.name, course);
+    });
+    return [...distinctCourses.values()];
   };
 
   if (activeIcon.course === "") {
     return (
       <List sx={{ width: "100%" }}>
-        <ListItem sx={{ justifyContent: "center"}}>
+        <ListItem sx={{ justifyContent: "center" }}>
           <Typography variant="h6" noWrap component="div">
             BoilerTalks Home
           </Typography>
@@ -46,7 +45,8 @@ export const CourseView = ({ ...props }: Props) => {
   }
   // if a course is selected, show course navigation
   if (activeIcon.isActiveCourse) {
-    return <CourseNavigation course={currentCourse} {...CourseNavigationProps} />;
+    const currCourse = userCourseList?.find((course) => course.name === activeIcon.course);
+    return <CourseNavigation course={currCourse} />;
   }
   // if a department is selected, show course list
   return (
@@ -59,7 +59,7 @@ export const CourseView = ({ ...props }: Props) => {
       <StyledDivider />
       {distinctCoursesByDepartment?.map((course) => (
         <React.Fragment key={course.name + course.semester}>
-          <CourseNavigation course={course} {...CourseNavigationProps} />
+          <CourseNavigation course={course} />
           <StyledDivider />
         </React.Fragment>
       ))}

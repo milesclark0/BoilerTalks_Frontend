@@ -23,7 +23,7 @@ type Props = {
   username: string;
 };
 
-const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props) => {
+const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props) => {  
   const [reasonError, setReasonError] = useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
   const { courseId } = useParams();

@@ -3,14 +3,16 @@ import { useState, useEffect } from "react";
 import { Box, Typography, Grid, CardContent, CardActions, TextField } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Course, Room } from "../../types/types";
+import { Course, Room } from "../../globals/types";
 import { useOutletContext, useParams } from "react-router-dom";
-import UserBar from "../HomePage/userBar";
+import UserBar from "../HomePage/components/userBar";
 import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import { LoadingButton } from "@mui/lab";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { updateAppealURL } from "../../API/CourseManagementAPI";
+import { APP_STYLES } from "../../globals/globalStyles";
+import useStore from "../../store/store";
 
 type Props = {
   drawerWidth: number;
@@ -30,16 +32,16 @@ type Appeal = {
 };
 
 const AppealsDisplay = () => {
-  const { roomProps } = useOutletContext<{ roomProps: Props }>();
   const axiosPrivate = useAxiosPrivate();
   const [appeals, setAppeals] = useState<Appeal[]>([]);
   const { courseId } = useParams();
   const [stateChange, setStateChange] = useState<boolean>(false);
+  const [currentCourse] = useStore((state) => [state.currentCourse]);
 
   useEffect(() => {
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
-      console.log(res)
+      console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           setAppeals(res.data.data.appeals);
@@ -47,9 +49,9 @@ const AppealsDisplay = () => {
       }
     };
     // if (roomProps.currentCourse) {
-      fetchCourseManagement();
+    fetchCourseManagement();
     // }
-  }, [roomProps.currentCourse, stateChange]);
+  }, [currentCourse, stateChange]);
 
   const AppealBox = ({ appeal }) => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
@@ -63,7 +65,7 @@ const AppealsDisplay = () => {
           reviewed: true,
           unban: decision,
         });
-        console.log(res)
+        console.log(res);
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
             setDecisionLoading(false);
@@ -85,12 +87,7 @@ const AppealsDisplay = () => {
     };
 
     return (
-      <Grid
-        item
-        m={2}
-        xs={6}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
+      <Grid item m={2} xs={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
         <Box
           sx={{
             width: "100%",
@@ -137,27 +134,13 @@ const AppealsDisplay = () => {
             />
           </CardContent>
           {appeal?.reviewed ? (
-            <Typography sx={{ mb: 2 }}>
-              {appeal?.unban ? "Decision: Accepted" : "Decision: Denied"}
-            </Typography>
+            <Typography sx={{ mb: 2 }}>{appeal?.unban ? "Decision: Accepted" : "Decision: Denied"}</Typography>
           ) : (
             <CardActions sx={{ mb: 2 }}>
-              <LoadingButton
-                variant="contained"
-                startIcon={<CloseIcon />}
-                color="error"
-                loading={decisionLoading}
-                onClick={appealDecision}
-              >
+              <LoadingButton variant="contained" startIcon={<CloseIcon />} color="error" loading={decisionLoading} onClick={appealDecision}>
                 Deny
               </LoadingButton>
-              <LoadingButton
-                variant="contained"
-                startIcon={<CheckIcon />}
-                color="success"
-                loading={decisionLoading}
-                onClick={appealDecision}
-              >
+              <LoadingButton variant="contained" startIcon={<CheckIcon />} color="success" loading={decisionLoading} onClick={appealDecision}>
                 Unban
               </LoadingButton>
             </CardActions>
@@ -171,8 +154,8 @@ const AppealsDisplay = () => {
     <Box
       sx={{
         height: "100%",
-        p: roomProps.defaultPadding,
-        width: `calc(100% - ${roomProps.drawerWidth}px)`,
+        p: APP_STYLES.DEFAULT_PADDING,
+        width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
         overflowY: "auto",
         // display: "flex",
         // flexDirection: "column-reverse"
@@ -182,13 +165,13 @@ const AppealsDisplay = () => {
       {appeals.length !== 0 ? (
         <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {
-            return <AppealBox key={index} appeal={appeal}/>;
+            return <AppealBox key={index} appeal={appeal} />;
           })}
         </Grid>
       ) : (
         <Typography variant="h6">There are currently no appeals.</Typography>
       )}
-      <UserBar {...roomProps} />
+      <UserBar />
     </Box>
   );
 };

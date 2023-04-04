@@ -2,25 +2,21 @@ import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, Ico
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
-import { Course, User } from "../../types/types";
+import { Course, User } from "../../globals/types";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../../context/context";
 import React from "react";
+import useStore from "../../store/store";
 
 type Props = {
-  user: User;
   showCourses: boolean;
   setShowCourses: (value: boolean) => void;
-  userCourses: Course[];
-  setUserCourses: (value: Course[]) => void;
-  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
-  activeIcon: { course: string; isActiveCourse: boolean };
-  distinctDepartments: string[];
-  setDistinctDepartments: React.Dispatch<React.SetStateAction<string[]>>;
 };
+
+//TODO: fix bugs with adding courses (updating course list, removing from list on leave, etc)
 const emptyCourse: Course = {
   _id: { $oid: "" },
   name: "",
@@ -28,7 +24,7 @@ const emptyCourse: Course = {
   description: "",
   instructor: "",
   memberCount: 0,
-  userThread: { $oid: "" },
+  userThread: { _id: { $oid: "" }, name: "", courseId: { $oid: "" }, numberOfPosts: 0 },
   modRoom: {
     _id: { $oid: "" },
     name: "",
@@ -36,23 +32,15 @@ const emptyCourse: Course = {
     connected: [{ username: "", sid: "", profilePic: "" }],
     messages: [{ username: "", message: "", timeSent: "", profilePic: "" }],
   },
-  rooms: [
-    {
-      _id: { $oid: "" },
-      name: "",
-      courseId: { $oid: "" },
-      connected: [{ username: "", sid: "", profilePic: "" }],
-      messages: [{ username: "", message: "", timeSent: "", profilePic: ""}],
-    },
-  ],
+  rooms: [],
   owner: "",
   creationDate: { $date: "" },
   department: "",
 };
 
-const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, userCourses, setActiveIcon, activeIcon, distinctDepartments, setDistinctDepartments }: Props) => {
+const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
   const api = useAxiosPrivate();
-  const { setUser } = useAuth();
+  const { setUser, user } = useAuth();
   // tracks all courses from db
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,11 +48,26 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   const [courseFilters, setUserFilteredCourses] = useState<string[]>([]);
   // tracks the current courses the user added
   const [userAddedCourses, setUserAddedCourses] = useState<Course[]>([emptyCourse]);
-  // tracks the current courses the user is in
-  const currentCourses = new Map<string, boolean>();
   // tracks the unique departments in course list
   const departments = new Set<string>();
   const distinctCourses = new Map<string, Course[]>();
+  // tracks the current courses the user is in
+  const [currentCourses, setCurrentCourses] = useState<Map<string, boolean>>(new Map<string, boolean>());
+
+  const [userCourseList, updateUserCourseList, updateDistinctCoursesByDepartment, updateDistinctDepartments, setActiveIcon] = useStore((state) => [
+    state.userCourseList,
+    state.updateUserCourseList,
+    state.updateDistinctCoursesByDepartment,
+    state.updateDistinctDepartments,
+    state.setActiveIcon,
+  ]);
+
+  //functions for state map
+  const addCourseToMap = (courseName: string) => {
+    const newMap = new Map(currentCourses);
+    newMap.set(courseName, true);
+    setCurrentCourses(newMap);
+  };
 
   // handles modal close
   const handleClose = (event: Event, reason: string) => {
@@ -162,11 +165,15 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
     getCourses();
   }, []);
 
+  useEffect(() => {
+    cacheCurrentCourses();
+  }, [user]);
+
   // save the current courses the user is in in a map for easy access
   const cacheCurrentCourses = () => {
     if (user) {
       user.courses.forEach((userCourse) => {
-        currentCourses.set(userCourse, true);
+        addCourseToMap(userCourse);
       });
     }
   };
@@ -191,26 +198,21 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
       const response = await api.post(subscribeToCourseURL, { courses: courseNames, username: user?.username });
       if (response.data.statusCode === 200) {
         setShowCourses(false);
-        //update the user context
-        //triggers a re-render of the course icons
-        setUser({ ...user, courses: [...user.courses, ...courseNames] });
         //returns all the courses the user is in
-        const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
-        setUserCourses([...userCourses, ...matchingCourses]);
-        //if course is a new department, add it to the list of distinct departments
-        const newDepartments = [];
-        matchingCourses.forEach((course) => {
-          if(!distinctDepartments.includes(course.department)) {            
-            newDepartments.push(course.department);
-          }
-        });
-        setDistinctDepartments([...distinctDepartments, ...newDepartments]);
-        //trigger a re-render of the course list
-        setActiveIcon({...activeIcon})
-        setUserAddedCourses([{...emptyCourse}]);
+        const newUserCourses = response.data.data;
+        const newDepartments = newUserCourses.map((course) => course.department);
+
+        //update states
+        updateUserCourseList(newUserCourses, "add");
+        updateDistinctDepartments(newDepartments, "add");
+        updateDistinctCoursesByDepartment(newUserCourses, "add");
+        setUser({ ...user, courses: [...user.courses, ...courseNames] });
+
+        //clear the added courses
+        setUserAddedCourses([{ ...emptyCourse }]);
       } else {
         console.log(response.data.message);
-        alert(response.data.message)
+        alert(response.data.message);
       }
     } catch (error) {
       console.log(error);
@@ -218,9 +220,8 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
   };
 
   const courseEntry = (course: Course, index: number) => {
-    cacheCurrentCourses();
-    console.log(userCourses);
-    
+    console.log(userCourseList);
+
     return (
       <Box key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction={"row"} spacing={2} sx={{ width: "600px" }}>
@@ -265,7 +266,7 @@ const SearchCourseModal = ({ user, showCourses, setShowCourses, setUserCourses, 
               }}
             >
               <Tooltip title={currentCourses.get(course.name) ? "Subscribed" : "Delete"}>
-                <CheckCircleOutlineIcon color={userCourses.some((userCourse) => userCourse.name === course.name) ? "success" : "disabled"} />
+                <CheckCircleOutlineIcon color={userCourseList?.some((userCourse) => userCourse.name === course.name) ? "success" : "disabled"} />
               </Tooltip>
             </IconButton>
             <IconButton

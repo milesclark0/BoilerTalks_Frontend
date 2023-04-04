@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { useState } from "react";
-import { Profile, User } from "../types/types";
+import { Profile, User } from "../globals/types";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -14,7 +14,7 @@ type AuthProviderType = {
   signOut: () => void;
   setUser: (user: User) => void;
   setProfile: (profile: Profile) => void;
-  themeSetting: string;
+  themeSetting: string; // 'light' or 'dark'
   handleThemeSettingChange: () => void;
 };
 

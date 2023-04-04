@@ -4,7 +4,7 @@ import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
 import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
 import { useAuth } from "../../context/context";
-import { Course } from "../../types/types";
+import { Course } from "../../globals/types";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -172,7 +172,7 @@ const ChooseThreads = () => {
         const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
         // setUserCourses([...userCourses, ...matchingCourses]);
         console.log(matchingCourses);
-        navigate("/home")
+        navigate("/home");
       } else {
         console.log(response.data.message);
         //TODO: handle error
@@ -298,7 +298,7 @@ const ChooseThreads = () => {
                 justifyContent: "center",
                 display: "flex",
                 alignItems: "center",
-                pb: 2
+                pb: 2,
               }}
             >
               <Button variant="outlined" onClick={subscribeToCourses} disabled={getAddedCourses().length === 0}>

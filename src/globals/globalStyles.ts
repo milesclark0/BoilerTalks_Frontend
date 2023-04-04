@@ -1,0 +1,6 @@
+export const APP_STYLES = {
+    DRAWER_WIDTH: 320,
+    INNER_DRAWER_WIDTH: 85,
+    DEFAULT_PADDING: 4,
+    APP_BAR_HEIGHT: 64,
+};

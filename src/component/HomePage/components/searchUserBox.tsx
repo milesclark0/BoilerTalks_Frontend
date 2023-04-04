@@ -1,16 +1,17 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { APP_STYLES } from "../../../globals/globalStyles";
+import { Course } from "../../../globals/types";
+import useStore from "../../../store/store";
 
-type Props = {
-  courseUsers: any[];
-  isCourseSelected: () => boolean;
-  drawerWidth: number;
-  innerDrawerWidth: number;
-};
 
-export const SearchUserBox = ({ courseUsers, isCourseSelected, drawerWidth, innerDrawerWidth }: Props) => {
-  const [value, setValue] = useState<string>(null);
+export const SearchUserBox = () => {
+  const [value, setValue] = useState<{username: string, profilePic: string} | null>(null);
+  const [courseUsers, currentCourse] = useStore((state) => [
+    state.courseUsers,
+    state.currentCourse,
+  ]);
   const navigate = useNavigate();
 
   const navigateToProfile = (username: string) => {
@@ -19,9 +20,13 @@ export const SearchUserBox = ({ courseUsers, isCourseSelected, drawerWidth, inne
 
   const handleEnter = (e) => {
     if (e.keyCode === 13 && value != null) {
-      console.log(value["username"]);
-      navigateToProfile(value["username"]);
+      console.log(value.username);
+      navigateToProfile(value.username);
     }
+  };
+
+  const isCourseSelected = () => {
+    return currentCourse !== null;
   };
 
   if (isCourseSelected() === false) return null;
@@ -40,7 +45,7 @@ export const SearchUserBox = ({ courseUsers, isCourseSelected, drawerWidth, inne
           return option?.username;
         }
       }}
-      sx={{ color: "white", width: drawerWidth - innerDrawerWidth, "& .Mui-focused": { color: "white"}}}
+      sx={{ color: "white", width: APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH, "& .Mui-focused": { color: "white"}}}
       renderInput={(params) => <TextField onKeyDown={(e) => handleEnter(e)} {...params} variant="outlined" color="info" label="Search users..." size="small" sx={{
         input: {
           color: "white",

@@ -1,8 +1,9 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
-import { addRoomToCourseURL } from "../../../../API/CoursesAPI";
-import { useAuth } from "../../../../context/context";
-import { Course, Room } from "../../../../types/types";
-import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+import { addRoomToCourseURL } from "../../../API/CoursesAPI";
+import { useAuth } from "../../../context/context";
+import { Course, Room } from "../../../globals/types";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import useStore from "../../../store/store";
 
 type AddThreadProps = {
   newThreadValue: string;
@@ -10,20 +11,11 @@ type AddThreadProps = {
   setNewThreadOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setNewThreadValue: React.Dispatch<React.SetStateAction<string>>;
   course: Course;
-  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
-  userCourses: Course[];
 };
 
-const AddThreadModal = ({
-  newThreadValue,
-  newThreadOpen,
-  setNewThreadOpen,
-  setNewThreadValue,
-  course,
-  setUserCourses,
-  userCourses,
-}: AddThreadProps) => {
+const AddThreadModal = ({ newThreadValue, newThreadOpen, setNewThreadOpen, setNewThreadValue, course }: AddThreadProps) => {
   const api = useAxiosPrivate();
+  const addUserRoom = useStore((state) => state.addUserRoom);
   const handleCloseNewThread = () => {
     setNewThreadOpen(false);
     setNewThreadValue(""); //wipe the text field
@@ -38,13 +30,8 @@ const AddThreadModal = ({
     if (res.data.statusCode === 200) {
       console.log(res.data.data);
       const newRoom: Room = res.data.data;
-      userCourses.forEach((userCourse) => {
-        if (userCourse.name === course?.name) {
-          course.rooms.push(newRoom);
-        }
-      });
       //updates the userCourses state
-      setUserCourses([...userCourses]);
+      addUserRoom(newRoom);
     }
     setNewThreadOpen(false); //newThreadValue
     setNewThreadValue(""); //wipe the text field

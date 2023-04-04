@@ -1,15 +1,15 @@
 import { Avatar, Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/context";
-import { Message, Room } from "../../types/types";
+import { Message, Room } from "../../globals/types";
 import { MessageHeader } from "./MessageHeader";
 import MessageIcon from "@mui/icons-material/Message";
-import { EmojiPanel } from "../HomePage/emojiPanel";
+import { EmojiPanel } from "./emojiPanel";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { StyledDivider } from "../SideBar/StyledDivider";
-import { Course } from "../../types/types";
+import { StyledDivider } from "../SideBar/components/StyledDivider";
+import { Course } from "../../globals/types";
 import WarnPrompt from "./WarnPrompt";
 import BanPrompt from "./BanPrompt";
 
@@ -20,15 +20,9 @@ type MessageEntryProps = {
   isReply: (newValue: boolean) => void;
   isRoomMod: boolean;
   promoteUser: (username: string) => void;
-  room: Room;
-  addReaction: (
-    message: Message,
-    room: Room,
-    isSystemMessage: boolean,
-    reaction: string,
-    index: number
-  ) => void;
+  addReaction: (reaction: string, index: number) => void;
   course: Course | null;
+  profilePicLastUpdated: number;
 };
 
 export const MessageEntry = ({
@@ -38,9 +32,9 @@ export const MessageEntry = ({
   isReply,
   isRoomMod,
   promoteUser,
-  room,
   addReaction,
-  course
+  course,
+  profilePicLastUpdated,
 }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
   const [emojiPanelShow, setEmojiPanelShow] = useState<boolean>(false);
@@ -52,19 +46,15 @@ export const MessageEntry = ({
   const [reactingIndex, setReactingIndex] = useState<number>(null);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openUserMenu = Boolean(anchorEl);
   const { profile } = useAuth();
   const [openWarningPrompt, setOpenWarningPrompt] = useState<boolean>(false);
   const [openBanPrompt, setOpenBanPrompt] = useState<boolean>(false);
 
-  const GetProfilePicture = (message) => {
+  const GetProfilePicture = () => {
     if (message.profilePic) {
       return (
         <IconButton onClick={handleUserClick} size="small">
-          <Avatar
-            sx={{ width: 35, height: 35, mr: 2 }}
-            src={message.profilePic + `?${Date.now()}`}
-          />
+          <Avatar sx={{ width: 35, height: 35, mr: 2 }} src={message.profilePic + `?${profilePicLastUpdated}`} />
         </IconButton>
       );
     } else {
@@ -117,7 +107,7 @@ export const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      {GetProfilePicture(message)}
+      <GetProfilePicture />
       <Box
         sx={{
           overflow: "hidden",
@@ -133,14 +123,12 @@ export const MessageEntry = ({
           >
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
-              {`Replied To: ` +
-                messages[message.replyIndex].username +
-                `: ` +
-                messages[message.replyIndex].message}
+              {`Replied To: ` + messages[message.replyIndex].username + `: ` + messages[message.replyIndex].message}
             </Typography>
           </Box>
         ) : null}
-        <MessageHeader
+        {/* commented out for performance */}
+        {/* <MessageHeader
           message={message}
           index={index}
           hoveredMessageId={hoveredMessageId}
@@ -149,7 +137,7 @@ export const MessageEntry = ({
           promoteUser={promoteUser}
           isReacting={handleEmojiPanelChange}
           setReactingIndex={setReactingIndex}
-        />
+        /> */}
         <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
           {message.message}
         </Typography>
@@ -161,12 +149,10 @@ export const MessageEntry = ({
             </React.Fragment>
           );
         })}
-        {reactingIndex === index && emojiPanelShow ? (
-          <EmojiPanel message={message} room={room} index={index} addReaction={addReaction} />
-        ) : null}
+        {reactingIndex === index && emojiPanelShow ? <EmojiPanel message={message} index={index} addReaction={addReaction} /> : null}
       </Box>
       <Menu
-        open={openUserMenu}
+        open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={handleUserMenuClose}
         PaperProps={{
@@ -189,16 +175,8 @@ export const MessageEntry = ({
           </Box>
         )}
       </Menu>
-      <WarnPrompt
-        openWarningPrompt={openWarningPrompt}
-        setOpenWarningPrompt={setOpenWarningPrompt}
-        username={message.username}
-      />
-      <BanPrompt
-        openBanPrompt={openBanPrompt}
-        setOpenBanPrompt={setOpenBanPrompt}
-        username={message.username}
-      />
+      <WarnPrompt openWarningPrompt={openWarningPrompt} setOpenWarningPrompt={setOpenWarningPrompt} username={message.username} />
+      <BanPrompt openBanPrompt={openBanPrompt} setOpenBanPrompt={setOpenBanPrompt} username={message.username} />
     </Box>
   );
 };

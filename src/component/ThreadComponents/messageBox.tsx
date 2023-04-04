@@ -1,74 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
-import useSockets from "../../hooks/useSockets";
-import { Course, Message, Room } from "../../types/types";
+import useSocketFunctions from "../../hooks/useSocketFunctions";
+import { Course, Message, Room } from "../../globals/types";
 import { useAuth } from "../../context/context";
 import SendIcon from "@mui/icons-material/Send";
+import useStore from "../../store/store";
 
 type Props = {
-  currentCourse: Course | null;
-  setCurrentCourse: React.Dispatch<React.SetStateAction<Course | null>>;
-  userCourses: Course[];
-  setUserCourses: React.Dispatch<React.SetStateAction<Course[]>>;
-  currentRoom: Room | null;
-  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>;
-  connectToRoom: (room: Room) => Promise<void>;
-  messages: Message[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  sendMessage: (
-    message: {
-      username: string;
-      message: string;
-      timeSent: string;
-      profilePic: string;
-      replyIndex?: number;
-      reactions?: any[];
-    },
-    room: Room,
-    isSystemMessage: boolean
-  ) => void;
+  updateReaction: ( reaction: string,index: number) => void;
   replyIndex: any;
   handleReply: (index: number, isReplying: any) => void;
+  reaction: { reaction: string; index: number };
+  messages: Message[];
 };
 
-const MessageBox = ({
-  currentCourse,
-  setCurrentCourse,
-  userCourses,
-  setUserCourses,
-  currentRoom,
-  setCurrentRoom,
-  connectToRoom,
-  messages,
-  setMessages,
-  sendMessage,
-  replyIndex,
-  handleReply,
-}: Props) => {
+const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, messages }: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
+  const {sendMessage, connectToRoom, addReaction} = useSocketFunctions();
 
-  const [reactionChange, setReactionChange] = useState<boolean>(false);
+  const [currentRoom, updateRoomMessages, updateCurrentRoom, isConnected] = useStore((state) => [
+    state.currentRoom,
+    state.updateRoomMessages,
+    state.updateCurrentRoom,
+    state.isConnected,
+  ]);
+
+  //listen to reaction change and send the reaction to the server
+  useEffect(() => {
+    if (reaction != null) {
+      addReaction(messages[reaction.index], currentRoom, false, reaction.reaction, reaction.index);
+      updateReaction(null, null);
+    }
+  }, [reaction]);
 
   useEffect(() => {
     //when the current room changes, connect to the room and set the messages to the messages in the room
+    console.log("connecting to room")
     const connect = async (room: Room) => {
       if (room) {
-        console.log("connecting to room", room?.name);
         await connectToRoom(room);
       }
     };
     connect(currentRoom);
   }, [currentRoom]);
 
-  useEffect(() => {
-    //on message received, update the messages and scroll to the bottom of the message box
-    if (message !== "") {
-      updateMessageFields(message);
-      setMessage("");
-    }
-  }, [messages]);
 
   // get the current date and time in the format of YYYY-MM-DD HH:MM:SS
   const getDateTime = () => {
@@ -79,7 +56,8 @@ const MessageBox = ({
     const hour = date.getHours();
     const minute = date.getMinutes();
     const second = date.getSeconds();
-    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    const millisecond = date.getMilliseconds();
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}:${millisecond}`;
   };
 
   const updateMessageFields = (message: any) => {
@@ -90,37 +68,17 @@ const MessageBox = ({
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
       replyIndex: messages[messages.length - 1]?.replyIndex, //set the reply index to the reply index of the last message
+      reactions: messages[messages.length - 1]?.reactions, //set the reactions to the reactions of the last message
     };
-    //update message fields in userCourses and currentCourse and currentRoom
-    const userCourseCopy = structuredClone(userCourses);
-    userCourseCopy?.forEach((course) => {
-      if (course._id.$oid === currentCourse?._id.$oid) {
-        //find the room in the course
-        course.rooms.forEach((room) => {
-          if (room._id.$oid === currentRoom?._id.$oid) {
-            room.messages.push(formattedMessage);
-          }
-        });
-
-        if (currentRoom?._id.$oid === course?.modRoom._id.$oid) {
-          course?.modRoom.messages.push(formattedMessage);
-        }
-      }
-    });
-    setUserCourses(userCourseCopy);
-
-    //update current course
-    const currCourseCopy = structuredClone(currentCourse);
-    currCourseCopy?.rooms.forEach((room) => {
-      if (room._id.$oid === currentRoom?._id.$oid) {
-        room.messages.push(formattedMessage);
-      }
-    });
-
-    if (currentRoom?._id.$oid === currCourseCopy?.modRoom._id.$oid) {
-      currCourseCopy?.modRoom.messages.push(formattedMessage);
+    //update message fields in currentRoom and roomList
+    if (currentRoom) {
+      updateCurrentRoom(formattedMessage);
+      updateRoomMessages(currentRoom, formattedMessage);
     }
-    setCurrentCourse(currCourseCopy);
+    // if (currentRoom?._id.$oid === currentCourse?.modRoom._id.$oid) {
+    //   currCourseCopy?.modRoom.messages.push(formattedMessage);
+    // }
+    // setCurrentCourse(currCourseCopy);
   };
 
   const handleSendMessage = () => {
@@ -133,6 +91,7 @@ const MessageBox = ({
     };
     sendMessage(formattedMessage, currentRoom, false);
     handleReply(null, false);
+    setMessage("");
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +104,7 @@ const MessageBox = ({
     }
   };
 
-  return (
+  return(
     <Box
       display={"flex"}
       sx={{
@@ -156,6 +115,7 @@ const MessageBox = ({
       <TextField
         label="Enter Message"
         value={message}
+        disabled={!isConnected}
         sx={{
           width: "100%",
         }}
@@ -171,9 +131,8 @@ const MessageBox = ({
           ),
         }}
       />
-      {/* <Button onClick={handleSendMessage}>Send</Button> */}
     </Box>
   );
 };
 
-export default MessageBox;
+export default React.memo(MessageBox);

@@ -1,8 +1,8 @@
 import { IconButton } from "@mui/material";
-import { setCourseActiveURL } from "../../../../API/CoursesAPI";
-import { useAuth } from "../../../../context/context";
-import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import { Course } from "../../../../types/types";
+import { setCourseActiveURL } from "../../../API/CoursesAPI";
+import { useAuth } from "../../../context/context";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { Course } from "../../../globals/types";
 import PushPinIcon from "@mui/icons-material/PushPin";
 
 export const PinIcon = ({ course }: { course: Course }) => {

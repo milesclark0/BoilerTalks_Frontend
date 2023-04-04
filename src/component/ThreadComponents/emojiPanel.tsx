@@ -1,19 +1,14 @@
-import EmojiPicker, {
-  Theme,
-  EmojiClickData,
-  Emoji,
-  EmojiStyle,
-} from "emoji-picker-react";
+import EmojiPicker, { Theme, EmojiClickData, Emoji, EmojiStyle } from "emoji-picker-react";
 import React, { useEffect, useState } from "react";
 import useSockets from "../../hooks/useSockets";
-import { Room } from "../../types/types";
+import { Room } from "../../globals/types";
 
-export const EmojiPanel = ({ message, room, index, addReaction }: any) => {
+export const EmojiPanel = ({ index, addReaction }: any) => {
   const [selectedEmojis, setSelectedEmojis] = useState<string>("");
 
   useEffect(() => {
     const updateMessage = async () => {
-      await addReaction(message, room, false, selectedEmojis, index);
+      addReaction(selectedEmojis, index);
     };
 
     updateMessage();
@@ -38,15 +33,7 @@ export const EmojiPanel = ({ message, room, index, addReaction }: any) => {
           }}
         />
       </div>
-      <div className="show-emoji">
-        {selectedEmojis ? (
-          <Emoji
-            unified={selectedEmojis}
-            emojiStyle={EmojiStyle.APPLE}
-            size={22}
-          />
-        ) : null}
-      </div>
+      <div className="show-emoji">{selectedEmojis ? <Emoji unified={selectedEmojis} emojiStyle={EmojiStyle.APPLE} size={22} /> : null}</div>
     </div>
   );
 };

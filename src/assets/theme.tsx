@@ -30,7 +30,7 @@ export const light = {
   palette: {
     type: "light",
     primary: {
-      main: "#ffffff",
+      main: "#ffffff0",
     },
     secondary: {
       main: "#f0f0f0",

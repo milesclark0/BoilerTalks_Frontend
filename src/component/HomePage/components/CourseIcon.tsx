@@ -1,8 +1,7 @@
 import { ListItem, IconButton, Avatar, Typography } from "@mui/material";
+import useStore from "../../../store/store";
 
 type Props = {
-  activeIcon: { course: string; isActiveCourse: boolean };
-  setActiveIcon: React.Dispatch<React.SetStateAction<{ course: string; isActiveCourse: boolean }>>;
   labelText: string;
   isActiveCourse: boolean;
   selectedIconColor: string;
@@ -10,8 +9,9 @@ type Props = {
   handleIconClick: (labelText: string, isActiveCourse: boolean) => void;
 };
 
-export const CourseIcon = ({ labelText, isActiveCourse, activeIcon, setActiveIcon, selectedIconColor, AvatarSize, handleIconClick }: Props) => {
+export const CourseIcon = ({ labelText, isActiveCourse, selectedIconColor, AvatarSize, handleIconClick }: Props) => {
   const iconColor = isActiveCourse ? "lightblue" : "";
+  const activeIcon = useStore((state) => state.activeIcon);
   const outLineColor = activeIcon.course === labelText ? selectedIconColor : "";
   const outlineStyle = activeIcon.course === labelText ? "solid" : "";
   const [department, courseNumber] = labelText.split(" ");

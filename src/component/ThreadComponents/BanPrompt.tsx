@@ -23,7 +23,7 @@ type Props = {
   username: string;
 };
 
-const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
+const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {  
   const [reasonError, setReasonError] = useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
   const { courseId } = useParams();

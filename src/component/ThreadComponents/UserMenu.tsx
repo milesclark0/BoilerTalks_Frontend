@@ -3,8 +3,8 @@ import { Menu, MenuItem, IconButton, Avatar, Box } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/context";
-import { StyledDivider } from "../SideBar/StyledDivider";
-import { Course } from "../../types/types";
+import { StyledDivider } from "../SideBar/components/StyledDivider";
+import { Course } from "../../globals/types";
 import WarnPrompt from "./WarnPrompt";
 import BanPrompt from "./BanPrompt";
 
@@ -72,12 +72,8 @@ const UserMenu = ({ username, course }: Props) => {
           </Box>
         )}
       </Menu>
-      <WarnPrompt
-        openWarningPrompt={openWarningPrompt}
-        setOpenWarningPrompt={setOpenWarningPrompt}
-        username={username}
-      />
-      <BanPrompt openBanPrompt={openBanPrompt} setOpenBanPrompt={setOpenBanPrompt} username={username}/>
+      <WarnPrompt openWarningPrompt={openWarningPrompt} setOpenWarningPrompt={setOpenWarningPrompt} username={username} />
+      <BanPrompt openBanPrompt={openBanPrompt} setOpenBanPrompt={setOpenBanPrompt} username={username} />
     </React.Fragment>
   );
 };

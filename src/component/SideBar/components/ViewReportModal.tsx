@@ -1,22 +1,22 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box, Typography } from "@mui/material";
-import { useAuth } from "../../../../context/context";
-import { Course, Room } from "../../../../types/types";
-import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
-import { getCourseManagementURL, removeReportURL } from "../../../../API/CourseManagementAPI";
+import { useAuth } from "../../../context/context";
+import { Course, Room } from "../../../globals/types";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { getCourseManagementURL, removeReportURL } from "../../../API/CourseManagementAPI";
 import { useQuery } from "react-query";
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type ViewReportProps = {
-  ReportsList: {username: string, reason: string}[];
+  ReportsList: { username: string; reason: string }[];
   ReportsOpen: boolean;
   setReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setReportsList: React.Dispatch<React.SetStateAction<{username: string, reason: string}[]>>;
+  setReportsList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   course: Course;
 };
 
-const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsOpen, course}: ViewReportProps) => {
+const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsOpen, course }: ViewReportProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseReports = () => {
@@ -27,7 +27,7 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
     const reportlist = ReportsList;
     reportlist?.splice(reportIndex, 1);
     setReportsList(reportlist);
-    await RemoveReport(reportIndex);//update backend
+    await RemoveReport(reportIndex); //update backend
   };
 
   const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
@@ -40,7 +40,7 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
   const RemoveReport = async (reportIndex: number) => {
     //fetch course management api
     const res = await api.post(removeReportURL + course?._id.$oid, {
-      ...ReportsList[reportIndex]
+      ...ReportsList[reportIndex],
     });
     if (res.data.statusCode === 200) {
       console.log(res.data.data);
@@ -53,13 +53,7 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
   if (isLoading) {
     return null;
   }
-  const ReportEntry = ({
-    report,
-    index,
-  }: {
-    report: {username: string, reason: string};
-    index: number;
-  }) => {
+  const ReportEntry = ({ report, index }: { report: { username: string; reason: string }; index: number }) => {
     return (
       <Stack direction="row" spacing={1}>
         <Typography
@@ -67,7 +61,8 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
             width: 500,
             display: "flex",
           }}
-          >{report.reason}
+        >
+          {report.reason}
         </Typography>
         <IconButton aria-label="delete" onClick={() => handleRemoveReport(index)}>
           <DeleteIcon />
@@ -96,6 +91,5 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
     </Dialog>
   );
 };
-
 
 export default ViewReportModal;

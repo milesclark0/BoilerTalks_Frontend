@@ -1,13 +1,14 @@
 import { Box, Typography, Grid, Tooltip, IconButton } from "@mui/material";
-import { Message } from "../../types/types";
+import { Message } from "../../globals/types";
 import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
-import BlockUserModal from "../HomePage/blockUserModal";
+import BlockUserModal from "../HomePage/components/blockUserModal";
 import { useState } from "react";
 import { useAuth } from "../../context/context";
 import GavelIcon from "@mui/icons-material/Gavel";
-import { EmojiPanel } from "../HomePage/emojiPanel";
+
+//TODO: this file is causing the messages to lag a lot, need to figure out why
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -22,12 +23,7 @@ type MessageHeaderProps = {
 const armyToRegTime = (time: any) => {
   const clock = time.split(" ");
   const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue =
-    hours > 0 && hours <= 12
-      ? "" + hours
-      : hours > 12
-      ? "" + (hours - 12)
-      : "12";
+  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
   timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
   timeValue += hours >= 12 ? " P.M." : " A.M.";
   return timeValue;
@@ -57,15 +53,8 @@ export const MessageHeader = ({
   return (
     <Box>
       <BlockUserModal {...blockUserProps} />
-      <Typography
-        variant="h6"
-        display="inline"
-      >{`${message.username} `}</Typography>
-      <Typography
-        variant="overline"
-        display="inline"
-        sx={{ color: "black", paddingLeft: "5px" }}
-      >
+      <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
+      <Typography variant="overline" display="inline" sx={{ color: "black", paddingLeft: "5px" }}>
         {armyToRegTime(message.timeSent)}
       </Typography>
       <Box
@@ -89,13 +78,13 @@ export const MessageHeader = ({
             }}
           >
             <Tooltip title="React" placement="bottom-start">
-              <IconButton>
-                <AddReactionIcon
-                  onClick={() => {
-                    isReacting();
-                    setReactingIndex(index);
-                  }}
-                />
+              <IconButton
+                onClick={() => {
+                  isReacting();
+                  setReactingIndex(index);
+                }}
+              >
+                <AddReactionIcon />
               </IconButton>
             </Tooltip>
           </Grid>
@@ -113,13 +102,13 @@ export const MessageHeader = ({
           {user?.username != message.username && (
             <Grid item xs={6} sx={{ display: "inline" }}>
               <Tooltip title="Block" placement="bottom-start">
-                <IconButton>
-                  <BlockIcon
-                    onClick={() => {
-                      setUserToBlock(message.username);
-                      setShowBlockUser(true);
-                    }}
-                  />
+                <IconButton
+                  onClick={() => {
+                    setUserToBlock(message.username);
+                    setShowBlockUser(true);
+                  }}
+                >
+                  <BlockIcon />
                 </IconButton>
               </Tooltip>
             </Grid>

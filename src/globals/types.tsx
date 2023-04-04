@@ -19,9 +19,9 @@ export type Course = {
   creationDate: { $date: string };
   department: string;
   owner: string;
-  rooms: Room[];
-  modRoom: Room;
-  userThread: { $oid: string };
+  rooms: [string, {$oid: string}][]
+  modRoom: Room
+  userThread: UserThread
   instructor: string | null;
   memberCount: number;
   semester: string;
@@ -65,6 +65,13 @@ export type Room = {
   courseId: { $oid: string };
   connected: [{ username: string; sid: string; profilePic: string }];
   messages: Message[];
+};
+
+export type UserThread = {
+  _id: { $oid: string };
+  courseId: { $oid: string };
+  name: string;
+  numberOfPosts: number;
 };
 
 export type Message = {

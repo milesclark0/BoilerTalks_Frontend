@@ -2,9 +2,8 @@ import React from "react";
 import { Box, Switch, Typography } from "@mui/material";
 
 const NotificationCourse = ({ course, profileData }) => {
-  console.log(course);
   return (
-    <Box key={course.courseName}>
+    <Box>
       <Typography>{course.courseName}</Typography>
       <Typography>Messages</Typography>
       <Switch checked={false} />

@@ -46,7 +46,7 @@ function App() {
               <Route path="/profile/:requestUsername" element={<ProfilePage />} />
               <Route path="/settings" element={<Settings />}>
                 <Route path="passwordReset" element={<PasswordReset />} />
-                <Route path="notificationPreference" element={<NotificationPreference />} />
+                <Route path="notification" element={<NotificationPreference />} />
               </Route>
               <Route path="/home/courses" element={<Home />} />
               <Route path="/home" element={<Home />}>

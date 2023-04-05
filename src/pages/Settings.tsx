@@ -3,6 +3,8 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useState } from "react";
 import { AppBar, Box, Button, Drawer, Paper, Stack, Toolbar, Typography } from "@mui/material";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import PasswordIcon from "@mui/icons-material/Password";
 
 const Settings = () => {
   const { user } = useAuth();
@@ -64,20 +66,24 @@ const Settings = () => {
           <Button
             component={NavLink}
             to="passwordReset"
-            onClick={() => setSettingsPage("Password")}
+            // onClick={() => setSettingsPage("Password")}
             fullWidth
             sx={{ textTransform: "none" }}
+            startIcon={<PasswordIcon />}
           >
-            <Typography variant="body1">Password</Typography>
+            Password
+            {/* <Typography variant="body1">Password</Typography> */}
           </Button>
           <Button
             component={NavLink}
-            to="notificationPreference"
-            onClick={() => setSettingsPage("NotificationPreference")}
+            to="notification"
+            // onClick={() => setSettingsPage("Notification")}
             fullWidth
             sx={{ textTransform: "none" }}
+            startIcon={<NotificationsIcon />}
           >
-            <Typography variant="body1">Notification Preference</Typography>
+            Notification
+            {/* <Typography variant="body1">Notification</Typography> */}
           </Button>
         </Stack>
       </Drawer>

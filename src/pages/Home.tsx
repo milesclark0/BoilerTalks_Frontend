@@ -90,7 +90,7 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
         {/* renders display for the current room/thread etc */}
         <Outlet />
         <UserBar />
-        <Typography>Notifications</Typography>
+        {/* <Typography>Notifications</Typography> */}
       </Paper>
     </Box>
   ) : (

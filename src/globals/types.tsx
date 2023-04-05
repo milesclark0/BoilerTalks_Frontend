@@ -36,6 +36,9 @@ export type Profile = {
   blockedUsers: string[];
   creationDate: { $date: string };
   displayName: string;
+  notificationPreference: [
+    { courseName: string; messages: boolean; appeals: boolean; reports: boolean }
+  ];
 };
 
 export type CourseManagement = {

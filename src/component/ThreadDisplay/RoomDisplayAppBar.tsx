@@ -25,10 +25,20 @@ const RoomDisplayAppBar = ({ setShowCourses }: RoomAppBarProps) => {
       <Toolbar sx={{ padding: 0 }}>
         <Box sx={{ display: "flex", flexGrow: 1, height: APP_STYLES.APP_BAR_HEIGHT }}>
           <Typography variant="h5" sx={{ p: 2 }} noWrap>
-            {currentCourse?.name ? `${currentCourse?.name}: ${activeCourseThread}` : activeIcon.course || "Select a Department or Course"}
+            {currentCourse?.name
+              ? `${currentCourse?.name}: ${activeCourseThread}`
+              : activeIcon.course || "Select a Department or Course"}
           </Typography>
 
-          <Button variant="contained" onClick={() => setShowCourses(true)} sx={{}}>
+          <Button
+            // variant="contained"
+            onClick={() => setShowCourses(true)} 
+            // removes border from box
+            sx={{
+              boxShadow: "none",
+              ".MuiOutlinedInput-notchedOutline": { border: 0 },
+            }}
+          >
             Add Courses
           </Button>
 

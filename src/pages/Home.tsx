@@ -83,12 +83,14 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
           height: `calc(100% - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
           // width: `calc(100% - ${drawerWidth}px)`,
           width: "100%",
+          borderRadius: 0
         }}
         id="threads"
       >
         {/* renders display for the current room/thread etc */}
         <Outlet />
         <UserBar />
+        <Typography>Notifications</Typography>
       </Paper>
     </Box>
   ) : (

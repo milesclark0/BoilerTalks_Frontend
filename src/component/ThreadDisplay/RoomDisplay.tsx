@@ -14,7 +14,7 @@ import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Paper } from "@mui/material";
-import RoomDisplayAppBar from "./RoomDisplayAppBar";
+import CourseDisplayAppBar from "./CourseDisplayAppBar";
 import SearchCourseModal from "./searchCourseModal";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useUserRoomData from "../HomePage/hooks/useUserRoomData";
@@ -132,7 +132,7 @@ const RoomDisplay = () => {
     <Paper sx={{ height: "100%", width: "100%" }} id="room">
       <SearchCourseModal {...searchCourseProps} />
 
-      <RoomDisplayAppBar {...searchCourseProps} />
+      <CourseDisplayAppBar {...searchCourseProps} />
       {(banned || warned) && (
         <Box
           sx={{
@@ -177,6 +177,7 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReacti
     </Box>
   );
 };
+
 const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
   return (
     <Box>

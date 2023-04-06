@@ -193,6 +193,8 @@ export const CourseNavigation = ({ course }: Props) => {
             );
           })}
           <Button
+            component={NavLink}
+            to={`/home/courses/${course?._id.$oid}/Q&A`}
             sx={{
               width: "100%",
               ...threadButtonStyle("Q&A", course?._id.$oid),

@@ -16,48 +16,52 @@ import AppealsDisplay from "./component/ThreadDisplay/AppealsDisplay";
 import QADisplay from "./component/ThreadDisplay/QADisplay";
 import Blocklist from "./pages/Blocklist";
 import { useEffect, useState } from "react";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { darkTheme, lightTheme } from "./assets/theme";
 import { useAuth } from "./context/context";
+import NotificationPreference from "./component/Settings/NotificationPreference";
+import PasswordReset from "./component/Settings/PasswordReset";
 
 function App() {
-  const {themeSetting} = useAuth();
+  const { themeSetting } = useAuth();
   var themeObject = lightTheme;
-  if (themeSetting == 'dark') {
+  if (themeSetting == "dark") {
     themeObject = darkTheme;
   }
   return (
     <ThemeProvider theme={themeObject}>
-    <div className="appDisplay">
-      <Routes>
-        {/* public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/policies" element={<Policies />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/" element={<Navigate to="/home" replace />} />
+      <div className="appDisplay">
+        <Routes>
+          {/* public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/policies" element={<Policies />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
 
-        {/* protected routes */}
-        <Route element={<PersistLogin />}>
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/chooseThreads" element={<ChooseThreads />} />
-            <Route path="/profile/:requestUsername" element={<ProfilePage />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/home/courses" element={<Home />} />
-            <Route path="/home" element={<Home />}>
-              <Route path="courses/:courseId/:roomId" element={<RoomDisplay />} />
-              <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
-              <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
+          {/* protected routes */}
+          <Route element={<PersistLogin />}>
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/chooseThreads" element={<ChooseThreads />} />
+              <Route path="/profile/:requestUsername" element={<ProfilePage />} />
+              <Route path="/settings" element={<Settings />}>
+                <Route path="passwordReset" element={<PasswordReset />} />
+                <Route path="notification" element={<NotificationPreference />} />
+              </Route>
+              <Route path="/home/courses" element={<Home />} />
+              <Route path="/home" element={<Home />}>
+                <Route path="courses/:courseId/:roomId" element={<RoomDisplay />} />
+                <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
+                <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
+              </Route>
+              <Route path="/blocklist" element={<Blocklist />} />
             </Route>
-           <Route path="/blocklist" element={<Blocklist />} /> 
           </Route>
-        </Route>
 
-        {/* 404 */}
-        <Route path="*" element={<MissingRoute />} />
-      </Routes>
-    </div>
-
+          {/* 404 */}
+          <Route path="*" element={<MissingRoute />} />
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 }

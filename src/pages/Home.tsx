@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { APP_STYLES } from "../globals/globalStyles";
 import SideBar from "../component/HomePage/components/sideBar";
 import { Box, Paper, Typography } from "@mui/material";
@@ -9,11 +9,11 @@ import useUserCourseData from "../component/HomePage/hooks/useUserCourseData";
 import UserBar from "../component/HomePage/components/userBar";
 import useUserRoomData from "../component/HomePage/hooks/useUserRoomData";
 import useStore from "../store/store";
+import CourseDisplayBar from "../component/ThreadDisplay/CourseDisplayAppBar";
+import TabBar from "../component/HomePage/components/TabBar";
 
 const Home = () => {
-  const [activeIcon] = useStore((state) => [
-    state.activeIcon,
-  ]);
+  const [activeIcon] = useStore((state) => [state.activeIcon]);
   console.log("home rerendered");
 
   const navigate = useNavigate();
@@ -29,7 +29,10 @@ const Home = () => {
     return course;
   };
 
-  const { userCourseList, isUserCourseListLoading, userCourseListError } = useUserCourseData({ getCourseFromUrl, getRoomFromUrl });
+  const { userCourseList, isUserCourseListLoading, userCourseListError } = useUserCourseData({
+    getCourseFromUrl,
+    getRoomFromUrl,
+  });
   const { userRoomsList, isUserRoomsListLoading, userRoomsListError } = useUserRoomData();
   useCourseUsers();
   useEffect(() => {
@@ -75,20 +78,30 @@ const Home = () => {
 };
 
 const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
+  const [showCourses, setShowCourses] = useState(false);
   return !isUserCourseListLoading && !userCourseListError ? (
-    <Box sx={{ pl: `${APP_STYLES.DRAWER_WIDTH}px`, width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)` }} id="home">
+    <Box
+      sx={{
+        pl: `${APP_STYLES.DRAWER_WIDTH}px`,
+        width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
+      }}
+      id="home"
+    >
       <Paper
         sx={{
           pt: `${APP_STYLES.APP_BAR_HEIGHT}px`,
           height: `calc(100% - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
           // width: `calc(100% - ${drawerWidth}px)`,
           width: "100%",
+          borderRadius: 0,
         }}
         id="threads"
       >
         {/* renders display for the current room/thread etc */}
         <Outlet />
         <UserBar />
+        <TabBar />
+        {/* <CourseDisplayBar setShowCourses={setShowCourses}/> */}
       </Paper>
     </Box>
   ) : (
@@ -99,7 +112,9 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
       }}
     >
       {isUserCourseListLoading ? <Typography variant="h4">Loading...</Typography> : null}
-      {userCourseListError ? <Typography variant="h4">Error: {`${userCourseListError}`}</Typography> : null}
+      {userCourseListError ? (
+        <Typography variant="h4">Error: {`${userCourseListError}`}</Typography>
+      ) : null}
     </Box>
   );
 };

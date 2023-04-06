@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Course, Room, Message } from "../../globals/types";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import UserBar from "../HomePage/components/userBar";
-import RoomDisplayAppBar from "./CourseDisplayAppBar";
+import CourseDisplayAppBar from "./CourseDisplayAppBar";
 
 type Props = {
   drawerWidth: number;
@@ -18,7 +18,7 @@ const QADisplay = () => {
   const [showCourses, setShowCourses] = useState(false);
   return (
     <Box sx={{ height: "100%" }}>
-      <RoomDisplayAppBar setShowCourses={setShowCourses} />
+      <CourseDisplayAppBar setShowCourses={setShowCourses} />
       <Typography variant="h1">Q&A</Typography>
       <UserBar />
     </Box>

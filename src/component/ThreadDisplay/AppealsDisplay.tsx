@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { updateAppealURL } from "../../API/CourseManagementAPI";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useStore from "../../store/store";
-import RoomDisplayAppBar from "./CourseDisplayAppBar";
+import CourseDisplayAppBar from "./CourseDisplayAppBar";
 
 type Props = {
   drawerWidth: number;
@@ -162,7 +162,7 @@ const AppealsDisplay = () => {
       }}
       className="scrollBar"
     >
-      <RoomDisplayAppBar setShowCourses={setShowCourses}/>
+      <CourseDisplayAppBar setShowCourses={setShowCourses}/>
       {appeals.length !== 0 ? (
         <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {

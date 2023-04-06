@@ -5,12 +5,13 @@ import { SearchUserBox } from "../HomePage/components/searchUserBox";
 import { SemesterSelector } from "../HomePage/components/semesterSelector";
 import { Course, Room } from "../../globals/types";
 import useStore from "../../store/store";
+import SearchCourseModal from "./searchCourseModal";
 
-interface RoomAppBarProps {
+interface CourseAppBarProps {
   setShowCourses: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const RoomDisplayAppBar = ({ setShowCourses }: RoomAppBarProps) => {
+const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
   const [currentCourse, activeCourseThread, activeIcon] = useStore((state) => [state.currentCourse, state.activeCourseThread, state.activeIcon]);
 
   return (
@@ -32,7 +33,7 @@ const RoomDisplayAppBar = ({ setShowCourses }: RoomAppBarProps) => {
 
           <Button
             // variant="contained"
-            onClick={() => setShowCourses(true)} 
+            onClick={() => setShowCourses(true)}
             // removes border from box
             sx={{
               boxShadow: "none",
@@ -48,8 +49,9 @@ const RoomDisplayAppBar = ({ setShowCourses }: RoomAppBarProps) => {
           <SearchUserBox />
         </Box>
       </Toolbar>
+      {/* <SearchCourseModal showCourses={showCourses} setShowCourses={setShowCourses} /> */}
     </AppBar>
   );
 };
 
-export default RoomDisplayAppBar;
+export default CourseDisplayAppBar;

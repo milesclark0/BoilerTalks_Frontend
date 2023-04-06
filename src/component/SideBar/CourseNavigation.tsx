@@ -34,17 +34,13 @@ export const CourseNavigation = ({ course }: Props) => {
   const navigate = useNavigate();
   const { profile, themeSetting } = useAuth();
   const [
-    currentCourse,
     setCurrentCourse,
-    currentRoom,
     setCurrentRoom,
     userRoomsList,
     activeCourseThread,
     setActiveCourseThread,
   ] = useStore((state) => [
-    state.currentCourse,
     state.setCurrentCourse,
-    state.currentRoom,
     state.setCurrentRoom,
     state.userRoomsList,
     state.activeCourseThread,
@@ -93,13 +89,16 @@ export const CourseNavigation = ({ course }: Props) => {
     setReportsOpen(true);
   };
 
+  const isActiveCourse = () => {
+    return course?._id.$oid === courseId;
+  };
+
+
   //handler for when a room button is clicked
   const handleClickCourseOrRoom = (buttonRoomId?: string) => {
-    // if the user clicks on the same course or room, do nothing
-    console.log(course?.name , currentCourse?.name , buttonRoomId );
-    
-    if (buttonRoomId === currentRoom?._id.$oid) return;
-    if (course?._id.$oid === currentCourse?._id.$oid && buttonRoomId === undefined) return;
+    // if the user clicks on the same course or room, do nothing    
+    if (buttonRoomId === roomId) return;
+    if (isActiveCourse() && buttonRoomId === undefined) return;
     //if room is clicked
     console.log("here");
     
@@ -120,11 +119,11 @@ export const CourseNavigation = ({ course }: Props) => {
   };
 
   const staticButtonStyle = () => {
-    const color = themeSetting === "light" ? "black" : "";
-    let backgroundColor = "";
+    const color = themeSetting === "light" ? "black" : "white";
+    let backgroundColor = themeSetting === "light" ? "lightgrey" : "#424242";
     const filterAmnt = "0";
     const hoverColor = "lightblue";
-    return { "&:hover": { filter: `sepia(${filterAmnt})`, backgroundColor: "lightgrey" }, color, borderColor: color, mb: 1, backgroundColor };
+    return { "&:hover": { filter: `sepia(${filterAmnt})`, backgroundColor: backgroundColor }, borderColor: color, mb: 1 };
   };
 
   const roomButtonStyle = (buttonRoomId?: string) => {
@@ -133,7 +132,7 @@ export const CourseNavigation = ({ course }: Props) => {
     if (themeSetting === "light") {
       if (roomId === buttonRoomId) backgroundColor = "lightgrey";
     } else {
-      if (roomId === buttonRoomId) backgroundColor = "lightblue";
+      if (roomId === buttonRoomId) backgroundColor = "#424242";
     }
     return { ...staticStyle, backgroundColor };
   };
@@ -144,7 +143,7 @@ export const CourseNavigation = ({ course }: Props) => {
     if (themeSetting === "light") {
       if (activeCourseThread === threadName && courseId === buttonCourseId) backgroundColor = "lightgrey";
     } else {
-      if (activeCourseThread === threadName && courseId === buttonCourseId) backgroundColor = "lightblue";
+      if (activeCourseThread === threadName && courseId === buttonCourseId) backgroundColor = "grey";
     }
     return { ...staticStyle, backgroundColor };
   };
@@ -153,35 +152,17 @@ export const CourseNavigation = ({ course }: Props) => {
     const staticStyle = staticButtonStyle();
     let backgroundColor = "";
     if (themeSetting === "light") {
-      if (courseId === course?._id.$oid) backgroundColor = "lightgrey";
+      if (isActiveCourse()) backgroundColor = "lightgrey";
     } else {
-      if (courseId === course?._id.$oid) backgroundColor = "lightblue";
+      if (isActiveCourse()) backgroundColor = "#424242";
     }
     return { ...staticStyle, backgroundColor };
   };
 
-  // const fetchProfile = async () => {
-  //   return await axiosPrivate.get(getProfileURL + user?.username);
-  // };
-
-  // const { isLoading, error, data } = useQuery("profile", fetchProfile, {
-  //   enabled: true,
-  //   staleTime: 1000 * 60, //1 minute
-  //   refetchOnMount: "always",
-  //   onSuccess: (data) => {
-  //     if (data.data.statusCode === 200) {
-  //       setProfileInfo(data.data.data[0]);
-  //       // console.log(data.data.data);
-  //     } else setFetchError(data.data.message);
-  //   },
-  //   onError: (error: string) => console.log(error),
-  // });
-  console.log(course?.rooms);
-
   return (
     <List>
       <ListItem>
-        <Button onClick={() => handleClickCourseOrRoom()} variant="outlined" sx={courseButtonStyle()}>
+        <Button onClick={() => handleClickCourseOrRoom()} variant={isActiveCourse() ? "outlined": "text"} sx={courseButtonStyle()}>
           <Typography variant="body1" noWrap component="div">
             {course?.name}
           </Typography>
@@ -201,7 +182,6 @@ export const CourseNavigation = ({ course }: Props) => {
                     ...roomButtonStyle(room[1]?.$oid),
                   }}
                   onClick={() => handleClickCourseOrRoom(room[1]?.$oid)}
-                  variant="outlined"
                 >
                   <ListItem>
                     <Typography variant="body2" noWrap>
@@ -213,7 +193,6 @@ export const CourseNavigation = ({ course }: Props) => {
             );
           })}
           <Button
-            variant="outlined"
             sx={{
               width: "100%",
               ...threadButtonStyle("Q&A", course?._id.$oid),
@@ -242,7 +221,6 @@ export const CourseNavigation = ({ course }: Props) => {
                 handleClickCourseOrRoom(course?.modRoom._id.$oid);
                 setActiveCourseThread(course?.modRoom.name.replace(course?.name, ""));
               }}
-              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Mod Chat</Typography>
@@ -261,25 +239,24 @@ export const CourseNavigation = ({ course }: Props) => {
                 setCurrentCourse(course);
                 setActiveCourseThread("Appeals");
               }}
-              variant="outlined"
             >
               <ListItem>
                 <Typography variant="body2">Appeals</Typography>
               </ListItem>
             </Button>
           )}
-          <Button variant="outlined" onClick={handleClickRules} sx={{ ...staticButtonStyle(), width: "100%" }}>
+          <Button  onClick={handleClickRules} sx={{ ...staticButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          <Button variant="outlined" onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
+          <Button onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Create Report</Typography>
             </ListItem>
           </Button>
           {profile?.modThreads?.includes(course?.name) && (
-            <Button variant="outlined" onClick={handleClickNewThread} sx={staticButtonStyle()}>
+            <Button onClick={handleClickNewThread} sx={staticButtonStyle()}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>
               </ListItem>

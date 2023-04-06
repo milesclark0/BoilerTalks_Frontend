@@ -68,7 +68,6 @@ export const SemesterSelector = () => {
       sx={{
         boxShadow: "none",
         ".MuiOutlinedInput-notchedOutline": { border: 0 },
-        color: "white",
       }}
     >
       <MenuItem disabled value="">

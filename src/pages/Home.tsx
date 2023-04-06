@@ -79,7 +79,7 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
     <Box sx={{ pl: `${APP_STYLES.DRAWER_WIDTH}px`, width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)` }} id="home">
       <Paper
         sx={{
-          mt: `${APP_STYLES.APP_BAR_HEIGHT}px`,
+          pt: `${APP_STYLES.APP_BAR_HEIGHT}px`,
           height: `calc(100% - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
           // width: `calc(100% - ${drawerWidth}px)`,
           width: "100%",

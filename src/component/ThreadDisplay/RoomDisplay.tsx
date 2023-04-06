@@ -22,27 +22,11 @@ import useStore from "./../../store/store";
 import { getRoomURL } from "../../API/CoursesAPI";
 import React from "react";
 
+
 type WarnOrBan = {
   username: string;
   reason: string;
-}; // date to String representation of date (January 6, 2023, 12:00 PM)
-const dateStringify = (dateTime: string) => {
-  const date = new Date(dateTime);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const time = armyToRegTime(dateTime);
-  return `${month}/${day}/${year}, ${time}`;
-};
-
-const armyToRegTime = (time: any) => {
-  const clock = time.split(" ");
-  const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
-  timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
-  timeValue += hours >= 12 ? " P.M." : " A.M.";
-  return timeValue;
-};
+}; 
 
 type Appeal = {
   username: string;
@@ -299,16 +283,17 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
     return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
   };
 
-  const ConditionalLineBreak = ({ index }) => {
+  const ConditionalLineBreak = ({ index }) => {    
+    const options = { year: "numeric", month: "long", day: "numeric" } as const;
     if (messages?.length - 1 === index || messages?.length === 0) {
       return null;
     }
-    const messageDate = dateStringify(messages[index + 1]?.timeSent);
-
-    let messageTime = new Date(messages[index]?.timeSent);
-    let messageTime2 = new Date(messages[index + 1]?.timeSent);
-    // if message 2 is the next day
-    if (messageTime2.getDate() > messageTime.getDate()) {
+    const msgDateBefore = new Date(messages[index -1]?.timeSent).toLocaleDateString(undefined, options);
+    
+    const msgDateAfter =  new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
+    // if message after is the next day
+    
+    if (msgDateBefore === undefined || msgDateAfter !== msgDateBefore) {
       return (
         <Divider
           sx={{
@@ -316,11 +301,10 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
             textAlign: "center",
           }}
         >
-          <Typography variant="overline">{messageDate}</Typography>
+          <Typography variant="overline">{msgDateAfter}</Typography>
         </Divider>
       );
     }
-
     return null;
   };
 
@@ -335,6 +319,7 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
 
           return user?.blockedUsers.includes(message.username) ? null : (
             <Box key={index} sx={{ paddingBottom: "12px" }}>
+              <ConditionalLineBreak index={index} />
               <MessageEntry
                 profilePicLastUpdated={profilePicLastUpdated}
                 messages={messages}
@@ -347,7 +332,7 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
                 addReaction={updateReaction}
                 course={currentCourse}
               />
-              <ConditionalLineBreak index={index} />
+              
 
               {/* {isReplying ? setReplyIndex(index) : null} */}
               {/* room={currentRoom} 

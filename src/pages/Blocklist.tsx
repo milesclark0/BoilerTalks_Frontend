@@ -31,7 +31,7 @@ const Blocklist = () => {
           <Typography variant="h4">Users You've Blocked</Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ display: "flex", margin: 5, mt: `${appBarHeight}px`, justifyContent: "center" }}>
+      <Box sx={{ display: "flex", margin: 5, pt: `${appBarHeight}px`, justifyContent: "center" }}>
         {user.blockedUsers.length !== 0 ? (
           <List>
             {user.blockedUsers

@@ -93,7 +93,7 @@ const UserBar = () => {
   return (
     // <Box>
     <Drawer sx={OuterDrawerStyles} anchor="right" variant="permanent">
-      <Box sx={{ display: "block", mt: `${APP_STYLES.APP_BAR_HEIGHT}px`, p: 1 }}>
+      <Box sx={{ display: "block", p:2 , pt: `${APP_STYLES.APP_BAR_HEIGHT + 4 * APP_STYLES.DEFAULT_PADDING}px`}}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           Online - {getAllConnectedUsers().length}
         </Typography>

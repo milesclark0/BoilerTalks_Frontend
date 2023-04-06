@@ -20,13 +20,13 @@ type MessageHeaderProps = {
   isReacting: () => void;
   setReactingIndex: (newValue: number) => void;
 };
-const armyToRegTime = (time: any) => {
-  const clock = time.split(" ");
-  const [hours, minutes, seconds] = clock[1].split(":").map(Number);
-  let timeValue = hours > 0 && hours <= 12 ? "" + hours : hours > 12 ? "" + (hours - 12) : "12";
-  timeValue += minutes < 10 ? ":0" + minutes : ":" + minutes;
-  timeValue += hours >= 12 ? " P.M." : " A.M.";
-  return timeValue;
+
+const getTime = (timeSent: string, isHovered: boolean) => {
+  const options = !isHovered
+    ? ({ hour: "numeric", minute: "numeric" } as const)
+    : ({ weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" } as const);
+  const date = new Date(timeSent);
+  return !isHovered ? date.toLocaleTimeString("en-US", options) : date.toLocaleDateString("en-US", options);
 };
 
 export const MessageHeader = ({
@@ -49,85 +49,95 @@ export const MessageHeader = ({
     showBlockUser,
     setShowBlockUser,
   };
+  //TODO: dont render modal for every message, move it to a higher level + move username and time to a higher level
 
   return (
-    <Box>
-      <BlockUserModal {...blockUserProps} />
-      <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
-      <Typography variant="overline" display="inline" sx={{ color: "black", paddingLeft: "5px" }}>
-        {armyToRegTime(message.timeSent)}
-      </Typography>
-      <Box
-        sx={{
-          display: "inline",
-          visibility: hoveredMessageId === index ? "visible" : "hidden",
-        }}
-      >
-        <Grid
-          container
+    <Box sx={{ height: 1, alignItems: "top", display: "flex" }}>
+      {/* <BlockUserModal {...blockUserProps} /> */}
+<Box display={"inline"}>
+        <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
+        <Tooltip title={getTime(message.timeSent, true)} placement="top" arrow>
+          <Typography variant="overline" sx={{paddingLeft: "5px" }}>
+            {getTime(message.timeSent, false)}
+          </Typography>
+        </Tooltip>
+</Box >
+      {hoveredMessageId === index ? (
+        <Box
           sx={{
             display: "inline",
           }}
         >
           <Grid
-            item
-            xs={6}
+            container
             sx={{
               display: "inline",
-              marginRight: "-5px",
             }}
           >
-            <Tooltip title="React" placement="bottom-start">
-              <IconButton
-                onClick={() => {
-                  isReacting();
-                  setReactingIndex(index);
-                }}
-              >
-                <AddReactionIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          <Grid item xs={6} sx={{ display: "inline" }}>
-            <Tooltip title="Reply" placement="bottom-start">
-              <IconButton
-                onClick={() => {
-                  isReply(true);
-                }}
-              >
-                <ReplyIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-          {user?.username != message.username && (
-            <Grid item xs={6} sx={{ display: "inline" }}>
-              <Tooltip title="Block" placement="bottom-start">
+            <Grid
+              item
+              xs={6}
+              sx={{
+                display: "inline",
+                marginRight: "-5px",
+              }}
+            >
+              <Tooltip title="React" placement="top" arrow>
                 <IconButton
                   onClick={() => {
-                    setUserToBlock(message.username);
-                    setShowBlockUser(true);
+                    isReacting();
+                    setReactingIndex(index);
                   }}
+                  size="small"
                 >
-                  <BlockIcon />
+                  <AddReactionIcon />
                 </IconButton>
               </Tooltip>
             </Grid>
-          )}
-          {isRoomMod ? (
             <Grid item xs={6} sx={{ display: "inline" }}>
-              <Tooltip title="Promote To Moderator" placement="bottom-start">
+              <Tooltip title="Reply" placement="top" arrow>
                 <IconButton
                   onClick={() => {
-                    promoteUser(message.username);
+                    isReply(true);
                   }}
+                  size="small"
                 >
-                  <GavelIcon />
+                  <ReplyIcon />
                 </IconButton>
               </Tooltip>
             </Grid>
-          ) : null}
-        </Grid>
-      </Box>
+            {user?.username != message.username && (
+              <Grid item xs={6} sx={{ display: "inline" }}>
+                <Tooltip title="Block" placement="top" arrow>
+                  <IconButton
+                    onClick={() => {
+                      setUserToBlock(message.username);
+                      setShowBlockUser(true);
+                    }}
+                    size="small"
+                  >
+                    <BlockIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
+            {isRoomMod ? (
+              <Grid item xs={6} sx={{ display: "inline" }}>
+                <Tooltip title="Promote To Moderator" placement="top" arrow>
+                  <IconButton
+                    onClick={() => {
+                      promoteUser(message.username);
+                    }}
+                    size="small"
+                  >
+                    <GavelIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : null}
+          </Grid>
+        </Box>
+      ) : null}
     </Box>
   );
 };

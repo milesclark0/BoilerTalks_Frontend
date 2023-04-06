@@ -7,7 +7,7 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 
 export const PinIcon = ({ course }: { course: Course }) => {
   const api = useAxiosPrivate();
-  const { user, setUser } = useAuth();
+  const { user, setUser, themeSetting } = useAuth();
   const activeCourseSwitch = async (course: Course) => {
     try {
       const res = await api.post(setCourseActiveURL, { courseName: course?.name, username: user?.username });
@@ -27,7 +27,7 @@ export const PinIcon = ({ course }: { course: Course }) => {
     }
   };
   const isActiveCourse = user.activeCourses?.includes(course?.name);
-  const color = isActiveCourse ? "primary" : "disabled";
+  const color = isActiveCourse ? "secondary" : "primary";
   return (
     <IconButton onClick={() => activeCourseSwitch(course)} sx={{ transform: "rotate(45deg)" }}>
       <PushPinIcon color={color} />

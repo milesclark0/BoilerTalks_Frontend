@@ -9,6 +9,7 @@ import React from "react";
 import { Course } from "../../globals/types";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../../context/context";
+import { Visibility } from "@mui/icons-material";
 
 type MessageEntryProps = {
   message: Message;
@@ -43,7 +44,7 @@ export const MessageEntry = ({
   const [reactingIndex, setReactingIndex] = useState<number>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openUserMenu = Boolean(anchorEl);
-  const {themeSetting} = useAuth();
+  const { themeSetting } = useAuth();
 
   const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -68,7 +69,7 @@ export const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture message={message} handleUserClick={handleUserClick} />
+      <GetProfilePicture index={index} messages={messages} handleUserClick={handleUserClick} profilePicLastUpdated={profilePicLastUpdated} />
       <Box
         sx={{
           overflow: "hidden",
@@ -88,20 +89,21 @@ export const MessageEntry = ({
             </Typography>
           </Box>
         ) : null}
-        {/* commented out for performance */}
-        {/* <MessageHeader
-          message={message}
-          index={index}
-          hoveredMessageId={hoveredMessageId}
-          isReply={isReply}
-          isRoomMod={isRoomMod}
-          promoteUser={promoteUser}
-          isReacting={handleEmojiPanelChange}
-          setReactingIndex={setReactingIndex}
-        /> */}
-        <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
-          {message.message}
-        </Typography>
+        <Box>
+          <MessageHeader
+            message={message}
+            index={index}
+            hoveredMessageId={hoveredMessageId}
+            isReply={isReply}
+            isRoomMod={isRoomMod}
+            promoteUser={promoteUser}
+            isReacting={handleEmojiPanelChange}
+            setReactingIndex={setReactingIndex}
+          />
+          <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
+            {message.message}
+          </Typography>
+        </Box>
 
         {message.reactions?.map((reaction, index) => {
           return (
@@ -116,10 +118,14 @@ export const MessageEntry = ({
     </Box>
   );
 };
-const GetProfilePicture = ({ message, handleUserClick }) => {
+const GetProfilePicture = ({ index, messages, handleUserClick, profilePicLastUpdated }) => {
+  // only show profile picture if it is the first message or if the username is different from the previous message
+  // const show = index === 0 || messages[index].username !== messages[index - 1].username;
+  // const visibility = show ? "visible" : "hidden";
+  const message = messages[index];
   return (
-    <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3 }}>
-      <Avatar src={message.profilePic + `?${Date.now()}`} />
+    <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}>
+      <Avatar src={message.profilePic + `?${profilePicLastUpdated}`} />
     </IconButton>
   );
 };

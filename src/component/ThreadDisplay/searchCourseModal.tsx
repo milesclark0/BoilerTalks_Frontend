@@ -223,7 +223,7 @@ const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
     console.log(userCourseList);
 
     return (
-      <Box key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <Paper key={index} sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Stack direction={"row"} spacing={2} sx={{ width: "600px" }}>
           <Autocomplete
             id="selectCourseDepartment"
@@ -284,13 +284,13 @@ const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
             </IconButton>
           </Stack>
         </Stack>
-      </Box>
+      </Paper>
     );
   };
 
   const CourseSelection = () => {
     return (
-      <React.Fragment>
+      <Paper sx={{p:2}}>
         <IconButton
           onClick={() => setShowCourses(false)}
           sx={{
@@ -356,13 +356,13 @@ const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
             </Stack>
           </Stack>
         </Stack>
-      </React.Fragment>
+      </Paper>
     );
   };
 
   return (
     <Modal open={showCourses} onClose={handleClose}>
-      <Paper
+      <Box
         sx={{
           position: "absolute",
           top: "50%",
@@ -372,14 +372,13 @@ const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
           bgcolor: "white",
           borderRadius: "10px",
           boxShadow: 24,
-          p: 2,
           paddingRight: 4,
           display: "flex",
           maxHeight: 450,
         }}
       >
         {!loading ? <CourseSelection /> : <Typography variant="h4">Loading Courses...</Typography>}
-      </Paper>
+      </Box>
     </Modal>
   );
 };

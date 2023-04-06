@@ -19,12 +19,12 @@ const useRefreshToken = () => {
       } else {
         //something went wrong
         console.log(response.data.message);
-        logout(null);
+        logout();
       }
       return response.data.accessToken;
     } catch (error) {
       //401: token expired or no token found
-      logout(null);
+      logout();
     }
   };
   return refreshToken;

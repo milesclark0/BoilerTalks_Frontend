@@ -155,7 +155,8 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
 const SideAppBar = () => {
   const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [themeChecked, setThemeChecked] = useState(false || localStorage.getItem("theme") === "dark");
+  const [themeChecked, setThemeChecked] = useState(false || localStorage.getItem("themeSetting") === "dark");
+  
   const { handleThemeSettingChange } = useAuth();
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {

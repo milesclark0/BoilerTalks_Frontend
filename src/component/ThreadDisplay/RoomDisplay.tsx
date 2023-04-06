@@ -14,7 +14,7 @@ import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Paper } from "@mui/material";
-import RoomDisplayAppBar from "./RoomDisplayAppBar";
+import RoomDisplayAppBar from "./CourseDisplayAppBar";
 import SearchCourseModal from "./searchCourseModal";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useUserRoomData from "../HomePage/hooks/useUserRoomData";

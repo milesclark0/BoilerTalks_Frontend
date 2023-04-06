@@ -181,7 +181,11 @@ export const CourseNavigation = ({ course }: Props) => {
   return (
     <List>
       <ListItem>
-        <Button onClick={() => handleClickCourseOrRoom()} variant="outlined" sx={courseButtonStyle()}>
+        <Button
+          onClick={() => handleClickCourseOrRoom()}
+          variant="outlined"
+          sx={courseButtonStyle()}
+        >
           <Typography variant="body1" noWrap component="div">
             {course?.name}
           </Typography>
@@ -214,6 +218,8 @@ export const CourseNavigation = ({ course }: Props) => {
           })}
           <Button
             variant="outlined"
+            component={NavLink}
+            to={`/home/courses/${course?._id.$oid}/Q&A`}
             sx={{
               width: "100%",
               ...threadButtonStyle("Q&A", course?._id.$oid),
@@ -268,12 +274,20 @@ export const CourseNavigation = ({ course }: Props) => {
               </ListItem>
             </Button>
           )}
-          <Button variant="outlined" onClick={handleClickRules} sx={{ ...staticButtonStyle(), width: "100%" }}>
+          <Button
+            variant="outlined"
+            onClick={handleClickRules}
+            sx={{ ...staticButtonStyle(), width: "100%" }}
+          >
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          <Button variant="outlined" onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
+          <Button
+            variant="outlined"
+            onClick={handleClickReport}
+            sx={{ ...staticButtonStyle(), width: "100%" }}
+          >
             <ListItem>
               <Typography variant="body2">Create Report</Typography>
             </ListItem>

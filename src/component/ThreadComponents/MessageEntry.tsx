@@ -145,6 +145,7 @@ export const MessageEntry = ({
                         backgroundColor:
                           themeSetting === "dark" ? "#222222" : "#d3d3d3",
                       },
+                      border: "0.5px ridge grey",
                       borderRadius: "20%",
                       textAlign: "center",
                     }}
@@ -152,7 +153,7 @@ export const MessageEntry = ({
                     <Emoji
                       unified={reaction.reaction}
                       emojiStyle={EmojiStyle.APPLE}
-                      size={25}
+                      size={20}
                     />
                   </Box>
                 </Tooltip>

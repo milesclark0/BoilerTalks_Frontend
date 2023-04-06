@@ -8,7 +8,11 @@ import { useOutletContext, useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/components/userBar";
 import MessageBox from "../ThreadComponents/messageBox";
-import { addCourseModsURL, getCourseManagementURL, getCourseModsURL } from "../../API/CourseManagementAPI";
+import {
+  addCourseModsURL,
+  getCourseManagementURL,
+  getCourseModsURL,
+} from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
@@ -22,11 +26,10 @@ import useStore from "./../../store/store";
 import { getRoomURL } from "../../API/CoursesAPI";
 import React from "react";
 
-
 type WarnOrBan = {
   username: string;
   reason: string;
-}; 
+};
 
 type Appeal = {
   username: string;
@@ -50,7 +53,16 @@ const RoomDisplay = () => {
   // const [messages, setMessagesL] = useState<Message[]>(null);
   const [showCourses, setShowCourses] = useState(false);
   const [emojiShow, setEmojiShow] = useState<boolean>(false);
-  const [currentCourse, currentRoom, setCurrentRoom, messages, setMessages, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore((state) => [
+  const [
+    currentCourse,
+    currentRoom,
+    setCurrentRoom,
+    messages,
+    setMessages,
+    userCourseList,
+    setCurrentCourse,
+    setActiveCourseThread,
+  ] = useStore((state) => [
     state.currentCourse,
     state.currentRoom,
     state.setCurrentRoom,
@@ -93,9 +105,10 @@ const RoomDisplay = () => {
     fetchCourseManagement();
   }, [courseId]);
 
-
   useEffect(() => {
-    const course = userCourseList?.find((course) => course._id.$oid === courseId);
+    const course = userCourseList?.find(
+      (course) => course._id.$oid === courseId
+    );
     setCurrentCourse(course);
   }, [courseId]);
 
@@ -108,7 +121,9 @@ const RoomDisplay = () => {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
           setCurrentRoom(resData);
-          const course = userCourseList?.find((course) => course._id.$oid === courseId);
+          const course = userCourseList?.find(
+            (course) => course._id.$oid === courseId
+          );
           setActiveCourseThread(resData.name.replace(course.name, ""));
           setMessages(resData.messages);
         }
@@ -120,8 +135,6 @@ const RoomDisplay = () => {
   // useEffect(() => {
   //   setActiveCourseThread(currentRoom.name.replace(currentCourse.name, ""));
   // }, [currentRoom]);
-
-
 
   const searchCourseProps = {
     showCourses,
@@ -143,7 +156,11 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (
@@ -155,7 +172,14 @@ const RoomDisplay = () => {
   );
 };
 
-const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
+const MessageBoxContainer = ({
+  isReplying,
+  handleReply,
+  replyIndex,
+  updateReaction,
+  reaction,
+  messages,
+}) => {
   const containerProps = {
     isReplying,
     handleReply,
@@ -169,7 +193,9 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReacti
         height: `${APP_STYLES.APP_BAR_HEIGHT}px`,
         position: "absolute",
         bottom: 20,
-        right: `${APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8}px`,
+        right: `${
+          APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8
+        }px`,
         left: `${APP_STYLES.DRAWER_WIDTH}px`,
       }}
     >
@@ -178,7 +204,14 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReacti
   );
 };
 
-const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
+const MessageBoxItems = ({
+  isReplying,
+  handleReply,
+  replyIndex,
+  updateReaction,
+  reaction,
+  messages,
+}) => {
   return (
     <Box>
       {isReplying ? (
@@ -195,11 +228,18 @@ const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, 
           </IconButton>
           <Typography variant="overline">
             {/* <ReplyIcon /> */}
-            {`replying to ` + messages[replyIndex].username + `: ` + messages[replyIndex].message}
+            {`replying to ` +
+              messages[replyIndex].username +
+              `: ` +
+              messages[replyIndex].message}
           </Typography>
         </Box>
       ) : null}
-      <MessageBox replyIndex={replyIndex} handleReply={handleReply} {...{ updateReaction, reaction, messages }} />
+      <MessageBox
+        replyIndex={replyIndex}
+        handleReply={handleReply}
+        {...{ updateReaction, reaction, messages }}
+      />
     </Box>
   );
 };
@@ -207,7 +247,10 @@ const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, 
 const MessageListContainer = ({ messages }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyIndex, setReplyIndex] = useState<number>(null);
-  const [reaction, setReaction] = useState<{ reaction: string; index: number } | null>(null);
+  const [reaction, setReaction] = useState<{
+    reaction: string;
+    index: number;
+  } | null>(null);
   // whens messages change, scroll to bottom
   // useEffect(() => {
   //   const messageContainer = document.getElementById("message-container");
@@ -265,10 +308,19 @@ const MessageListContainer = ({ messages }) => {
   );
 };
 
-const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
+const MessagesList = ({
+  isReplying,
+  handleReply,
+  replyIndex,
+  updateReaction,
+  reaction,
+  messages,
+}) => {
   const { user, profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
+  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(
+    Date.now()
+  );
   const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
@@ -281,19 +333,26 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
 
   const setCurrentRoomMods = async (username: string) => {
     // return await axiosPrivate.get(getCourseModsURL + courseId);
-    return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
+    return await axiosPrivate.post(
+      addCourseModsURL + username + "/" + currentCourse._id.$oid
+    );
   };
 
-  const ConditionalLineBreak = ({ index }) => {    
+  const ConditionalLineBreak = ({ index }) => {
     const options = { year: "numeric", month: "long", day: "numeric" } as const;
     if (messages?.length - 1 === index || messages?.length === 0) {
       return null;
     }
-    const msgDateBefore = new Date(messages[index -1]?.timeSent).toLocaleDateString(undefined, options);
-    
-    const msgDateAfter =  new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
+    const msgDateBefore = new Date(
+      messages[index - 1]?.timeSent
+    ).toLocaleDateString(undefined, options);
+
+    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(
+      undefined,
+      options
+    );
     // if message after is the next day
-    
+
     if (msgDateBefore === undefined || msgDateAfter !== msgDateBefore) {
       return (
         <Divider
@@ -327,28 +386,27 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
                 message={message}
                 index={index}
                 isReply={(isReplying) => handleReply(isReplying, index)}
-                //SamNote: Return Here
-                isRoomMod={profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2"}
+                isRoomMod={
+                  profile?.modThreads?.includes(currentCourse?.name) ||
+                  profile?.username == "user2"
+                }
                 promoteUser={setCurrentRoomMods}
                 addReaction={updateReaction}
                 course={currentCourse}
               />
-              
-
-              {/* {isReplying ? setReplyIndex(index) : null} */}
-              {/* room={currentRoom} 
-                        
-                        ||
-                            getCurrentRoomMods(courseId).includes(
-                              profile?.username
-                            ) */}
             </Box>
           );
         })}
       </Box>
     </Box>
   ) : (
-    <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
+    <Box>
+      {messages ? (
+        <Typography variant="h6">No messages yet!</Typography>
+      ) : (
+        <Typography>Loading...</Typography>
+      )}
+    </Box>
   );
 };
 export default React.memo(RoomDisplay);

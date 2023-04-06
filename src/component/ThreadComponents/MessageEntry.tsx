@@ -1,4 +1,12 @@
-import { Avatar, Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from "@mui/material";
 import { useState } from "react";
 import { Message, Room } from "../../globals/types";
 import { MessageHeader } from "./MessageHeader";
@@ -69,7 +77,12 @@ export const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture index={index} messages={messages} handleUserClick={handleUserClick} profilePicLastUpdated={profilePicLastUpdated} />
+      <GetProfilePicture
+        index={index}
+        messages={messages}
+        handleUserClick={handleUserClick}
+        profilePicLastUpdated={profilePicLastUpdated}
+      />
       <Box
         sx={{
           overflow: "hidden",
@@ -85,7 +98,10 @@ export const MessageEntry = ({
           >
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
-              {`Replied To: ` + messages[message.replyIndex].username + `: ` + messages[message.replyIndex].message}
+              {`Replied To: ` +
+                messages[message.replyIndex].username +
+                `: ` +
+                messages[message.replyIndex].message}
             </Typography>
           </Box>
         ) : null}
@@ -100,7 +116,10 @@ export const MessageEntry = ({
             isReacting={handleEmojiPanelChange}
             setReactingIndex={setReactingIndex}
           />
-          <Typography variant="body1" sx={{ wordWrap: "break-word" }}>
+          <Typography
+            variant="body1"
+            sx={{ wordWrap: "break-word", paddingBottom: "5px" }}
+          >
             {message.message}
           </Typography>
         </Box>
@@ -108,23 +127,73 @@ export const MessageEntry = ({
         {message.reactions?.map((reaction, index) => {
           return (
             <React.Fragment key={index}>
-              <Emoji unified={reaction.reaction} emojiStyle={EmojiStyle.APPLE} size={22} />
+              {reaction.reaction !== "" && (
+                <Tooltip
+                  title={reaction.username + `'s reaction`}
+                  placement="bottom"
+                  arrow
+                >
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: "5px",
+                      width: "30px",
+                      height: "30px",
+                      ":hover": {
+                        backgroundColor:
+                          themeSetting === "dark" ? "#222222" : "#d3d3d3",
+                      },
+                      borderRadius: "20%",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Emoji
+                      unified={reaction.reaction}
+                      emojiStyle={EmojiStyle.APPLE}
+                      size={25}
+                    />
+                  </Box>
+                </Tooltip>
+              )}
             </React.Fragment>
           );
         })}
-        {reactingIndex === index && emojiPanelShow ? <EmojiPanel message={message} index={index} addReaction={addReaction} /> : null}
+
+        {reactingIndex === index && emojiPanelShow ? (
+          <EmojiPanel
+            message={message}
+            index={index}
+            addReaction={addReaction}
+          />
+        ) : null}
       </Box>
-      <UserMenu username={message.username} course={course} openUserMenu={openUserMenu} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+      <UserMenu
+        username={message.username}
+        course={course}
+        openUserMenu={openUserMenu}
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+      />
     </Box>
   );
 };
-const GetProfilePicture = ({ index, messages, handleUserClick, profilePicLastUpdated }) => {
+const GetProfilePicture = ({
+  index,
+  messages,
+  handleUserClick,
+  profilePicLastUpdated,
+}) => {
   // only show profile picture if it is the first message or if the username is different from the previous message
   // const show = index === 0 || messages[index].username !== messages[index - 1].username;
   // const visibility = show ? "visible" : "hidden";
   const message = messages[index];
   return (
-    <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}>
+    <IconButton
+      onClick={handleUserClick}
+      sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}
+    >
       <Avatar src={message.profilePic + `?${profilePicLastUpdated}`} />
     </IconButton>
   );

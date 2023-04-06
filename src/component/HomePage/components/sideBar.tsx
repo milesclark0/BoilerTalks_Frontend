@@ -1,4 +1,14 @@
-import { Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar } from "@mui/material";
+import {
+  Drawer,
+  Typography,
+  Avatar,
+  ListItem,
+  List,
+  IconButton,
+  Box,
+  AppBar,
+  Toolbar,
+} from "@mui/material";
 import { Course, Room, User } from "../../../globals/types";
 import { APP_STYLES } from "../../../globals/globalStyles";
 import React from "react";
@@ -22,11 +32,13 @@ import useStore from "../../../store/store";
 const SideBar = ({ ...props }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeIcon, setActiveIcon, setDistinctDepartments] = useStore((state) => [
-    state.activeIcon,
-    state.setActiveIcon,
-    state.setDistinctDepartments,
-  ]);
+  const [activeIcon, setActiveIcon, setDistinctDepartments] = useStore(
+    (state) => [
+      state.activeIcon,
+      state.setActiveIcon,
+      state.setDistinctDepartments,
+    ]
+  );
 
   const OuterDrawerStyles = {
     width: APP_STYLES.DRAWER_WIDTH,
@@ -58,7 +70,9 @@ const SideBar = ({ ...props }) => {
   // get distinct departments from course list
 
   useEffect(() => {
-    const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
+    const distinctDepartments = [
+      ...new Set(user?.courses.map((course) => course.split(" ")[0])),
+    ];
     setDistinctDepartments(distinctDepartments);
   }, []);
 
@@ -94,7 +108,12 @@ const SideBar = ({ ...props }) => {
 
 const GetProfilePicture = () => {
   const { user } = useAuth();
-  return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture + `?${Date.now()}`} />;
+  return (
+    <Avatar
+      sx={{ width: 50, height: 50, mr: 2 }}
+      src={user?.profilePicture + `?${Date.now()}`}
+    />
+  );
 };
 
 type CourseIconProps = {
@@ -103,14 +122,24 @@ type CourseIconProps = {
   selectedIconColor: string;
 };
 
-const BoilerTalksIcon = ({ AvatarSize, handleIconClick, selectedIconColor }: CourseIconProps) => {
+const BoilerTalksIcon = ({
+  AvatarSize,
+  handleIconClick,
+  selectedIconColor,
+}: CourseIconProps) => {
   const activeIcon = useStore((state) => state.activeIcon);
   const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
   const outlineStyle = activeIcon.course === "" ? "solid" : "";
   return (
     <ListItem>
       <IconButton onClick={() => handleIconClick("", false)}>
-        <Avatar sx={{ ...AvatarSize, outlineColor: outLineColor, outlineStyle: outlineStyle }}>
+        <Avatar
+          sx={{
+            ...AvatarSize,
+            outlineColor: outLineColor,
+            outlineStyle: outlineStyle,
+          }}
+        >
           <Typography sx={{ marginTop: "5px" }}>
             <HomeIcon />
           </Typography>
@@ -139,13 +168,21 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
       <StyledDivider />
       {user.activeCourses?.map((course: string) => (
         <React.Fragment key={course}>
-          <CourseIcon labelText={course} isActiveCourse={true} {...CourseIconProps} />
+          <CourseIcon
+            labelText={course}
+            isActiveCourse={true}
+            {...CourseIconProps}
+          />
         </React.Fragment>
       ))}
       {user.activeCourses.length > 0 && <StyledDivider />}
       {distinctDepartments.map((course: string) => (
         <React.Fragment key={course}>
-          <CourseIcon labelText={course} isActiveCourse={false} {...CourseIconProps} />
+          <CourseIcon
+            labelText={course}
+            isActiveCourse={false}
+            {...CourseIconProps}
+          />
         </React.Fragment>
       ))}
     </List>
@@ -155,8 +192,10 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
 const SideAppBar = () => {
   const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [themeChecked, setThemeChecked] = useState(false || localStorage.getItem("themeSetting") === "dark");
-  
+  const [themeChecked, setThemeChecked] = useState(
+    false || localStorage.getItem("themeSetting") === "dark"
+  );
+
   const { handleThemeSettingChange } = useAuth();
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -169,13 +208,29 @@ const SideAppBar = () => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ width: APP_STYLES.DRAWER_WIDTH, left: 0, height: APP_STYLES.APP_BAR_HEIGHT }}>
+    <AppBar
+      position="fixed"
+      sx={{
+        width: APP_STYLES.DRAWER_WIDTH,
+        left: 0,
+        height: APP_STYLES.APP_BAR_HEIGHT,
+      }}
+    >
       <Toolbar>
         <GetProfilePicture />
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Hi, {user?.username}
+        <Typography variant="body2" noWrap component="div" sx={{ flexGrow: 1 }}>
+          {user?.username}
         </Typography>
-        <FormControlLabel control={<ThemeSwitch sx={{ m: 1 }} checked={themeChecked} onChange={() => handleThemeChecked()} />} label="" />
+        <FormControlLabel
+          control={
+            <ThemeSwitch
+              sx={{ m: 1 }}
+              checked={themeChecked}
+              onChange={() => handleThemeChecked()}
+            />
+          }
+          label=""
+        />
         <IconButton onClick={handleSettingsClick}>
           <Settings />
         </IconButton>

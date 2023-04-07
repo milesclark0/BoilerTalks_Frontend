@@ -5,6 +5,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import AddIcon from "@mui/icons-material/Add";
 import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
+import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
+import { useAuth } from "../../../context/context";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -13,13 +15,19 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
+  const { children, value, index } = props;
   return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
+    <div role="tabpanel" hidden={value !== index}>
       {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+        <Box
+          sx={{
+            p: 4,
+            overflowY: "auto",
+            maxHeight: `calc(100vh - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
+            boxSizing: "border-box",
+          }}
+        >
+          {children}
         </Box>
       )}
     </div>
@@ -29,6 +37,7 @@ function TabPanel(props: TabPanelProps) {
 const TabBar = () => {
   const [value, setValue] = useState(0);
   const [showCourses, setShowCourses] = useState<boolean>(false);
+  const {themeSetting} = useAuth();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     if (newValue === 2) {
@@ -60,20 +69,32 @@ const TabBar = () => {
           display: "flex",
           alignItems: "center",
           ".Mui-selected": {
-            color: "blue !important",
+            color: themeSetting === "light" ? "blue !important" : "teal !important",
           },
         }}
         centered
       >
-        <Tab icon={<NotificationsIcon />} label="Notifications" />
-        <Tab icon={<AnnouncementIcon />} label="Release Notes"/>
-        <Tab icon={<AddIcon />} label="Add Courses"/>
+        <Tab
+          icon={<NotificationsIcon />}
+          label="Notifications"
+          sx={{ color: themeSetting === "light" ? "black" : "white" }}
+        />
+        <Tab
+          icon={<AnnouncementIcon />}
+          label="Release Notes"
+          sx={{ color: themeSetting === "light" ? "black" : "white" }}
+        />
+        <Tab
+          icon={<AddIcon />}
+          label="Add Courses"
+          sx={{ color: themeSetting === "light" ? "black" : "white" }}
+        />
       </Tabs>
       <TabPanel value={value} index={0}>
         Item One
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <ReleaseNotes />
       </TabPanel>
       <SearchCourseModal {...searchCourseProps} />
     </AppBar>

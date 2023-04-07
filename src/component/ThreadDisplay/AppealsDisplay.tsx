@@ -162,7 +162,7 @@ const AppealsDisplay = () => {
       }}
       className="scrollBar"
     >
-      <CourseDisplayAppBar setShowCourses={setShowCourses}/>
+      <CourseDisplayAppBar/>
       {appeals.length !== 0 ? (
         <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Box, Typography, Tab, Tabs, AppBar } from "@mui/material";
+import { Box, Typography, Tab, Tabs, AppBar, Button } from "@mui/material";
 import { APP_STYLES } from "../../../globals/globalStyles";
-import useStore from "../../../store/store";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import AddIcon from "@mui/icons-material/Add";
+import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -28,9 +28,20 @@ function TabPanel(props: TabPanelProps) {
 
 const TabBar = () => {
   const [value, setValue] = useState(0);
+  const [showCourses, setShowCourses] = useState<boolean>(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    if (newValue === 2) {
+      // add courses index
+      setShowCourses(true);
+    } else {
+      setValue(newValue);
+    }
+  };
+
+  const searchCourseProps = {
+    showCourses,
+    setShowCourses,
   };
 
   return (
@@ -41,7 +52,6 @@ const TabBar = () => {
         height: APP_STYLES.APP_BAR_HEIGHT,
       }}
     >
-    {/* <Box> */}
       <Tabs
         value={value}
         onChange={handleTabChange}
@@ -50,26 +60,23 @@ const TabBar = () => {
           display: "flex",
           alignItems: "center",
           ".Mui-selected": {
-            color: "blue",
+            color: "blue !important",
           },
         }}
         centered
-        // orientation="vertical"
-        // textColor="primary"
-        // variant="fullWidth"
       >
         <Tab icon={<NotificationsIcon />} label="Notifications" />
-        <Tab icon={<AnnouncementIcon />} label="Announcements" />
-        {/* <Tab icon={<AddIcon />} label="Add Courses" /> */}
+        <Tab icon={<AnnouncementIcon />} label="Release Notes"/>
+        <Tab icon={<AddIcon />} label="Add Courses"/>
       </Tabs>
-      {/* <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={0}>
         Item One
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item Two
-      </TabPanel> */}
-      </AppBar>
-    // </Box>
+      </TabPanel>
+      <SearchCourseModal {...searchCourseProps} />
+    </AppBar>
   );
 };
 

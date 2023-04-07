@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Box, Typography, Button, Paper } from "@mui/material";
-import React from "react";
+import React, {useState} from "react";
 import { APP_STYLES } from "../../globals/globalStyles";
 import { SearchUserBox } from "../HomePage/components/searchUserBox";
 import { SemesterSelector } from "../HomePage/components/semesterSelector";
@@ -12,12 +12,19 @@ interface CourseAppBarProps {
   setShowCourses: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
+// const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
+const CourseDisplayAppBar = () => {
   const [currentCourse, activeCourseThread, activeIcon] = useStore((state) => [
     state.currentCourse,
     state.activeCourseThread,
     state.activeIcon,
   ]);
+  const [showCourses, setShowCourses] = useState<boolean>(false);
+
+  const searchCourseProps = {
+    showCourses,
+    setShowCourses,
+  };
 
   return (
     <AppBar
@@ -46,7 +53,8 @@ const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
             // variant="contained"
             onClick={() => setShowCourses(true)}
             // removes border from box
-            endIcon={<AddIcon />}
+            // endIcon={<AddIcon />}
+            startIcon={<AddIcon />}
             sx={{
               boxShadow: "none",
               ".MuiOutlinedInput-notchedOutline": { border: 0 },
@@ -61,7 +69,7 @@ const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
           <SearchUserBox />
         </Box>
       </Toolbar>
-      {/* <SearchCourseModal showCourses={showCourses} setShowCourses={setShowCourses} /> */}
+      <SearchCourseModal {...searchCourseProps} />
     </AppBar>
   );
 };

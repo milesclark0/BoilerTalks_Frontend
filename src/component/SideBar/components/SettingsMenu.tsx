@@ -1,10 +1,15 @@
-import { Menu, MenuItem } from "@mui/material";
+import { ListItemIcon, Menu, MenuItem } from "@mui/material";
 import React from "react";
 import useLogout from "../../../hooks/useLogout";
 import { StyledDivider } from "./StyledDivider";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/context";
 import { Room } from "../../../globals/types";
+import SettingsIcon from "@mui/icons-material/Settings";
+import InfoIcon from "@mui/icons-material/Info";
+import LogoutIcon from "@mui/icons-material/Logout";
+import BlockIcon from "@mui/icons-material/Block";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 type Props = {
   anchorEl: HTMLElement | null;
@@ -40,13 +45,36 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
   return (
     <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose} sx={{ pt: 0 }}>
       <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
+        <ListItemIcon>
+          <AccountCircleIcon />
+        </ListItemIcon>
         {user?.username}
       </MenuItem>
       <StyledDivider />
-      <MenuItem onClick={navigateToSettings}>Settings</MenuItem>
-      <MenuItem onClick={navigateToBlocklist}>Blocked Users</MenuItem>
-      <MenuItem onClick={navigateToAbout}>About</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
+      <MenuItem onClick={navigateToSettings}>
+        <ListItemIcon>
+          <SettingsIcon />
+        </ListItemIcon>
+        Settings
+      </MenuItem>
+      <MenuItem onClick={navigateToBlocklist}>
+        <ListItemIcon>
+          <BlockIcon />
+        </ListItemIcon>
+        Blocked Users
+      </MenuItem>
+      <MenuItem onClick={navigateToAbout}>
+        <ListItemIcon>
+          <InfoIcon />
+        </ListItemIcon>
+        About
+      </MenuItem>
+      <MenuItem onClick={logout}>
+        <ListItemIcon>
+          <LogoutIcon />
+        </ListItemIcon>
+        Logout
+      </MenuItem>
     </Menu>
   );
 };

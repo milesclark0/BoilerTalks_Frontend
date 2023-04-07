@@ -1,4 +1,4 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import React from "react";
 import { unsubscribeFromCourseURL } from "../../../API/CoursesAPI";
 import { Course, User } from "../../../globals/types";
@@ -6,6 +6,8 @@ import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useAuth } from "../../../context/context";
 import useStore from "../../../store/store";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 type Props = {
   course: Course;
@@ -16,7 +18,12 @@ export const MoreIcon = ({ course }: Props) => {
   const open = Boolean(anchorEl);
   const api = useAxiosPrivate();
   const { user, setUser } = useAuth();
-  const [activeIcon, setActiveIcon, distinctCoursesByDepartment, updateDistinctCoursesByDepartment] = useStore((state) => [
+  const [
+    activeIcon,
+    setActiveIcon,
+    distinctCoursesByDepartment,
+    updateDistinctCoursesByDepartment,
+  ] = useStore((state) => [
     state.activeIcon,
     state.setActiveIcon,
     state.distinctCoursesByDepartment,
@@ -32,7 +39,10 @@ export const MoreIcon = ({ course }: Props) => {
   };
 
   const handleLeaveServer = async () => {
-    const ret = await api.post(unsubscribeFromCourseURL, { courseName: course.name, username: user.username });
+    const ret = await api.post(unsubscribeFromCourseURL, {
+      courseName: course.name,
+      username: user.username,
+    });
     if (ret.data.statusCode == 200) {
       //if the course is the active course, set the active course to home icon
       if (course.name == activeIcon.course) {
@@ -68,7 +78,19 @@ export const MoreIcon = ({ course }: Props) => {
           },
         }}
       >
-        <MenuItem onClick={handleLeaveServer}>Leave Server</MenuItem>
+        <MenuItem onClick={handleLeaveServer}>
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          Leave Server
+          {/* <Typography>Leave Server</Typography> */}
+        </MenuItem>
+        <MenuItem onClick={handleLeaveServer}>
+          <ListItemIcon>
+            <NotificationsIcon />
+          </ListItemIcon>
+          Notification
+        </MenuItem>
         {/* {add more options for mods and what not} */}
       </Menu>
     </React.Fragment>

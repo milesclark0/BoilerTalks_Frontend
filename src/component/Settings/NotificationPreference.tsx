@@ -7,6 +7,7 @@ import { getProfileURL } from "../../API/ProfileAPI";
 import NotificationCourse from "../Notification/NotificationCourse";
 import { Profile } from "../../globals/types";
 import { LoadingButton } from "@mui/lab";
+import { updateNotificationURL } from "../../API/ProfileAPI";
 
 type NotificationPreference = {
   courseName: string;
@@ -20,6 +21,7 @@ const NotificationPreference = () => {
   const axiosPrivate = useAxiosPrivate();
   const { user } = useAuth();
   const [profileData, setProfileData] = useState<Profile>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // retrieve user notification preference
@@ -35,10 +37,28 @@ const NotificationPreference = () => {
     fetchProfile();
   }, []);
 
+  const saveNotificationPreference = async () => {
+    try {
+      const res = await axiosPrivate.post(updateNotificationURL + user.username, {
+        // username: username,
+        // reason: reason,
+      });
+      if (res.status == 200) {
+        if (res.data.statusCode == 200) {
+          // maybe open a modal saying notifcation updated
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
-      <Typography variant="h3">Notification Settings</Typography>
-      <Typography variant="h6">Select the kinds of notifications you get about your subscribed threads.</Typography>
+    <Box sx={{ width: "100%", height: "100%" }} id="notification">
+      <Typography variant="h4">Notification Settings</Typography>
+      <Typography variant="h6">
+        Select the kinds of notifications you get about your subscribed threads.
+      </Typography>
       {notificationCourses?.map((course) => {
         return (
           <Box key={course.courseName}>
@@ -46,7 +66,14 @@ const NotificationPreference = () => {
           </Box>
         );
       })}
-      <LoadingButton variant="contained">Save</LoadingButton>
+      <LoadingButton
+        variant="contained"
+        onClick={saveNotificationPreference}
+        sx={{ mt: 2 }}
+        loading={loading}
+      >
+        Save
+      </LoadingButton>
     </Box>
   );
 };

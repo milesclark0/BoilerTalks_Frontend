@@ -7,6 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
 import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
 import { useAuth } from "../../../context/context";
+import NotificationHome from "../../Notification/NotificationHome";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -91,7 +92,7 @@ const TabBar = () => {
         />
       </Tabs>
       <TabPanel value={value} index={0}>
-        Item One
+        <NotificationHome/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <ReleaseNotes />

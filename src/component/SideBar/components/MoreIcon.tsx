@@ -78,18 +78,18 @@ export const MoreIcon = ({ course }: Props) => {
           },
         }}
       >
+        <MenuItem>
+          <ListItemIcon>
+            <NotificationsIcon />
+          </ListItemIcon>
+          Notification
+        </MenuItem>
         <MenuItem onClick={handleLeaveServer}>
           <ListItemIcon>
             <ExitToAppIcon />
           </ListItemIcon>
           Leave Server
           {/* <Typography>Leave Server</Typography> */}
-        </MenuItem>
-        <MenuItem onClick={handleLeaveServer}>
-          <ListItemIcon>
-            <NotificationsIcon />
-          </ListItemIcon>
-          Notification
         </MenuItem>
         {/* {add more options for mods and what not} */}
       </Menu>

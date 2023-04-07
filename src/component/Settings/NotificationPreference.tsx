@@ -59,10 +59,10 @@ const NotificationPreference = () => {
       <Typography variant="h6">
         Select the kinds of notifications you get about your subscribed threads.
       </Typography>
-      {notificationCourses?.map((course) => {
+      {notificationCourses?.map((courseNoti) => {
         return (
-          <Box key={course.courseName}>
-            <NotificationCourse course={course} profileData={profileData} />
+          <Box key={courseNoti.courseName}>
+            <NotificationCourse courseNoti={courseNoti} profileData={profileData} />
           </Box>
         );
       })}

@@ -3,6 +3,7 @@ import { addReportURL } from "../../../API/CourseManagementAPI";
 import { useAuth } from "../../../context/context";
 import { Course, Room } from "../../../globals/types";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { v4 as uuidv4 } from "uuid";
 
 type SendReportProps = {
   NewReportText: string;
@@ -24,6 +25,7 @@ const SendReportModal = ({ setNewReportText, NewReportText, setReportsOpen, Repo
     event.preventDefault();
     //fetch course management api
     const res = await api.post(addReportURL + course?._id.$oid, {
+      id: uuidv4().toString(),
       username: user?.username,
       reason: NewReportText,
     });

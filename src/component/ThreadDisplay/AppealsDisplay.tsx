@@ -38,7 +38,6 @@ const AppealsDisplay = () => {
   const { courseId } = useParams();
   const [stateChange, setStateChange] = useState<boolean>(false);
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [showCourses, setShowCourses] = useState(false);
 
   useEffect(() => {
     const fetchCourseManagement = async () => {

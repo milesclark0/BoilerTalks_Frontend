@@ -19,6 +19,7 @@ import { addAppealURL } from "../../API/CourseManagementAPI";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useAuth } from "../../context/context";
 import { LoadingButton } from "@mui/lab";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   // setSubmittedAppeal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -59,6 +60,7 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
     const sendAppeal = async () => {
       try {
         const res = await axiosPrivate.post(addAppealURL + courseId, {
+          id: uuidv4().toString(),
           username: user?.username,
           response: response,
           reason: bannedData?.reason,

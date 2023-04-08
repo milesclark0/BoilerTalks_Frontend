@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { darkTheme, lightTheme } from "./assets/theme";
 import { useAuth } from "./context/context";
-import NotificationPreference from "./component/Settings/NotificationPreference";
+import NotificationPreference from "./component/Notification/NotificationPreference";
 import PasswordReset from "./component/Settings/PasswordReset";
 
 function App() {
@@ -46,7 +46,7 @@ function App() {
               <Route path="/profile/:requestUsername" element={<ProfilePage />} />
               <Route path="/settings" element={<Settings />}>
                 <Route path="passwordReset" element={<PasswordReset />} />
-                <Route path="notification" element={<NotificationPreference />} />
+                {/* <Route path="notification" element={<NotificationPreference />} /> */}
               </Route>
               <Route path="/home/courses" element={<Home />} />
               <Route path="/home" element={<Home />}>

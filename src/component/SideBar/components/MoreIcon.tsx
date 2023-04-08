@@ -1,5 +1,5 @@
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
-import React from "react";
+import React, {useState} from "react";
 import { unsubscribeFromCourseURL } from "../../../API/CoursesAPI";
 import { Course, User } from "../../../globals/types";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
@@ -8,13 +8,15 @@ import { useAuth } from "../../../context/context";
 import useStore from "../../../store/store";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationPreference from "../../Notification/NotificationPreference";
 
 type Props = {
   course: Course;
 };
 
 export const MoreIcon = ({ course }: Props) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openNoti, setOpenNoti] = useState<boolean>(false);
   const open = Boolean(anchorEl);
   const api = useAxiosPrivate();
   const { user, setUser } = useAuth();
@@ -37,6 +39,10 @@ export const MoreIcon = ({ course }: Props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleOpenNotification = () => {
+    setOpenNoti(true);
+  }
 
   const handleLeaveServer = async () => {
     const ret = await api.post(unsubscribeFromCourseURL, {
@@ -78,7 +84,7 @@ export const MoreIcon = ({ course }: Props) => {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleOpenNotification}>
           <ListItemIcon>
             <NotificationsIcon />
           </ListItemIcon>
@@ -93,6 +99,7 @@ export const MoreIcon = ({ course }: Props) => {
         </MenuItem>
         {/* {add more options for mods and what not} */}
       </Menu>
+      <NotificationPreference openNoti={openNoti} setOpenNoti={setOpenNoti} courseName={course.name}/>
     </React.Fragment>
   );
 };

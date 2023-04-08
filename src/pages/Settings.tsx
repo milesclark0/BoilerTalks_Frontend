@@ -74,7 +74,7 @@ const Settings = () => {
             Password
             {/* <Typography variant="body1">Password</Typography> */}
           </Button>
-          <Button
+          {/* <Button
             component={NavLink}
             to="notification"
             // onClick={() => setSettingsPage("Notification")}
@@ -83,8 +83,7 @@ const Settings = () => {
             startIcon={<NotificationsIcon />}
           >
             Notification
-            {/* <Typography variant="body1">Notification</Typography> */}
-          </Button>
+          </Button> */}
         </Stack>
       </Drawer>
       <Box

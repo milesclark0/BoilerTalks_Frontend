@@ -39,6 +39,7 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
   const [appealNoti, setAppealNoti] = useState<boolean>(false);
   const [reportNoti, setReportNoti] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<boolean>(false);
 
   useEffect(() => {
     // retrieve user notification preference
@@ -76,7 +77,7 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
         if (res.data.statusCode == 200) {
           setSaveSuccess(true);
         } else {
-          setSaveSuccess(false);
+          setSaveError(true);
         }
       }
     } catch (error) {
@@ -111,6 +112,16 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
           severity="success"
         >
           Updated notification preference.
+        </Alert>
+      )}
+      {saveError && (
+        <Alert
+          onClose={() => {
+            setSaveError(false);
+          }}
+          severity="error"
+        >
+          Error occurred while updating notification preference. Please try again later.
         </Alert>
       )}
       <DialogTitle>Notification Settings</DialogTitle>

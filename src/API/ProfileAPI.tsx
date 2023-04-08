@@ -8,4 +8,8 @@ export const uploadProfilePictureURL = "/profile/uploadProfilePicture/";
 
 export const updateNotificationURL = "/profile/updateNotification/";
 
-export const updateLastSeenURL = "/profile/updateLastSeen/";
+export const updateLastSeenMessageURL = "/profile/updateLastSeenMessage/";
+
+export const updateLastSeenAppealURL = "/profile/updateLastSeenAppeal/";
+
+export const updateLastSeenReportURL = "/profile/updateLastSeenReport/";

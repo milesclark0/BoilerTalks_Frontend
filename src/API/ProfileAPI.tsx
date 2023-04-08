@@ -7,3 +7,5 @@ export const editProfileURL = "/profile/editProfile";
 export const uploadProfilePictureURL = "/profile/uploadProfilePicture/";
 
 export const updateNotificationURL = "/profile/updateNotification/";
+
+export const updateLastSeenURL = "/profile/updateLastSeen/";

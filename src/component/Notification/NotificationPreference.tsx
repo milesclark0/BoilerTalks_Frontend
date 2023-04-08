@@ -61,6 +61,7 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
     };
     fetchProfile();
     setSaveSuccess(false);
+    setSaveError(false);
   }, [openNoti]);
 
   const saveNotificationPreference = async () => {

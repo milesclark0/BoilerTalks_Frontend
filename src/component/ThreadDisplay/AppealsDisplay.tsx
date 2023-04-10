@@ -4,7 +4,7 @@ import { Box, Typography, Grid, CardContent, CardActions, TextField } from "@mui
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Room } from "../../globals/types";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import UserBar from "../HomePage/components/userBar";
 import { getCourseManagementURL } from "../../API/CourseManagementAPI";
 import { LoadingButton } from "@mui/lab";
@@ -14,6 +14,7 @@ import { updateAppealURL } from "../../API/CourseManagementAPI";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useStore from "../../store/store";
 import CourseDisplayAppBar from "./CourseDisplayAppBar";
+import { updateLastSeenAppealURL } from "../../API/ProfileAPI";
 
 type Props = {
   drawerWidth: number;
@@ -38,11 +39,29 @@ const AppealsDisplay = () => {
   const { courseId } = useParams();
   const [stateChange, setStateChange] = useState<boolean>(false);
   const [currentCourse] = useStore((state) => [state.currentCourse]);
+  const {user} = useAuth();
+
+  const updateLastSeenAppeal = async () => {
+    try {
+      const res = await axiosPrivate.post(updateLastSeenAppealURL + user?.username, {
+        courseName: currentCourse.name,
+        id: appeals[appeals.length - 1]["id"],
+      });
+      console.log(res)
+      if (res.status == 200) {
+        if (res.data.statusCode == 200) {
+          // do nothing
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
-      console.log(res);
+      // console.log(res);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           setAppeals(res.data.data.appeals);
@@ -51,6 +70,12 @@ const AppealsDisplay = () => {
     };
     fetchCourseManagement();
   }, [currentCourse, stateChange]);
+
+  useEffect(() => {
+    if (appeals[appeals.length - 1] != undefined) {
+      updateLastSeenAppeal();
+    }
+  }, [appeals]);
 
   const AppealBox = ({ appeal }) => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
@@ -90,18 +115,15 @@ const AppealsDisplay = () => {
         <Box
           sx={{
             width: "100%",
-            // minHeight: 250,
-            // maxHeight: 400,
             display: "flex",
             flexDirection: "column",
             borderRadius: 2,
             boxShadow: 8,
-            // justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           <CardContent>
-            <Typography variant="h5">user: {appeal?.username}</Typography>
+            <Typography variant="h5">'{appeal?.username}'</Typography>
           </CardContent>
           <CardContent sx={{ width: "80%" }}>
             <TextField
@@ -156,8 +178,9 @@ const AppealsDisplay = () => {
         p: APP_STYLES.DEFAULT_PADDING,
         width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
         overflowY: "auto",
-        // display: "flex",
-        // flexDirection: "column-reverse"
+        display: "flex",
+        flexDirection: "column-reverse",
+        justifyContent: "flex-end"
       }}
       className="scrollBar"
     >

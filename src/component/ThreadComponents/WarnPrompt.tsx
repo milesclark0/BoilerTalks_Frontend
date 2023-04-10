@@ -6,9 +6,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
+  Typography,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { warnUserURL } from "../../API/CourseManagementAPI";
@@ -68,7 +68,7 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
         <Box>
           <DialogTitle>Warn &quot;{username}&quot;</DialogTitle>
           <DialogContent>
-            <DialogContentText>Please provide a reason for warning "{username}".</DialogContentText>
+            <Typography>Please provide a reason for warning "{username}".</Typography>
             <TextField
               autoFocus
               multiline
@@ -103,7 +103,7 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
         <Box>
           <DialogTitle>Warn Processed</DialogTitle>
           <DialogContent>
-            <DialogContentText>You have warned "{username}".</DialogContentText>
+            <Typography>You have warned "{username}".</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseWarningPrompt} startIcon={<CloseIcon />} variant="outlined">

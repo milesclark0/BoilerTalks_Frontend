@@ -24,9 +24,18 @@ type MessageHeaderProps = {
 const getTime = (timeSent: string, isHovered: boolean) => {
   const options = !isHovered
     ? ({ hour: "numeric", minute: "numeric" } as const)
-    : ({ weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" } as const);
+    : ({
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      } as const);
   const date = new Date(timeSent);
-  return !isHovered ? date.toLocaleTimeString("en-US", options) : date.toLocaleDateString("en-US", options);
+  return !isHovered
+    ? date.toLocaleTimeString("en-US", options)
+    : date.toLocaleDateString("en-US", options);
 };
 
 export const MessageHeader = ({
@@ -54,14 +63,14 @@ export const MessageHeader = ({
   return (
     <Box sx={{ height: 1, alignItems: "top", display: "flex" }}>
       {/* <BlockUserModal {...blockUserProps} /> */}
-<Box display={"inline"}>
+      <Box display={"inline"}>
         <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
         <Tooltip title={getTime(message.timeSent, true)} placement="top" arrow>
-          <Typography variant="overline" sx={{paddingLeft: "5px" }}>
+          <Typography variant="overline" sx={{ paddingLeft: "5px" }}>
             {getTime(message.timeSent, false)}
           </Typography>
         </Tooltip>
-</Box >
+      </Box>
       {hoveredMessageId === index ? (
         <Box
           sx={{

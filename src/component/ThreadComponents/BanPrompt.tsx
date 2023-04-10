@@ -1,14 +1,14 @@
 // This file is used to give a ban to a user
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
+  Typography,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { banUserURL } from "../../API/CourseManagementAPI";
@@ -23,7 +23,7 @@ type Props = {
   username: string;
 };
 
-const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {  
+const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
   const [reasonError, setReasonError] = useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
   const { courseId } = useParams();
@@ -33,6 +33,9 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
   const handleCloseBanPrompt = () => {
     setOpenBanPrompt(false);
   };
+
+  // check if ban has already been sent
+  useEffect(() => {}, [username]);
 
   const sendBanToUser = async () => {
     try {
@@ -67,7 +70,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
         <Box>
           <DialogTitle>Ban &quot;{username}&quot;</DialogTitle>
           <DialogContent>
-            <DialogContentText>Please provide a reason for banning "{username}".</DialogContentText>
+            <Typography>Please provide a reason for banning "{username}".</Typography>
             <TextField
               autoFocus
               multiline
@@ -102,7 +105,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
         <Box>
           <DialogTitle>Ban Processed</DialogTitle>
           <DialogContent>
-            <DialogContentText>You have banned "{username}".</DialogContentText>
+            <Typography>You have banned "{username}".</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseBanPrompt} startIcon={<CloseIcon />} variant="outlined">

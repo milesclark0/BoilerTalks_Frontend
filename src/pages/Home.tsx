@@ -99,7 +99,7 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError, activeIcon }) =
       >
         {/* renders display for the current room/thread etc */}
         <Outlet />
-        <UserBar />
+        {/* <UserBar /> */}
         {activeIcon.course === "" ? <TabBar /> : <CourseDisplayAppBar/>}
       </Paper>
     </Box>

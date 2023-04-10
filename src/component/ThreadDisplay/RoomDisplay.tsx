@@ -1,10 +1,10 @@
 // Display for messages
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Message, Room } from "../../globals/types";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/components/userBar";
 import MessageBox from "../ThreadComponents/messageBox";
@@ -24,7 +24,7 @@ import { APP_STYLES } from "../../globals/globalStyles";
 import useUserRoomData from "../HomePage/hooks/useUserRoomData";
 import useStore from "./../../store/store";
 import { getRoomURL } from "../../API/CoursesAPI";
-import React from "react";
+import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
 
 type WarnOrBan = {
   username: string;
@@ -43,7 +43,7 @@ const RoomDisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const { courseId, roomId } = useParams();
-
+  const [bannedUsers, setBannedUsers] = useState<string[]>(null);
   const [banned, setBanned] = useState<boolean>(false);
   const [bannedData, setBannedData] = useState<WarnOrBan>();
   const [warned, setWarned] = useState<boolean>(false);
@@ -80,8 +80,10 @@ const RoomDisplay = () => {
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
-          // setCourseData(resData);
+          // console.log(resData)
+          const userBanned = [];
           resData?.bannedUsers.forEach((item) => {
+            userBanned.push(item.username);
             if (item.username === user?.username) {
               // find if user has sent an appeal
               resData?.appeals.forEach((appeal) => {
@@ -93,6 +95,7 @@ const RoomDisplay = () => {
               setBannedData(item);
             }
           });
+          setBannedUsers(userBanned);
           resData?.warnedUsers.forEach((item) => {
             if (item.username === user?.username) {
               setWarned(true);
@@ -106,9 +109,7 @@ const RoomDisplay = () => {
   }, [courseId]);
 
   useEffect(() => {
-    const course = userCourseList?.find(
-      (course) => course._id.$oid === courseId
-    );
+    const course = userCourseList?.find((course) => course._id.$oid === courseId);
     setCurrentCourse(course);
   }, [courseId]);
 
@@ -121,9 +122,7 @@ const RoomDisplay = () => {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
           setCurrentRoom(resData);
-          const course = userCourseList?.find(
-            (course) => course._id.$oid === courseId
-          );
+          const course = userCourseList?.find((course) => course._id.$oid === courseId);
           setActiveCourseThread(resData.name.replace(course.name, ""));
           setMessages(resData.messages);
         }
@@ -146,7 +145,7 @@ const RoomDisplay = () => {
       <SearchCourseModal {...searchCourseProps} />
 
       {/* <CourseDisplayAppBar {...searchCourseProps} /> */}
-      <CourseDisplayAppBar/>
+      <CourseDisplayAppBar />
       {(banned || warned) && (
         <Box
           sx={{
@@ -166,7 +165,7 @@ const RoomDisplay = () => {
       )}
       {!banned && !warned && (
         <Box sx={{ height: "100%", width: "100%" }}>
-          <MessageListContainer messages={messages} />
+          <MessageListContainer messages={messages} bannedUsers={bannedUsers} />
         </Box>
       )}
     </Paper>
@@ -194,9 +193,7 @@ const MessageBoxContainer = ({
         height: `${APP_STYLES.APP_BAR_HEIGHT}px`,
         position: "absolute",
         bottom: 20,
-        right: `${
-          APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8
-        }px`,
+        right: `${APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8}px`,
         left: `${APP_STYLES.DRAWER_WIDTH}px`,
       }}
     >
@@ -229,10 +226,7 @@ const MessageBoxItems = ({
           </IconButton>
           <Typography variant="overline">
             {/* <ReplyIcon /> */}
-            {`replying to ` +
-              messages[replyIndex].username +
-              `: ` +
-              messages[replyIndex].message}
+            {`replying to ` + messages[replyIndex].username + `: ` + messages[replyIndex].message}
           </Typography>
         </Box>
       ) : null}
@@ -245,7 +239,7 @@ const MessageBoxItems = ({
   );
 };
 
-const MessageListContainer = ({ messages }) => {
+const MessageListContainer = ({ messages, bannedUsers }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [replyIndex, setReplyIndex] = useState<number>(null);
   const [reaction, setReaction] = useState<{
@@ -285,6 +279,7 @@ const MessageListContainer = ({ messages }) => {
     replyIndex,
     updateReaction,
     reaction,
+    bannedUsers,
   };
 
   return (
@@ -305,6 +300,7 @@ const MessageListContainer = ({ messages }) => {
         <MessagesList {...messageBoxProps} messages={messages} />
       </Box>
       <MessageBoxContainer {...messageBoxProps} messages={messages} />
+      <UserBar/>
     </Box>
   );
 };
@@ -316,12 +312,11 @@ const MessagesList = ({
   updateReaction,
   reaction,
   messages,
+  bannedUsers,
 }) => {
   const { user, profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(
-    Date.now()
-  );
+  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
@@ -334,9 +329,7 @@ const MessagesList = ({
 
   const setCurrentRoomMods = async (username: string) => {
     // return await axiosPrivate.get(getCourseModsURL + courseId);
-    return await axiosPrivate.post(
-      addCourseModsURL + username + "/" + currentCourse._id.$oid
-    );
+    return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
   };
 
   const ConditionalLineBreak = ({ index }) => {
@@ -344,14 +337,12 @@ const MessagesList = ({
     if (messages?.length - 1 === index || messages?.length === 0) {
       return null;
     }
-    const msgDateBefore = new Date(
-      messages[index - 1]?.timeSent
-    ).toLocaleDateString(undefined, options);
-
-    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(
+    const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(
       undefined,
       options
     );
+
+    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
     // if message after is the next day
 
     if (msgDateBefore === undefined || msgDateAfter !== msgDateBefore) {
@@ -377,7 +368,6 @@ const MessagesList = ({
       <Box>
         {messages?.slice().map((message, index) => {
           //displays messages
-
           return user?.blockedUsers.includes(message.username) ? null : (
             <Box key={index} sx={{ paddingBottom: "12px" }}>
               <ConditionalLineBreak index={index} />
@@ -388,8 +378,7 @@ const MessagesList = ({
                 index={index}
                 isReply={(isReplying) => handleReply(isReplying, index)}
                 isRoomMod={
-                  profile?.modThreads?.includes(currentCourse?.name) ||
-                  profile?.username == "user2"
+                  profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2"
                 }
                 promoteUser={setCurrentRoomMods}
                 addReaction={updateReaction}

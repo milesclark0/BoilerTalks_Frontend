@@ -107,10 +107,10 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
             {"Appeal your ban"}
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <Typography>
               {/* get username and get reason for ban */}
               Please provide a reason for why you should be unbanned.
-            </DialogContentText>
+            </Typography>
             <TextField
               id="reason"
               label="Reason"

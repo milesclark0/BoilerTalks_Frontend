@@ -11,6 +11,7 @@ import useUserRoomData from "../component/HomePage/hooks/useUserRoomData";
 import useStore from "../store/store";
 import CourseDisplayBar from "../component/ThreadDisplay/CourseDisplayAppBar";
 import TabBar from "../component/HomePage/components/TabBar";
+import CourseDisplayAppBar from "../component/ThreadDisplay/CourseDisplayAppBar";
 
 const Home = () => {
   const [activeIcon] = useStore((state) => [state.activeIcon]);
@@ -72,13 +73,12 @@ const Home = () => {
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar />
-      <RoomBox {...{ isUserCourseListLoading, userCourseListError }} />
+      <RoomBox {...{ isUserCourseListLoading, userCourseListError, activeIcon }} />
     </Box>
   );
 };
 
-const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
-  const [showCourses, setShowCourses] = useState(false);
+const RoomBox = ({ isUserCourseListLoading, userCourseListError, activeIcon }) => {
   return !isUserCourseListLoading && !userCourseListError ? (
     <Box
       sx={{
@@ -100,8 +100,7 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError }) => {
         {/* renders display for the current room/thread etc */}
         <Outlet />
         <UserBar />
-        <TabBar />
-        {/* <CourseDisplayBar setShowCourses={setShowCourses}/> */}
+        {activeIcon.course === "" ? <TabBar /> : <CourseDisplayAppBar/>}
       </Paper>
     </Box>
   ) : (

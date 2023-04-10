@@ -4,7 +4,6 @@ import { Course, Room } from "../../globals/types";
 import { CourseNavigation } from "./CourseNavigation";
 import { StyledDivider } from "./components/StyledDivider";
 import useStore from "../../store/store";
-import TabBar from "../HomePage/components/TabBar";
 
 export const CourseView = () => {
   // if no course is selected, show boilertalks home
@@ -41,7 +40,6 @@ export const CourseView = () => {
           </Typography>
         </ListItem>
         <StyledDivider />
-        {/* <TabBar/> */}
       </List>
     );
   }

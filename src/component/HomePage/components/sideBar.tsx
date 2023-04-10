@@ -32,11 +32,12 @@ import useStore from "../../../store/store";
 const SideBar = ({ ...props }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeIcon, setActiveIcon, setDistinctDepartments] = useStore(
+  const [activeIcon, setActiveIcon, setDistinctDepartments, setCurrentCourse] = useStore(
     (state) => [
       state.activeIcon,
       state.setActiveIcon,
       state.setDistinctDepartments,
+      state.setCurrentCourse
     ]
   );
 
@@ -79,6 +80,10 @@ const SideBar = ({ ...props }) => {
   const handleIconClick = (course: string, isActiveCourse: boolean) => {
     if (course === activeIcon.course) {
       return;
+    }
+    if (course === "") {
+      // home button is clicked
+      setCurrentCourse(null);
     }
     setActiveIcon(course, isActiveCourse);
   };

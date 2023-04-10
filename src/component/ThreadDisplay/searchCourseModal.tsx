@@ -8,7 +8,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../../context/context";
-import React from "react";
 import useStore from "../../store/store";
 
 type Props = {

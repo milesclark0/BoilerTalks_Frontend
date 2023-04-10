@@ -38,7 +38,6 @@ const AppealsDisplay = () => {
   const { courseId } = useParams();
   const [stateChange, setStateChange] = useState<boolean>(false);
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [showCourses, setShowCourses] = useState(false);
 
   useEffect(() => {
     const fetchCourseManagement = async () => {
@@ -162,7 +161,7 @@ const AppealsDisplay = () => {
       }}
       className="scrollBar"
     >
-      <CourseDisplayAppBar setShowCourses={setShowCourses}/>
+      <CourseDisplayAppBar/>
       {appeals.length !== 0 ? (
         <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {

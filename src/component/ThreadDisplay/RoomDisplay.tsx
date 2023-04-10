@@ -145,7 +145,8 @@ const RoomDisplay = () => {
     <Paper sx={{ height: "100%", width: "100%" }} id="room">
       <SearchCourseModal {...searchCourseProps} />
 
-      <CourseDisplayAppBar {...searchCourseProps} />
+      {/* <CourseDisplayAppBar {...searchCourseProps} /> */}
+      <CourseDisplayAppBar/>
       {(banned || warned) && (
         <Box
           sx={{

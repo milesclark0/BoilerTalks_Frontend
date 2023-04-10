@@ -1,27 +1,21 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import React from "react";
-import { unsubscribeFromCourseURL } from "../../../API/CoursesAPI";
+import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import React, {useState} from "react";
 import { Course, User } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useAuth } from "../../../context/context";
-import useStore from "../../../store/store";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationPreference from "../../Notification/NotificationPreference";
+import LeaveServer from "../../ThreadComponents/LeaveServer";
 
 type Props = {
   course: Course;
 };
 
 export const MoreIcon = ({ course }: Props) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openNoti, setOpenNoti] = useState<boolean>(false);
+  const [openLeave, setOpenLeave] = useState<boolean>(false);
   const open = Boolean(anchorEl);
-  const api = useAxiosPrivate();
-  const { user, setUser } = useAuth();
-  const [activeIcon, setActiveIcon, distinctCoursesByDepartment, updateDistinctCoursesByDepartment] = useStore((state) => [
-    state.activeIcon,
-    state.setActiveIcon,
-    state.distinctCoursesByDepartment,
-    state.updateDistinctCoursesByDepartment,
-  ]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -31,23 +25,13 @@ export const MoreIcon = ({ course }: Props) => {
     setAnchorEl(null);
   };
 
-  const handleLeaveServer = async () => {
-    const ret = await api.post(unsubscribeFromCourseURL, { courseName: course.name, username: user.username });
-    if (ret.data.statusCode == 200) {
-      //if the course is the active course, set the active course to home icon
-      if (course.name == activeIcon.course) {
-        setActiveIcon("", false);
-      } else if (distinctCoursesByDepartment?.length == 1) {
-        //if the course is the last course in the department, set the active course to nothing
-        setActiveIcon("", false);
-      }
-      //update distinct courses by department
-      updateDistinctCoursesByDepartment(course, "remove");
-    } else {
-      alert("Error leaving server");
-    }
-    handleClose();
-  };
+  const handleOpenNotification = () => {
+    setOpenNoti(true);
+  }
+
+  const handleOpenLeave = () => {
+    setOpenLeave(true);
+  }
 
   return (
     <React.Fragment>
@@ -68,9 +52,31 @@ export const MoreIcon = ({ course }: Props) => {
           },
         }}
       >
-        <MenuItem onClick={handleLeaveServer}>Leave Server</MenuItem>
+        <MenuItem onClick={handleOpenNotification}>
+          <ListItemIcon>
+            <NotificationsIcon />
+          </ListItemIcon>
+          Notification
+        </MenuItem>
+        <MenuItem onClick={handleOpenLeave}>
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          Leave Server
+        </MenuItem>
         {/* {add more options for mods and what not} */}
       </Menu>
+      <NotificationPreference
+        openNoti={openNoti}
+        setOpenNoti={setOpenNoti}
+        courseName={course.name}
+      />
+      <LeaveServer
+        course={course}
+        setAnchorEl={setAnchorEl}
+        openLeave={openLeave}
+        setOpenLeave={setOpenLeave}
+      />
     </React.Fragment>
   );
 };

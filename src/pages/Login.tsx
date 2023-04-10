@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment } from "@mui/material";
+import { Box, Button, Typography, TextField, Divider, InputAdornment, Paper } from "@mui/material";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -45,13 +45,13 @@ const Login = () => {
     }
     setLoading(false);
   };
-  
+
   const navigateToRegister = () => {
     navigate("/register");
   };
 
   return (
-    <Box
+    <Paper
       sx={{
         height: "100%",
         width: "100%",
@@ -60,9 +60,8 @@ const Login = () => {
         alignItems: "center",
       }}
     >
-      <Box
+      <Paper
         sx={{
-          backgroundColor: "white",
           boxShadow: 8,
           height: "75%",
           width: "55%",
@@ -97,7 +96,7 @@ const Login = () => {
           autoComplete="current-password"
           type={showPassword ? "text" : "password"}
           error={error ? true : false}
-          sx={{ width: "60%" }}
+          sx={{ width: "60%", boxShadow: 0 }}
           helperText={error || ""}
           InputProps={{
             endAdornment: (
@@ -135,8 +134,8 @@ const Login = () => {
         >
           Sign Up
         </Button>
-      </Box>
-    </Box>
+      </Paper>
+    </Paper>
   );
 };
 

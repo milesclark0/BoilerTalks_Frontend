@@ -27,6 +27,7 @@ export type Course = {
   semester: string;
 };
 
+export type ClassYear = "" | "Freshman" | "Sophomore" | "Junior" | "Senior" | "Graduate" | "Alumni";
 export type Profile = {
   username: string;
   _id: { $oid: string };
@@ -39,6 +40,8 @@ export type Profile = {
   notificationPreference: [
     { courseName: string; messages: boolean; appeals: boolean; reports: boolean }
   ];
+  classYear: ClassYear;
+  major: string;
 };
 
 export type CourseManagement = {

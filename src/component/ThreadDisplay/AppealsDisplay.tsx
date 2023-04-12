@@ -59,6 +59,7 @@ const AppealsDisplay = () => {
     const updateAppeal = async (decision) => {
       try {
         const res = await axiosPrivate.post(updateAppealURL + courseId, {
+          id: appeal?.id,
           username: appeal?.username,
           response: appeal?.response,
           reason: appeal?.reason,

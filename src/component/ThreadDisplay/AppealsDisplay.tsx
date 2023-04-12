@@ -14,7 +14,6 @@ import { updateAppealURL } from "../../API/CourseManagementAPI";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useStore from "../../store/store";
 import CourseDisplayAppBar from "./CourseDisplayAppBar";
-import { updateLastSeenAppealURL } from "../../API/ProfileAPI";
 
 type Props = {
   drawerWidth: number;
@@ -41,23 +40,6 @@ const AppealsDisplay = () => {
   const [currentCourse] = useStore((state) => [state.currentCourse]);
   const {user} = useAuth();
 
-  const updateLastSeenAppeal = async () => {
-    try {
-      const res = await axiosPrivate.post(updateLastSeenAppealURL + user?.username, {
-        courseName: currentCourse.name,
-        id: appeals[appeals.length - 1]["id"],
-      });
-      console.log(res)
-      if (res.status == 200) {
-        if (res.data.statusCode == 200) {
-          // do nothing
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     const fetchCourseManagement = async () => {
       const res = await axiosPrivate.get(getCourseManagementURL + courseId);
@@ -70,12 +52,6 @@ const AppealsDisplay = () => {
     };
     fetchCourseManagement();
   }, [currentCourse, stateChange]);
-
-  useEffect(() => {
-    if (appeals[appeals.length - 1] != undefined) {
-      updateLastSeenAppeal();
-    }
-  }, [appeals]);
 
   const AppealBox = ({ appeal }) => {
     const [decisionLoading, setDecisionLoading] = useState<boolean>(false);
@@ -179,8 +155,7 @@ const AppealsDisplay = () => {
         width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
         overflowY: "auto",
         display: "flex",
-        flexDirection: "column-reverse",
-        justifyContent: "flex-end"
+        flexDirection: "column",
       }}
       className="scrollBar"
     >

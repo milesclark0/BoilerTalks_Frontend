@@ -19,7 +19,6 @@ import { MessageEntry } from "../ThreadComponents/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Paper } from "@mui/material";
 import CourseDisplayAppBar from "./CourseDisplayAppBar";
-import SearchCourseModal from "./searchCourseModal";
 import { APP_STYLES } from "../../globals/globalStyles";
 import useUserRoomData from "../HomePage/hooks/useUserRoomData";
 import useStore from "./../../store/store";
@@ -51,7 +50,6 @@ const RoomDisplay = () => {
   const [appealData, setAppealData] = useState<Appeal>(null);
   const { profile } = useAuth();
   // const [messages, setMessagesL] = useState<Message[]>(null);
-  const [showCourses, setShowCourses] = useState(false);
   const [emojiShow, setEmojiShow] = useState<boolean>(false);
   const [
     currentCourse,
@@ -131,20 +129,37 @@ const RoomDisplay = () => {
     fetchCurrentRoom();
   }, [roomId]);
 
+  useEffect(() => {
+    if (messages[messages.length - 1] != undefined) {
+      updateLastSeenMessage();
+    }
+  }, [messages]);
+
+  const updateLastSeenMessage = async () => {
+    const res = await axiosPrivate.post(updateLastSeenMessageURL + user?.username, {
+      roomId: roomId,
+      data: {
+        courseName: currentCourse.name,
+        message: {
+          username: messages[messages.length - 1]["username"],
+          timeSent: messages[messages.length - 1]["timeSent"],
+        },
+      },
+    });
+    console.log(res)
+    // if (res.status == 200) {
+    //   if (res.data.statusCode == 200) {
+    //     // do nothing
+    //   }
+    // }
+  };
+
   // useEffect(() => {
   //   setActiveCourseThread(currentRoom.name.replace(currentCourse.name, ""));
   // }, [currentRoom]);
 
-  const searchCourseProps = {
-    showCourses,
-    setShowCourses,
-  };
-
   return (
     <Paper sx={{ height: "100%", width: "100%" }} id="room">
-      <SearchCourseModal {...searchCourseProps} />
-
-      {/* <CourseDisplayAppBar {...searchCourseProps} /> */}
       <CourseDisplayAppBar />
       {(banned || warned) && (
         <Box

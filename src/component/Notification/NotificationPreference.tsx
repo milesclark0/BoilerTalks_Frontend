@@ -15,7 +15,7 @@ import {
 import { getProfileURL } from "../../API/ProfileAPI";
 import { Profile } from "../../globals/types";
 import { LoadingButton } from "@mui/lab";
-import { updateNotificationURL } from "../../API/ProfileAPI";
+import { updateNotificationPreferenceURL } from "../../API/ProfileAPI";
 
 type NotificationPreference = {
   courseName: string;
@@ -44,22 +44,23 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
   useEffect(() => {
     // retrieve user notification preference
     const fetchProfile = async () => {
-      const res = await axiosPrivate.get(getProfileURL + user.username);
+      const res = await axiosPrivate.get(getProfileURL + user?.username);
       if (res.status === 200) {
         if (res.data.statusCode === 200) {
-          const notificationCourses = res.data.data[0]["notificationPreference"];
-          notificationCourses.forEach((item: NotificationPreference) => {
-            if (item.courseName === courseName) {
-              setMessageNoti(item.messages);
-              setAppealNoti(item.appeals);
-              setReportNoti(item.reports);
-            }
-          });
+          const notificationCourses = res.data.data[0]["notificationPreference"][courseName];
+          setMessageNoti(notificationCourses["messages"]);
+          setAppealNoti(notificationCourses["appeals"]);
+          setReportNoti(notificationCourses["reports"]);
           setProfileData(res.data.data[0]);
         }
       }
     };
     fetchProfile();
+    // setSaveSuccess(false);
+    // setSaveError(false);
+  }, []);
+
+  useEffect(() => {
     setSaveSuccess(false);
     setSaveError(false);
   }, [openNoti]);
@@ -67,11 +68,9 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
   const saveNotificationPreference = async () => {
     setLoading(true);
     try {
-      const res = await axiosPrivate.post(updateNotificationURL + user.username, {
+      const res = await axiosPrivate.post(updateNotificationPreferenceURL + user.username, {
         courseName: courseName,
-        messages: messageNoti,
-        appeals: appealNoti,
-        reports: reportNoti,
+        data: {messages: messageNoti, appeals: appealNoti, reports: reportNoti}
       });
       console.log(res);
       if (res.status == 200) {

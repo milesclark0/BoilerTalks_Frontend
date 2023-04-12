@@ -40,6 +40,9 @@ export type Profile = {
   notificationPreference: [
     { courseName: string; messages: boolean; appeals: boolean; reports: boolean }
   ];
+  notification: Notification[];
+  seenNotification: Notification[];
+  lastSeenMessage: {courseName: string; message: {username: string; timeSent: string;}}
   classYear: ClassYear;
   major: string;
 };
@@ -88,4 +91,10 @@ export type Message = {
   replyIndex?: number;
   replyID?: string;//unused? maybe delete this?
   reactions?: [{ username: string; reaction: string }];
+};
+
+export type Notification = {
+  courseName: string;
+  notification: string;
+  date: { $date: string };
 };

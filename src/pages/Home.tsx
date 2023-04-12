@@ -6,15 +6,23 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import useSockets from "../hooks/useSockets";
 import { useCourseUsers } from "../component/HomePage/hooks/useCourseUsers";
 import useUserCourseData from "../component/HomePage/hooks/useUserCourseData";
-import UserBar from "../component/HomePage/components/userBar";
+// import UserBar from "../component/HomePage/components/userBar";
 import useUserRoomData from "../component/HomePage/hooks/useUserRoomData";
 import useStore from "../store/store";
-import CourseDisplayBar from "../component/ThreadDisplay/CourseDisplayAppBar";
+// import CourseDisplayBar from "../component/ThreadDisplay/CourseDisplayAppBar";
 import TabBar from "../component/HomePage/components/TabBar";
 import CourseDisplayAppBar from "../component/ThreadDisplay/CourseDisplayAppBar";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "../context/context";
+import { getProfileURL } from "../API/ProfileAPI";
+import { Notification } from "../globals/types";
 
 const Home = () => {
   const [activeIcon] = useStore((state) => [state.activeIcon]);
+  const [badgeCount, setBadgeCount] = useState<number>(0);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const axiosPrivate = useAxiosPrivate();
+  const { user } = useAuth();
   console.log("home rerendered");
 
   const navigate = useNavigate();
@@ -70,15 +78,48 @@ const Home = () => {
   //   setActiveCourseThread(getCourseFromUrl()?.rooms[0][0] || "");
   // }, []);
 
+  useEffect(() => {
+    // retrieve user notifications
+    const fetchProfile = async () => {
+      const res = await axiosPrivate.get(getProfileURL + user.username);
+      console.log(res);
+      if (res.status === 200) {
+        if (res.data.statusCode === 200) {
+          const retrievedNotifications = res.data.data[0]["notification"]
+          const seenNotifications = res.data.data[0]["seenNotification"]
+          setNotifications(retrievedNotifications)
+          if (JSON.stringify(retrievedNotifications) != JSON.stringify(seenNotifications)) {
+            setBadgeCount(1);
+          }
+        }
+      }
+    };
+    fetchProfile();
+    // retrieves every 1 min 40 sec
+    const interval = setInterval(() => {
+      fetchProfile();
+    }, 100000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
   return (
     <Box sx={{ display: "flex", height: "100%" }}>
       <SideBar />
-      <RoomBox {...{ isUserCourseListLoading, userCourseListError, activeIcon }} />
+      <RoomBox {...{ isUserCourseListLoading, userCourseListError, activeIcon, badgeCount, setBadgeCount, notifications }} />
     </Box>
   );
 };
 
-const RoomBox = ({ isUserCourseListLoading, userCourseListError, activeIcon }) => {
+const RoomBox = ({
+  isUserCourseListLoading,
+  userCourseListError,
+  activeIcon,
+  badgeCount,
+  setBadgeCount,
+  notifications,
+}) => {
   return !isUserCourseListLoading && !userCourseListError ? (
     <Box
       sx={{
@@ -100,7 +141,11 @@ const RoomBox = ({ isUserCourseListLoading, userCourseListError, activeIcon }) =
         {/* renders display for the current room/thread etc */}
         <Outlet />
         {/* <UserBar /> */}
-        {activeIcon.course === "" ? <TabBar /> : <CourseDisplayAppBar/>}
+        {activeIcon.course === "" ? (
+          <TabBar {...{ badgeCount, setBadgeCount, notifications }} />
+        ) : (
+          <CourseDisplayAppBar />
+        )}
       </Paper>
     </Box>
   ) : (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Tab, Tabs, AppBar, Button } from "@mui/material";
+import { Box, Typography, Tab, Tabs, AppBar, Badge } from "@mui/material";
 import { APP_STYLES } from "../../../globals/globalStyles";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
@@ -8,6 +8,10 @@ import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
 import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
 import { useAuth } from "../../../context/context";
 import NotificationHome from "../../Notification/NotificationHome";
+import HomeIcon from "@mui/icons-material/Home";
+import { Notification } from "../../../globals/types";
+import { updateSeenNotificationURL } from "../../../API/ProfileAPI";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -35,16 +39,43 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const TabBar = () => {
-  const [value, setValue] = useState(0);
+type Props = {
+  badgeCount: number;
+  setBadgeCount: React.Dispatch<React.SetStateAction<number>>;
+  notifications: Notification[];
+};
+
+const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
+  const [value, setValue] = useState<number>(0);
   const [showCourses, setShowCourses] = useState<boolean>(false);
-  const {themeSetting} = useAuth();
+  const { themeSetting, user } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+
+  const updateSeenNotification = async () => {
+    try {
+      const res = await axiosPrivate.post(updateSeenNotificationURL + user?.username, {
+        notifications: notifications
+      });
+      console.log(res);
+      if (res.status == 200) {
+        if (res.data.statusCode == 200) {
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     if (newValue === 2) {
       // add courses index
       setShowCourses(true);
     } else {
+      if (newValue == 1) {
+        // if notification tab is clicked
+        setBadgeCount(0);
+        updateSeenNotification();
+      }
       setValue(newValue);
     }
   };
@@ -76,13 +107,22 @@ const TabBar = () => {
         centered
       >
         <Tab
-          icon={<NotificationsIcon />}
-          label="Notifications"
+          icon={<HomeIcon />}
+          label="Home"
           sx={{ color: themeSetting === "light" ? "black" : "white" }}
         />
-        <Tab
+        {/* <Tab
           icon={<AnnouncementIcon />}
           label="Release Notes"
+          sx={{ color: themeSetting === "light" ? "black" : "white" }}
+        /> */}
+        <Tab
+          icon={
+            <Badge badgeContent={badgeCount} color="secondary" variant="dot">
+              <NotificationsIcon />
+            </Badge>
+          }
+          label="Notifications"
           sx={{ color: themeSetting === "light" ? "black" : "white" }}
         />
         <Tab
@@ -91,11 +131,14 @@ const TabBar = () => {
           sx={{ color: themeSetting === "light" ? "black" : "white" }}
         />
       </Tabs>
+      {/* <TabPanel value={value} index={0}>
+        Home
+      </TabPanel> */}
       <TabPanel value={value} index={0}>
-        <NotificationHome/>
+        <ReleaseNotes />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <ReleaseNotes />
+        <NotificationHome notifications={notifications} />
       </TabPanel>
       <SearchCourseModal {...searchCourseProps} />
     </AppBar>

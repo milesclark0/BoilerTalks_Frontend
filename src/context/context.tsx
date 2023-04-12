@@ -1,9 +1,8 @@
-import { createContext, useContext } from "react";
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { Profile, User } from "../globals/types";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+import useStore from "../store/store";
 
 type AuthProviderType = {
   user: User | undefined;
@@ -27,7 +26,7 @@ const AuthContext = createContext<AuthProviderType>({
   setUser: (user: User) => {},
   profile: undefined,
   setProfile: (profile: Profile) => {},
-  themeSetting: localStorage.getItem('themeSetting') || 'light',
+  themeSetting: localStorage.getItem("themeSetting") || "light",
   handleThemeSettingChange: () => {},
 });
 
@@ -37,20 +36,19 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const from = location.state?.from || "/home";
   const [user, setUser] = useState<User>(undefined);
   const [profile, setProfile] = useState<Profile>(undefined);
+  const [setCurrentCourse] = useStore((state) => [state.setCurrentCourse]);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const [themeSetting, setThemeSetting] = useState(
-        localStorage.getItem('themeSetting') || 'light'
-      );
+  const [themeSetting, setThemeSetting] = useState(localStorage.getItem("themeSetting") || "light");
 
-  const handleThemeSettingChange = () => { 
-    var setTo = 'light';
-    if(themeSetting == 'light') {
-      setTo = 'dark';
+  const handleThemeSettingChange = () => {
+    var setTo = "light";
+    if (themeSetting == "light") {
+      setTo = "dark";
     }
     setThemeSetting(setTo);
-    localStorage.setItem('themeSetting', setTo);
+    localStorage.setItem("themeSetting", setTo);
   };
 
   const signOut = () => {
@@ -66,14 +64,37 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     setIsLoggedIn(true);
     Cookies.set("user", user?.username);
     console.log("signed in: navigate to", from);
-    if (from.pathname === "/login" || from.pathname === "/register" || from.pathname === "/forgotPassword" || from.pathname === "/policies") {
+    if (
+      from.pathname === "/login" ||
+      from.pathname === "/register" ||
+      from.pathname === "/forgotPassword" ||
+      from.pathname === "/policies"
+    ) {
       navigate("/home", { replace: true });
       return;
     }
+    setCurrentCourse(null);
     navigate(from, { replace: true });
   };
 
-  return <AuthContext.Provider value={{ user, signIn, isLoggedIn, setIsLoggedIn, signOut, setUser, profile, setProfile, themeSetting, handleThemeSettingChange}}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        signIn,
+        isLoggedIn,
+        setIsLoggedIn,
+        signOut,
+        setUser,
+        profile,
+        setProfile,
+        themeSetting,
+        handleThemeSettingChange,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

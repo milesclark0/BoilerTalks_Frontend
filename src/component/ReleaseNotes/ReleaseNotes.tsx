@@ -4,7 +4,6 @@ import { StyledDivider } from "../SideBar/components/StyledDivider";
 
 const ReleaseNotes = () => {
   return (
-    // <Paper elevation={5} sx={{ borderRadius: 2, height: "100%", display:"flex", flexDirection:"column" }}>
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <CardHeader title="Release Notes" sx={{ textAlign: "center" }} />
       <StyledDivider />
@@ -43,7 +42,6 @@ const ReleaseNotes = () => {
         <Typography variant="body1">- Added "About" page about the creators.</Typography>
       </CardContent>
     </Box>
-    // </Paper>
   );
 };
 

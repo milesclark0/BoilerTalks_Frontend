@@ -64,7 +64,7 @@ export const MessageHeader = ({
     <Box sx={{ height: 1, alignItems: "top", display: "flex" }}>
       {/* <BlockUserModal {...blockUserProps} /> */}
       <Box display={"inline"}>
-        <Typography variant="h6" display="inline">{`${message.username} `}</Typography>
+        <Typography variant="h6" display="inline">{`${message.displayName || message.username}`}</Typography>
         <Tooltip title={getTime(message.timeSent, true)} placement="top" arrow>
           <Typography variant="overline" sx={{ paddingLeft: "5px" }}>
             {getTime(message.timeSent, false)}
@@ -120,7 +120,7 @@ export const MessageHeader = ({
                 <Tooltip title="Block" placement="top" arrow>
                   <IconButton
                     onClick={() => {
-                      setUserToBlock(message.username);
+                      setUserToBlock(message.displayName || message.username);
                       setShowBlockUser(true);
                     }}
                     size="small"
@@ -135,7 +135,7 @@ export const MessageHeader = ({
                 <Tooltip title="Promote To Moderator" placement="top" arrow>
                   <IconButton
                     onClick={() => {
-                      promoteUser(message.username);
+                      promoteUser(message.displayName || message.username);
                     }}
                     size="small"
                   >

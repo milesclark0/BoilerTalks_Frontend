@@ -50,7 +50,7 @@ export const light: ThemeOptions = {
       main: "#81a4fcd6",
     },
     background: {
-      default: "#2d2c2c",
+      default: "#ffffff",
       paper: "#f3f3f3",
     },
     text: {

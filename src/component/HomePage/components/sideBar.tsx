@@ -195,7 +195,7 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
 };
 
 const SideAppBar = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [themeChecked, setThemeChecked] = useState(
     false || localStorage.getItem("themeSetting") === "dark"
@@ -224,7 +224,7 @@ const SideAppBar = () => {
       <Toolbar>
         <GetProfilePicture />
         <Typography variant="body2" noWrap component="div" sx={{ flexGrow: 1 }}>
-          {user?.username}
+          {profile?.displayName || user?.username}
         </Typography>
         <FormControlLabel
           control={

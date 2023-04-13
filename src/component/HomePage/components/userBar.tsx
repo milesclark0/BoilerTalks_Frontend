@@ -10,7 +10,7 @@ import { APP_STYLES } from "../../../globals/globalStyles";
 import useStore from "../../../store/store";
 
 const UserBar = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const [currentCourse, userRoomsList, courseUsers] = useStore((state) => [state.currentCourse, state.userRoomsList, state.courseUsers]);
   const {courseId, roomId} = useParams();
@@ -21,6 +21,7 @@ const UserBar = () => {
     }, 300000);
     return () => clearInterval(interval);
   }, []);
+
   const newWidth = APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8;
   const OuterDrawerStyles = {
     width: newWidth,
@@ -39,7 +40,7 @@ const UserBar = () => {
   };
 
   const getAllConnectedUsers = () => {
-    const initialUser = { username: user?.username, profilePic: user?.profilePicture };
+    const initialUser = { username: user?.username, profilePic: user?.profilePicture, displayName: profile?.displayName };
     const users = new Map<string, any>();
     //if the current user username is not in the list of users connected in all rooms in the current course, add it
     if (!users.has(initialUser.username)) {
@@ -82,7 +83,7 @@ const UserBar = () => {
         </Badge>
         <Link to={`/profile/${user.username}`} style={{ textDecoration: "none", color: linkColor }}>
           <Typography sx={{ ml: 1, "&:hover": { cursor: "pointer", color: hoverColor } }} noWrap>
-            {user.username}
+            {user.displayName || user.username}
           </Typography>
         </Link>
       </Box>

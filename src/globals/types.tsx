@@ -72,7 +72,7 @@ export type Room = {
   _id: { $oid: string };
   name: string;
   courseId: { $oid: string };
-  connected: [{ username: string; sid: string; profilePic: string }];
+  connected: [{ username: string; sid: string; profilePic: string, displayName?: string }];
   messages: Message[];
 };
 
@@ -91,6 +91,7 @@ export type Message = {
   replyIndex?: number;
   replyID?: string;//unused? maybe delete this?
   reactions?: [{ username: string; reaction: string }];
+  displayName?: string;
 };
 
 export type Notification = {

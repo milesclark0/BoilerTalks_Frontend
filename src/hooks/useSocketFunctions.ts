@@ -12,7 +12,7 @@ const useSocketFunctions = () => {
         leave: "leave",
         react: "react",
     };
-    const {user} = useAuth();
+    const {user, profile} = useAuth();
     const socket = useStore(state => state.socket);
     const [joinedRoom, setJoinedRoom] = useStore(state => [state.joinedRoom, state.setJoinedRoom]);
     // sends a message to the server to be broadcasted to all users in the room
@@ -77,7 +77,7 @@ const useSocketFunctions = () => {
         if (joinedRoom?._id.$oid === room._id.$oid) {
             return;
         }
-        if (socket !== null) {
+        if (!socket.connected) {
             console.log(room.name);
             let ret;
             if (room !== null) {
@@ -89,8 +89,11 @@ const useSocketFunctions = () => {
                             roomID: room?._id.$oid,
                             username: user?.username,
                             profilePic: user?.profilePicture,
+                            displayName: profile?.displayName,
                         },
-                        (response: string | Room) => resolve(response)
+                        (response: string | Room) => {
+                            console.log(response)
+                            resolve(response)}
                     )
                 );
                 setJoinedRoom(room);

@@ -252,18 +252,18 @@ export const CourseNavigation = ({ course }: Props) => {
               <Typography variant="body2">Rules</Typography>
             </ListItem>
           </Button>
-          <Button onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
-            <ListItem>
-              <Typography variant="body2">Create Report</Typography>
-            </ListItem>
-          </Button>
-          {profile?.modThreads?.includes(course?.name) && (
+
+          {profile?.modThreads?.includes(course?.name) ? (
             <Button onClick={handleClickNewThread} sx={staticButtonStyle()}>
               <ListItem>
                 <Typography variant="body2">New thread</Typography>
               </ListItem>
             </Button>
-          )}
+          ):          <Button onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
+            <ListItem>
+              <Typography variant="body2">Create Report</Typography>
+            </ListItem>
+          </Button>}
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
           <SendReportModal {...SendReportsProps} />

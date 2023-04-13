@@ -23,39 +23,41 @@ const useSockets = () => {
     state.addReactionMessage,
   ]);
 
-  useEffect(() => {    
-    if (socket === null) {
+  useEffect(() => {
+    if (socket === null || socket.connected === false) {
       setSocket(io(endpoint));
-    } else {
-      socket.on(namespace.connect, () => {
-        console.log("connected");
-        setIsConnected(true);
-      });
-
-      // listens for disconnect event
-      socket.on(namespace.disconnect, () => {
-        console.log("disconnected");
-        setIsConnected(false);
-      });
-
-      socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string }) => {
-        addReactionMessage(data);
-      });
-
-      // listen for message
-      socket.on(namespace.message, (msg: Message) => {
-        console.log("got msg: ", msg);
-        addMessage(msg);
-      });
     }
+  }, []);
 
+  useEffect(() => {
+    if (socket === null) return;
+    socket.on(namespace.connect, () => {
+      console.log("connected");
+      setIsConnected(true);
+    });
+
+    // listens for disconnect event
+    socket.on(namespace.disconnect, () => {
+      console.log("disconnected");
+      setIsConnected(false);
+    });
+
+    socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string }) => {
+      addReactionMessage(data);
+    });
+
+    // listen for message
+    socket.on(namespace.message, (msg: Message) => {
+      console.log("got msg: ", msg);
+      addMessage(msg);
+    });
     return () => {
       socket?.off(namespace.connect);
       socket?.off(namespace.disconnect);
       socket?.off(namespace.message);
       socket?.off(namespace.react);
       console.log("unmounting");
-      
+
       socket?.disconnect();
     };
   }, [socket]);

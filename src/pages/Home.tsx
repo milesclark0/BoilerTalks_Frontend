@@ -95,10 +95,10 @@ const Home = () => {
       }
     };
     fetchProfile();
-    // retrieves every 1 min 40 sec
+    // retrieves every 20 sec
     const interval = setInterval(() => {
       fetchProfile();
-    }, 100000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, []);

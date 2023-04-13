@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import { Box, Typography, Tab, Tabs, AppBar, Badge } from "@mui/material";
+import { Box, Tab, Tabs, AppBar } from "@mui/material";
 import { APP_STYLES } from "../../../globals/globalStyles";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AnnouncementIcon from "@mui/icons-material/Announcement";
 import AddIcon from "@mui/icons-material/Add";
 import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
-import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
 import { useAuth } from "../../../context/context";
-import NotificationHome from "../../Notification/NotificationHome";
 import HomeIcon from "@mui/icons-material/Home";
 import { Notification } from "../../../globals/types";
-import { updateSeenNotificationURL } from "../../../API/ProfileAPI";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import HomeTab from "./HomeTab";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -26,11 +21,13 @@ function TabPanel(props: TabPanelProps) {
       {value === index && (
         <Box
           sx={{
-            p: 4,
-            overflowY: "auto",
-            maxHeight: `calc(100vh - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
+            p: 8,
+            // overflowY: "auto",
+            // maxHeight: `calc(100vh - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
+            height: `calc(100vh - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
             boxSizing: "border-box",
           }}
+          id={"tab"+index}
         >
           {children}
         </Box>
@@ -48,34 +45,13 @@ type Props = {
 const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
   const [value, setValue] = useState<number>(0);
   const [showCourses, setShowCourses] = useState<boolean>(false);
-  const { themeSetting, user } = useAuth();
-  const axiosPrivate = useAxiosPrivate();
-
-  const updateSeenNotification = async () => {
-    try {
-      const res = await axiosPrivate.post(updateSeenNotificationURL + user?.username, {
-        notifications: notifications
-      });
-      console.log(res);
-      if (res.status == 200) {
-        if (res.data.statusCode == 200) {
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { themeSetting } = useAuth();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    if (newValue === 2) {
+    if (newValue === 1) {
       // add courses index
       setShowCourses(true);
     } else {
-      if (newValue == 1) {
-        // if notification tab is clicked
-        setBadgeCount(0);
-        updateSeenNotification();
-      }
       setValue(newValue);
     }
   };
@@ -104,25 +80,12 @@ const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
             color: themeSetting === "light" ? "blue !important" : "teal !important",
           },
         }}
+        // TabIndicatorProps={{ style: { backgroundColor: "white" } }}
         centered
       >
         <Tab
           icon={<HomeIcon />}
           label="Home"
-          sx={{ color: themeSetting === "light" ? "black" : "white" }}
-        />
-        {/* <Tab
-          icon={<AnnouncementIcon />}
-          label="Release Notes"
-          sx={{ color: themeSetting === "light" ? "black" : "white" }}
-        /> */}
-        <Tab
-          icon={
-            <Badge badgeContent={badgeCount} color="secondary" variant="dot">
-              <NotificationsIcon />
-            </Badge>
-          }
-          label="Notifications"
           sx={{ color: themeSetting === "light" ? "black" : "white" }}
         />
         <Tab
@@ -131,14 +94,8 @@ const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
           sx={{ color: themeSetting === "light" ? "black" : "white" }}
         />
       </Tabs>
-      {/* <TabPanel value={value} index={0}>
-        Home
-      </TabPanel> */}
       <TabPanel value={value} index={0}>
-        <ReleaseNotes />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <NotificationHome notifications={notifications} />
+        <HomeTab notifications={notifications} badgeCount={badgeCount} setBadgeCount={setBadgeCount}/>
       </TabPanel>
       <SearchCourseModal {...searchCourseProps} />
     </AppBar>

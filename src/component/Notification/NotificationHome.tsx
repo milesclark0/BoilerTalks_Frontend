@@ -16,7 +16,6 @@ const NotificationHome = ({ notifications }: Props) => {
   const findRoomName = (notiString: string) => {
     if (notiString.split(" ")[3] != undefined) {
       const room = userRoomsList?.find((room) => room._id.$oid === notiString.split(" ")[3]);
-      console.log(room);
       return "new message in " + room.name;
     }
     return notiString;
@@ -27,7 +26,7 @@ const NotificationHome = ({ notifications }: Props) => {
       <CardHeader title="Notifications" sx={{ textAlign: "center" }} />
       <StyledDivider />
       <CardContent sx={{ overflowY: "auto", mb: 2 }} className="scrollBar">
-        {notifications?.map((notification, index) => {        
+        {notifications?.slice().reverse().map((notification, index) => {
           return (
             <Box key={index} sx={{ mb: 2 }}>
               <Typography>{notification.courseName}</Typography>

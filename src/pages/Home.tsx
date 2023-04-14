@@ -82,7 +82,7 @@ const Home = () => {
     // retrieve user notifications
     const fetchProfile = async () => {
       const res = await axiosPrivate.get(getProfileURL + user.username);
-      console.log(res);
+      // console.log(res);
       if (res.status === 200) {
         if (res.data.statusCode === 200) {
           const retrievedNotifications = res.data.data[0]["notification"]

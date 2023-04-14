@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  TextField,
+  Divider,
+  InputAdornment,
+  Paper,
+} from "@mui/material";
+import logowhite from "../assets/logo_white.png";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -17,6 +26,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  const { themeSetting } = useAuth();
+  const behindPaperColor = themeSetting === "dark" ? "#141414" : "#bebebefc";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -58,6 +70,7 @@ const Login = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: behindPaperColor,
       }}
     >
       <Paper
@@ -77,11 +90,24 @@ const Login = () => {
         autoComplete="off"
         onSubmit={handleLogin}
       >
-        <img src={logo} height={100} alt="logo" />
+        {themeSetting === "dark" ? (
+          <img src={logowhite} height={100} alt="logo" />
+        ) : (
+          <img src={logo} height={100} alt="logo" />
+        )}
+
         <TextField
           label="Username"
           autoComplete="username"
-          sx={{ width: "60%" }}
+          sx={{
+            width: "60%",
+            "& .MuiInputBase-input": {
+              "-webkit-box-shadow":
+                themeSetting == "dark"
+                  ? "0 0 0 100px #333333 inset !important"
+                  : "",
+            },
+          }}
           error={error ? true : false}
           // InputProps={{
           //   endAdornment: <InputAdornment position="end">{error ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
@@ -96,12 +122,23 @@ const Login = () => {
           autoComplete="current-password"
           type={showPassword ? "text" : "password"}
           error={error ? true : false}
-          sx={{ width: "60%", boxShadow: 0 }}
+          sx={{
+            width: "60%",
+            boxShadow: 0,
+            "& .MuiInputBase-input": {
+              "-webkit-box-shadow":
+                themeSetting == "dark"
+                  ? "0 0 0 100px #333333 inset !important"
+                  : "",
+            },
+          }}
           helperText={error || ""}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <div onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</div>
+                <div onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </div>
               </InputAdornment>
             ),
             style: { cursor: "pointer" },

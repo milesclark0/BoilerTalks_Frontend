@@ -47,7 +47,7 @@ export const light: ThemeOptions = {
       main: "#bebebefc",
     },
     secondary: {
-      main: "#81a4fcd6",
+      main: "#586fa8d5",
     },
     background: {
       default: "#ffffff",

@@ -158,9 +158,9 @@ type CourseListProps = {
   handleIconClick: (course: string, isActiveCourse: boolean) => void;
 };
 const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
-  const { user } = useAuth();
+  const { user, themeSetting } = useAuth();
   const distinctDepartments = useStore((state) => state.distinctDepartments);
-  const selectedIconColor = "#7e7e7e";
+  const selectedIconColor = themeSetting === "light" ? "#302f2f" : "#faf8f8";
   const AvatarSize = { width: 50, height: 50 };
   const CourseIconProps = {
     handleIconClick: handleIconClick,

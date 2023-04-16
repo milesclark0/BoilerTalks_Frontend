@@ -1,4 +1,4 @@
-import { Tabs, Tab, Box, Typography, Paper } from "@mui/material";
+import { Tabs, Tab, Box, Typography, Paper, useTheme } from "@mui/material";
 import React from "react";
 import { useAuth } from "../../context/context";
 import { User, Profile } from "../../globals/types";
@@ -39,6 +39,7 @@ interface GridProps {
 
 const ProfileTabBar = ({ ...props }: GridProps) => {
   const [value, setValue] = React.useState(0);
+  const theme = useTheme();
   const { themeSetting } = useAuth();
   const tabPanelOptions = ["Courses", "Modded Courses", "Blocked Users", "Change Password", "Change Theme", "Change Display Name"];
 
@@ -52,10 +53,10 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
           borderRight: 1,
           borderColor: "divider",
           ".Mui-selected": {
-            color: themeSetting === "light" ? "blue" : "teal",
+            color: `${theme.palette.secondary.main} !important`,
           },
           "& .MuiTabs-indicator": {
-            backgroundColor: themeSetting === "light" ? "blue" : "teal",
+            backgroundColor: `${theme.palette.secondary.main} !important`,
           },
           width: "25%",
         }}
@@ -68,7 +69,7 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
           if (!props.isLoggedUserProfile && index > 0) {
             return null;
           }
-          return <CustomTab label={option} />;
+          return <CustomTab label={option} key={index} />;
         })}
       </Tabs>
       {tabPanelOptions.map((option, index) => {
@@ -76,7 +77,7 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
           return null;
         }
         return (
-          <TabPanel value={value} index={index}>
+          <TabPanel value={value} index={index} key={index}>
             <Typography>{option}</Typography>
           </TabPanel>
         );

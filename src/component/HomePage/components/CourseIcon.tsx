@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const CourseIcon = ({ labelText, isActiveCourse, selectedIconColor, AvatarSize, handleIconClick }: Props) => {
-  const iconColor = isActiveCourse ? "lightblue" : "";
+  const iconColor = isActiveCourse ? "secondary.main" : "";
   const activeIcon = useStore((state) => state.activeIcon);
   const outLineColor = activeIcon.course === labelText ? selectedIconColor : "";
   const outlineStyle = activeIcon.course === labelText ? "solid" : "";

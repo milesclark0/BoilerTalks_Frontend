@@ -6,7 +6,9 @@ import { getProfileURL, uploadProfilePictureURL } from "../API/ProfileAPI";
 import {
   AppBar,
   Box,
+  Button,
   Card,
+  Divider,
   Grid,
   Paper,
   Toolbar,
@@ -14,7 +16,7 @@ import {
   styled,
 } from "@mui/material";
 import { Profile, User } from "../globals/types";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import { APP_STYLES } from "../globals/globalStyles";
 import { ProfileContainer } from "../component/Profile/ProfileContainer";
@@ -23,18 +25,17 @@ import ProfileTabBar from "../component/Profile/ProfileTabBar";
 const ProfilePage = () => {
   const { requestUsername } = useParams();
   const { user, setUser } = useAuth();
-  const [showEditBio, setShowEditBio] = useState(false);
   const [fetchError, setFetchError] = useState("");
 
   //the info for the users page
   const [profileInfo, setProfileInfo] = useState<Profile>(null);
   const [viewedUser, setViewedUser] = useState<User>(null);
   const [image, setImage] = useState<string>(null);
+  const navigate = useNavigate();
 
   const axiosPrivate = useAxiosPrivate();
   const defaultPadding = APP_STYLES.DEFAULT_PADDING;
   const drawerWidth = APP_STYLES.DRAWER_WIDTH;
-  const innerDrawerWidth = APP_STYLES.INNER_DRAWER_WIDTH;
   const appBarHeight = APP_STYLES.APP_BAR_HEIGHT;
 
   const fetchProfile = async () => {
@@ -102,12 +103,14 @@ const ProfilePage = () => {
   return (
     <Paper sx={{ width: 1, height: 1, pt: `${appBarHeight}px` }}>
       {/* <EditBioModal {...editBioProps} /> */}
-      {!isLoading && !error && !fetchError ? (
+      {profileInfo ? (
         <Box sx={{ p: 4 }}>
           <AppBar position="fixed" sx={{ height: appBarHeight }}>
             <Toolbar>
               {/* If display name is set, show it else show username */}
-              <Typography variant="h4">Viewing {`${profileInfo?.displayName ? profileInfo?.displayName : profileInfo?.username}`}</Typography>
+              <Typography variant="h5" sx={{mr:1}}>Viewing {`${profileInfo?.displayName ? profileInfo?.displayName : profileInfo?.username}`}</Typography>
+              <Divider orientation="vertical"></Divider>
+              <Button onClick={() => navigate("/home")}>Back to Home</Button>
             </Toolbar>
           </AppBar>
           <Card id="view-profile-container" sx={{ p: 8, bgcolor: "primary.main", borderRadius: "2%" }}>

@@ -7,8 +7,8 @@ interface ButtonProps extends IconButtonProps {
   isEditMode: boolean;
   viewedUser?: User;
 }
-export const CancelButton = ({ ...props }: ButtonProps) => {
-  if (!props.isEditMode) return null;
+export const CancelButton = ({  isEditMode, viewedUser,...props }: ButtonProps) => {
+  if (!isEditMode) return null;
 
   return (
     <IconButton onClick={props.onClick} {...props}>
@@ -17,8 +17,8 @@ export const CancelButton = ({ ...props }: ButtonProps) => {
   );
 };
 
-export const CheckButton = ({ ...props }: ButtonProps) => {
-  if (!props.isEditMode) return null;
+export const CheckButton = ({ isEditMode, viewedUser, ...props }: ButtonProps) => {
+  if (!isEditMode) return null;
 
   return (
     <IconButton onClick={props.onClick} {...props}>
@@ -27,10 +27,10 @@ export const CheckButton = ({ ...props }: ButtonProps) => {
   );
 };
 
-export const EditButton = ({ ...props }: ButtonProps) => {
+export const EditButton = ({ isEditMode, viewedUser, ...props }: ButtonProps) => {
   const { user } = useAuth();
-  if (props.viewedUser?.username !== user?.username) return null;
-  if (!props.isEditMode) return null;
+  if (viewedUser?.username !== user?.username) return null;
+  if (!isEditMode) return null;
   return (
     <IconButton onClick={props.onClick} {...props}>
       <Edit />

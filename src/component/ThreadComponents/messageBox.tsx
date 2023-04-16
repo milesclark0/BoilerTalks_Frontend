@@ -20,11 +20,11 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
   const [message, setMessage] = useState<string>("");
   const {sendMessage, connectToRoom, addReaction} = useSocketFunctions();
 
-  const [currentRoom, updateRoomMessages, updateCurrentRoom, isConnected] = useStore((state) => [
+  const [currentRoom, updateRoomMessages, updateCurrentRoom, socket] = useStore((state) => [
     state.currentRoom,
     state.updateRoomMessages,
     state.updateCurrentRoom,
-    state.isConnected,
+    state.socket,
   ]);
 
   //listen to reaction change and send the reaction to the server
@@ -81,7 +81,7 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
     // setCurrentCourse(currCourseCopy);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const formattedMessage = {
       username: user?.username,
       message,
@@ -89,7 +89,7 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
       profilePic: user?.profilePicture,
       replyIndex,
     };
-    sendMessage(formattedMessage, currentRoom, false);
+    await sendMessage(formattedMessage, currentRoom, false);
     handleReply(null, false);
     setMessage("");
   };
@@ -115,7 +115,7 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
       <TextField
         label="Enter Message"
         value={message}
-        disabled={!isConnected}
+        disabled={!socket?.connected}
         sx={{
           width: "100%",
         }}

@@ -25,7 +25,7 @@ function TabPanel(props: TabPanelProps) {
 
 function CustomTab(props) {
   const { themeSetting } = useAuth();
-  return <Tab {...props} sx={{ color: themeSetting === "light" ? "black" : "white" }} />;
+  return <Tab {...props} sx={{ color: themeSetting === "light" ? "black" : "white", minHeight: "80px" }} />;
 }
 
 interface GridProps {
@@ -47,10 +47,11 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
     setValue(newValue);
   };
   return (
-    <Paper sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", height: 1, borderRadius: "2%" }}>
+    <Paper sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", borderRadius: "2%", height:1 }}>
       <Tabs
         sx={{
           borderRight: 1,
+          m: 2,
           borderColor: "divider",
           ".Mui-selected": {
             color: `${theme.palette.secondary.main} !important`,
@@ -69,7 +70,7 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
           if (!props.isLoggedUserProfile && index > 0) {
             return null;
           }
-          return <CustomTab label={option} key={index} />;
+          return <CustomTab label={option} key={index} tabPanelOptions={tabPanelOptions} />;
         })}
       </Tabs>
       {tabPanelOptions.map((option, index) => {

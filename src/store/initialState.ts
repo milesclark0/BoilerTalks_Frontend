@@ -47,8 +47,6 @@ export interface IState {
     socket: Socket | null,
     setSocket: (socket: Socket) => void,
 
-    isConnected: boolean,
-    setIsConnected: (isConnected: boolean) => void,
 
     joinedRoom: Room | null,
     setJoinedRoom: (room: Room) => void,
@@ -102,8 +100,6 @@ export const initialState: IState = {
     socket: null,
     setSocket: (socket: Socket) => { },
 
-    isConnected: false,
-    setIsConnected: (isConnected: boolean) => { },
 
     joinedRoom: null,
     setJoinedRoom: (room: Room) => { },

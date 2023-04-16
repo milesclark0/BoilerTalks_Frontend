@@ -16,8 +16,10 @@ const useSocketFunctions = () => {
     const socket = useStore(state => state.socket);
     const [joinedRoom, setJoinedRoom] = useStore(state => [state.joinedRoom, state.setJoinedRoom]);
     // sends a message to the server to be broadcasted to all users in the room
-    const sendMessage = (message: Message, room: Room, isSystemMessage: boolean) => {
-        //TODO: send profile picture with message
+    const sendMessage = async (message: Message, room: Room, isSystemMessage: boolean) => {
+        if (joinedRoom === null) {
+            await connectToRoom(room);
+        }
         if (socket !== null) {
             if (message.message.trim() !== "") {
                 if (!isSystemMessage) {
@@ -44,7 +46,7 @@ const useSocketFunctions = () => {
 
     //used currently to add emoji reactions onto messages
     const addReaction = (message: Message, room: Room, isSystemMessage: boolean, reaction: string, index: number) => {
-        if (socket !== null) {
+        if (socket.connected) {
             if (message.message.trim() !== "") {
                 if (!isSystemMessage) {
                     console.log(`[${user?.username}]: ${room?._id.$oid} ${reaction}`);
@@ -71,14 +73,11 @@ const useSocketFunctions = () => {
         }
     };
 
-    const connectToRoom = async (room: Room) => {
-        console.log(joinedRoom?._id.$oid, room._id.$oid);
-        
+    const connectToRoom = async (room: Room) => {        
         if (joinedRoom?._id.$oid === room._id.$oid) {
             return;
         }
-        if (!socket.connected) {
-            console.log(room.name);
+        if (socket.connected) {
             let ret;
             if (room !== null) {
                 console.log("connecting to room", room?.name);
@@ -91,8 +90,8 @@ const useSocketFunctions = () => {
                             profilePic: user?.profilePicture,
                             displayName: profile?.displayName,
                         },
-                        (response: string | Room) => {
-                            console.log(response)
+                        (response) => {
+                            console.log(response.data.message)
                             resolve(response)}
                     )
                 );
@@ -100,12 +99,12 @@ const useSocketFunctions = () => {
             }
             return ret;
         } else {
-            console.log("socket is null");
+            console.log("socket is not connected");
         }
     };
 
     const disconnectFromRoom = (room: Room) => {
-        if (socket !== null) {
+        if (socket.connected) {
             if (room !== null) {
                 socket.emit(namespace.leave, { roomID: room?._id.$oid, username: user?.username }, (response: string) => {
                     //console.log(response);

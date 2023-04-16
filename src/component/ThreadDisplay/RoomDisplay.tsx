@@ -8,11 +8,7 @@ import { useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/components/userBar";
 import MessageBox from "../ThreadComponents/messageBox";
-import {
-  addCourseModsURL,
-  getCourseManagementURL,
-  getCourseModsURL,
-} from "../../API/CourseManagementAPI";
+import { addCourseModsURL, getCourseManagementURL, getCourseModsURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import { MessageEntry } from "../ThreadComponents/MessageEntry";
@@ -48,28 +44,21 @@ const RoomDisplay = () => {
   const [warned, setWarned] = useState<boolean>(false);
   const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
   const [appealData, setAppealData] = useState<Appeal>(null);
-  const { profile } = useAuth();
+  const { setProfile, profile } = useAuth();
   // const [messages, setMessagesL] = useState<Message[]>(null);
   const [emojiShow, setEmojiShow] = useState<boolean>(false);
-  const [
-    currentCourse,
-    currentRoom,
-    setCurrentRoom,
-    messages,
-    setMessages,
-    userCourseList,
-    setCurrentCourse,
-    setActiveCourseThread,
-  ] = useStore((state) => [
-    state.currentCourse,
-    state.currentRoom,
-    state.setCurrentRoom,
-    state.messages,
-    state.setMessages,
-    state.userCourseList,
-    state.setCurrentCourse,
-    state.setActiveCourseThread,
-  ]);
+  const [currentCourse, currentRoom, setCurrentRoom, messages, setMessages, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore(
+    (state) => [
+      state.currentCourse,
+      state.currentRoom,
+      state.setCurrentRoom,
+      state.messages,
+      state.setMessages,
+      state.userCourseList,
+      state.setCurrentCourse,
+      state.setActiveCourseThread,
+    ]
+  );
 
   // get course management
   useEffect(() => {
@@ -130,28 +119,36 @@ const RoomDisplay = () => {
   }, [roomId]);
 
   useEffect(() => {
-    if (messages[messages.length - 1] != undefined) {
+    return () => {
       updateLastSeenMessage();
-    }
+    };
   }, [messages]);
 
   const updateLastSeenMessage = async () => {
-    const res = await axiosPrivate.post(updateLastSeenMessageURL + user?.username, {
+    if (messages[messages.length - 1] == undefined || profile == undefined) {
+      return;
+    }
+    console.log("updating last seen message", roomId);
+    const data = {
       roomId: roomId,
       data: {
-        courseName: currentCourse.name,
+        courseName: currentCourse?.name,
         message: {
           username: messages[messages.length - 1]["username"],
           timeSent: messages[messages.length - 1]["timeSent"],
         },
       },
-    });
-    console.log(res)
-    // if (res.status == 200) {
-    //   if (res.data.statusCode == 200) {
-    //     // do nothing
-    //   }
-    // }
+    };
+    const res = await axiosPrivate.post(updateLastSeenMessageURL + user?.username, data);
+    console.log(res);
+    if (res.status == 200) {
+      if (res.data.statusCode == 200) {
+        const newProfile = profile;
+        newProfile.lastSeenMessage = res.data.data;
+        console.log(res.data.data, profile);
+        setProfile(newProfile);
+      }
+    }
   };
 
   // useEffect(() => {
@@ -171,11 +168,7 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? (
-            <BanDialog bannedData={bannedData} appealData={appealData} />
-          ) : (
-            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
-          )}
+          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
         </Box>
       )}
       {!banned && !warned && (
@@ -187,14 +180,7 @@ const RoomDisplay = () => {
   );
 };
 
-const MessageBoxContainer = ({
-  isReplying,
-  handleReply,
-  replyIndex,
-  updateReaction,
-  reaction,
-  messages,
-}) => {
+const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
   const containerProps = {
     isReplying,
     handleReply,
@@ -217,14 +203,7 @@ const MessageBoxContainer = ({
   );
 };
 
-const MessageBoxItems = ({
-  isReplying,
-  handleReply,
-  replyIndex,
-  updateReaction,
-  reaction,
-  messages,
-}) => {
+const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
   return (
     <Box>
       {isReplying ? (
@@ -245,11 +224,7 @@ const MessageBoxItems = ({
           </Typography>
         </Box>
       ) : null}
-      <MessageBox
-        replyIndex={replyIndex}
-        handleReply={handleReply}
-        {...{ updateReaction, reaction, messages }}
-      />
+      <MessageBox replyIndex={replyIndex} handleReply={handleReply} {...{ updateReaction, reaction, messages }} />
     </Box>
   );
 };
@@ -315,24 +290,17 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
         <MessagesList {...messageBoxProps} messages={messages} />
       </Box>
       <MessageBoxContainer {...messageBoxProps} messages={messages} />
-      <UserBar/>
+      <UserBar />
     </Box>
   );
 };
 
-const MessagesList = ({
-  isReplying,
-  handleReply,
-  replyIndex,
-  updateReaction,
-  reaction,
-  messages,
-  bannedUsers,
-}) => {
+const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages, bannedUsers }) => {
   const { user, profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const axiosPrivate = useAxiosPrivate();
+  const { roomId, courseId } = useParams();
 
   useEffect(() => {
     //update profile pic every 5 minutes
@@ -346,20 +314,33 @@ const MessagesList = ({
     // return await axiosPrivate.get(getCourseModsURL + courseId);
     return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
   };
+  console.log(profile?.lastSeenMessage);
 
   const ConditionalLineBreak = ({ index }) => {
+    //console.log(profile?.lastSeenMessage[roomId]?.message.timeSent, messages?.[index]?.timeSent);
     const options = { year: "numeric", month: "long", day: "numeric" } as const;
-    if (messages?.length - 1 === index || messages?.length === 0) {
+    if (messages?.length === 0) {
       return null;
     }
-    const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(
-      undefined,
-      options
-    );
 
+    const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(undefined, options);
     const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
+    
+    //render new message divider if message before is the last seen message
+    if (profile?.lastSeenMessage[roomId]?.message.timeSent === messages[index - 1]?.timeSent) {
+      return (
+        <Divider
+        sx={{
+          paddingBottom: "10px",
+          textAlign: "center",
+          color: "error.main",
+        }}
+        >
+          <Typography variant="overline">{msgDateAfter} (New)</Typography>
+        </Divider>
+      );
+    }
     // if message after is the next day
-
     if (msgDateBefore === undefined || msgDateAfter !== msgDateBefore) {
       return (
         <Divider
@@ -392,9 +373,7 @@ const MessagesList = ({
                 message={message}
                 index={index}
                 isReply={(isReplying) => handleReply(isReplying, index)}
-                isRoomMod={
-                  profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2"
-                }
+                isRoomMod={profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2"}
                 promoteUser={setCurrentRoomMods}
                 addReaction={updateReaction}
                 course={currentCourse}
@@ -405,13 +384,7 @@ const MessagesList = ({
       </Box>
     </Box>
   ) : (
-    <Box>
-      {messages ? (
-        <Typography variant="h6">No messages yet!</Typography>
-      ) : (
-        <Typography>Loading...</Typography>
-      )}
-    </Box>
+    <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
   );
 };
 export default React.memo(RoomDisplay);

@@ -71,7 +71,6 @@ const useStore = create<IState>((set, get) => ({
 
     //sockets
     setSocket: (socket: Socket) => set({ socket }),
-    setIsConnected: (isConnected: boolean) => set({ isConnected }),
     setMessage: (message: string) => set({ message }),
     setMessages: (messages: Message[]) => set({ messages }),
     addMessage: (message: Message) => set({ messages: [...get().messages, message] }),

@@ -1,4 +1,4 @@
-import { Button, Card, Box, Stack, Typography, Avatar, TextField } from "@mui/material";
+import { Button, Card, Box, Stack, Typography, Avatar, TextField, Alert } from "@mui/material";
 import React, { useState } from "react";
 import { editProfileURL } from "../../API/ProfileAPI";
 import { useAuth } from "../../context/context";
@@ -13,8 +13,13 @@ interface GridProps {
   isLoggedUserProfile: boolean;
   setProfileInfo: React.Dispatch<React.SetStateAction<Profile>>;
   image: string;
+  changeMessage: string;
+  setChangeMessage: React.Dispatch<React.SetStateAction<string>>;
+  changeMessageSeverity: "success" | "error" | "info";
+  setChangeMessageSeverity: React.Dispatch<React.SetStateAction<"success" | "error" | "info">>;
+
 }
-export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUserProfile, profileInfo, setProfileInfo, image }: GridProps) => {
+export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUserProfile, profileInfo, setProfileInfo, image, changeMessage, setChangeMessage, changeMessageSeverity, setChangeMessageSeverity}: GridProps) => {
   const { themeSetting } = useAuth();
   const [classYear, setClassYear] = useState<string>(null);
   const [major, setMajor] = useState<string>(null);
@@ -39,17 +44,20 @@ export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUse
       bio,
     });
     if (response.data.statusCode === 200) {
-      alert(response.data.message);
       let c = classYear ? (classYear as ClassYear) : profileInfo?.classYear;
       let m = major ? (major as string) : profileInfo?.major;
       let b = bio ? (bio as string) : profileInfo?.bio;
       setProfileInfo({ ...profileInfo, classYear: c, major: m, bio: b });
     } else {
-      alert(response.data.message);
+      setChangeMessage(response.data.message);
+      setChangeMessageSeverity("error");
     }
     setBio(null);
     setClassYear(null);
     setMajor(null);
+    setEditMode(false);
+    setChangeMessage(response.data.message);
+    setChangeMessageSeverity("success");
   };
 
   const infoStyle = {
@@ -100,12 +108,23 @@ export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUse
     <Card sx={{ borderRadius: "2%", p: 2, height: "60vh" }}>
       <Box position={"relative"} display={"flex"}>
         <EditButton
-          sx={{ position: "absolute", top: 0, right: 0 }}
+          sx={{ position: "absolute", top: 0, right: 0, color: "secondary.main" }}
           viewedUser={viewedUser}
           isEditMode={!editMode}
           onClick={() => setEditMode(true)}
         ></EditButton>
-        <Button sx={{ position: "absolute", top: 0, right: 0, visibility: editMode ? "visible" : "hidden" }} onClick={handleCancelEdit}>
+        <Button
+          variant="text"
+          sx={{ position: "absolute", top: 0, right: 0, visibility: editMode ? "visible" : "hidden", color: "secondary.main" }}
+          onClick={updateProfile}
+        >
+          Save
+        </Button>
+        <Button
+          variant="text"
+          sx={{ position: "absolute", top: 40, right: 0, visibility: editMode ? "visible" : "hidden" }}
+          onClick={handleCancelEdit}
+        >
           Cancel
         </Button>
       </Box>
@@ -121,6 +140,9 @@ export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUse
         <Box display={"flex"}>
           {/* class year */}
           <ClassYearText {...genProps} />
+          <Typography variant="h6" sx={{ ...infoStyle, ml: 1, mr: 1 }}>
+            |
+          </Typography>
           <MajorText {...genProps} />
         </Box>
         {/* email */}
@@ -133,16 +155,13 @@ export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUse
     </Card>
   );
 };
-const ClassYearText = ({ classYear, setClassYear, profileInfo, updateProfile, infoStyle, editMode, viewedUser }) => {
-  if (classYear === null || editMode === false) {
+const ClassYearText = ({ classYear, setClassYear, profileInfo, infoStyle, editMode }) => {
+  if (editMode === false) {
     return (
       <Box display={"flex"} sx={{ alignItems: "center" }}>
-        {profileInfo?.classYear ? (
-          <Typography variant="h6" sx={{ ...infoStyle }}>
-            {profileInfo?.classYear}
-          </Typography>
-        ) : null}
-        <EditButton isEditMode={editMode} viewedUser={viewedUser} onClick={() => setClassYear("")}></EditButton>
+        <Typography variant="h6" sx={{ ...infoStyle }}>
+          {profileInfo?.classYear || "-"}
+        </Typography>
       </Box>
     );
   }
@@ -153,44 +172,40 @@ const ClassYearText = ({ classYear, setClassYear, profileInfo, updateProfile, in
         label="Class Year"
         value={classYear ? classYear : profileInfo?.classYear}
         onChange={(e) => setClassYear(e.target.value)}
+        size="small"
       />
-      <CheckButton isEditMode={editMode} onClick={updateProfile}></CheckButton>
-      <CancelButton isEditMode={editMode} onClick={() => setClassYear(null)}></CancelButton>
     </Box>
   );
 };
 
-const MajorText = ({ major, setMajor, profileInfo, updateProfile, infoStyle, editMode, viewedUser }) => {
-  if (major === null || editMode === false) {
+const MajorText = ({ major, setMajor, profileInfo, infoStyle, editMode }) => {
+  if (editMode === false) {
     return (
       <Box display={"flex"} sx={{ alignItems: "center" }}>
-        <Typography variant="h6" sx={{ ...infoStyle, ml: 1, mr: 2 }}>
-          |
+        <Typography variant="h6" sx={{ ...infoStyle, width: "150px" }} noWrap>
+          {profileInfo?.major || "-"}
         </Typography>
-        {profileInfo?.major ? (
-          <Typography variant="h6" sx={{ ...infoStyle, width: "150px" }} noWrap>
-            {profileInfo?.major}
-          </Typography>
-        ) : null}
-        <EditButton isEditMode={editMode} viewedUser={viewedUser} onClick={() => setMajor("")}></EditButton>
       </Box>
     );
   }
   return (
     <Box display={"flex"} sx={{ alignItems: "center" }}>
-      <TextField label="Major" sx={{ width: 0.8 }} value={major ? major : profileInfo?.major} onChange={(e) => setMajor(e.target.value)} />
-      <CheckButton isEditMode={editMode} onClick={updateProfile}></CheckButton>
-      <CancelButton isEditMode={editMode} onClick={() => setMajor(null)}></CancelButton>
+      <TextField
+        size="small"
+        label="Major"
+        sx={{ width: 0.8 }}
+        value={major ? major : profileInfo?.major}
+        onChange={(e) => setMajor(e.target.value)}
+      />
     </Box>
   );
 };
 
-const BioText = ({ bio, setBio, profileInfo, updateProfile, editMode, viewedUser }) => {
-  if (bio === null || editMode === false) {
+const BioText = ({ bio, setBio, profileInfo, editMode }) => {
+  if (editMode === false) {
     return (
       <Box display={"flex"} sx={{ alignItems: "center" }}>
         <Typography variant="body1">{profileInfo?.bio}</Typography>
-        <EditButton isEditMode={editMode} viewedUser={viewedUser} onClick={() => setBio("")}></EditButton>
       </Box>
     );
   }
@@ -201,12 +216,9 @@ const BioText = ({ bio, setBio, profileInfo, updateProfile, editMode, viewedUser
         value={bio ? bio : profileInfo?.bio}
         onChange={(e) => setBio(e.target.value)}
         label="Bio"
-        style={{ width: "20vw" }} // Add this line
+        size="small"
+        style={{ width: "25vw" }} // Add this line
       />
-      <Stack direction={"column"}>
-        <CheckButton isEditMode={editMode} onClick={updateProfile}></CheckButton>
-        <CancelButton isEditMode={editMode} onClick={() => setBio(null)}></CancelButton>
-      </Stack>
     </Box>
   );
 };

@@ -15,10 +15,9 @@ const namespace = {
 };
 
 const useSockets = () => {
-  const [socket, setSocket, setIsConnected, addMessage, addReactionMessage] = useStore((state) => [
+  const [socket, setSocket, addMessage, addReactionMessage] = useStore((state) => [
     state.socket,
     state.setSocket,
-    state.setIsConnected,
     state.addMessage,
     state.addReactionMessage,
   ]);
@@ -33,13 +32,11 @@ const useSockets = () => {
     if (socket === null) return;
     socket.on(namespace.connect, () => {
       console.log("connected");
-      setIsConnected(true);
     });
 
     // listens for disconnect event
     socket.on(namespace.disconnect, () => {
       console.log("disconnected");
-      setIsConnected(false);
     });
 
     socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string }) => {

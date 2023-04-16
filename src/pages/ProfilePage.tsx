@@ -3,18 +3,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { getProfileURL, uploadProfilePictureURL } from "../API/ProfileAPI";
-import {
-  AppBar,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Grid,
-  Paper,
-  Toolbar,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Alert, AppBar, Box, Button, Card, Divider, Grid, Paper, Toolbar, Typography, styled } from "@mui/material";
 import { Profile, User } from "../globals/types";
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
@@ -31,6 +20,8 @@ const ProfilePage = () => {
   const [profileInfo, setProfileInfo] = useState<Profile>(null);
   const [viewedUser, setViewedUser] = useState<User>(null);
   const [image, setImage] = useState<string>(null);
+  const [changeMessage, setChangeMessage] = useState<string>(null);
+  const [changeMessageSeverity, setChangeMessageSeverity] = useState<"success" | "error" | "info">("success");
   const navigate = useNavigate();
 
   const axiosPrivate = useAxiosPrivate();
@@ -97,6 +88,10 @@ const ProfilePage = () => {
     isLoggedUserProfile,
     setProfileInfo,
     image,
+    changeMessage,
+    setChangeMessage,
+    changeMessageSeverity,
+    setChangeMessageSeverity,
   };
 
   //add a back button
@@ -108,12 +103,21 @@ const ProfilePage = () => {
           <AppBar position="fixed" sx={{ height: appBarHeight }}>
             <Toolbar>
               {/* If display name is set, show it else show username */}
-              <Typography variant="h5" sx={{mr:1}}>Viewing {`${profileInfo?.displayName ? profileInfo?.displayName : profileInfo?.username}`}</Typography>
+              <Typography variant="h5" sx={{ mr: 1 }}>
+                Viewing {`${profileInfo?.displayName ? profileInfo?.displayName : profileInfo?.username}`}
+              </Typography>
               <Divider orientation="vertical"></Divider>
               <Button onClick={() => navigate("/home")}>Back to Home</Button>
             </Toolbar>
           </AppBar>
-          <Card id="view-profile-container" sx={{ p: 8, bgcolor: "primary.main", borderRadius: "2%" }}>
+          <Card id="view-profile-container" sx={{ p: 10, bgcolor: "primary.main", borderRadius: "2%",}}>
+          <Alert
+            severity={changeMessageSeverity}
+            sx={{ visibility: changeMessage ? "visible" : "hidden", w: 1, mb: 1 }}
+            onClose={() => setChangeMessage(null)}
+          >
+            {changeMessage}
+          </Alert>
             <Grid container spacing={4}>
               <Grid item xs={4}>
                 <ProfileContainer {...gridProps} />

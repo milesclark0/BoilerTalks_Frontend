@@ -32,12 +32,13 @@ import useStore from "../../../store/store";
 const SideBar = ({ ...props }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeIcon, setActiveIcon, setDistinctDepartments, setCurrentCourse] = useStore(
+  const [activeIcon, setActiveIcon, setDistinctDepartments, setCurrentCourse, userCourseList] = useStore(
     (state) => [
       state.activeIcon,
       state.setActiveIcon,
       state.setDistinctDepartments,
-      state.setCurrentCourse
+      state.setCurrentCourse,
+      state.userCourseList,
     ]
   );
 
@@ -86,7 +87,33 @@ const SideBar = ({ ...props }) => {
       setCurrentCourse(null);
     }
     setActiveIcon(course, isActiveCourse);
+    updateActiveIcon(course, isActiveCourse);
   };
+
+    function updateActiveIcon(course, isActiveCourse) {
+      //runs when SideBar icon is clicked
+      if (isActiveCourse) {
+        //if the icon is a course, not a department
+        userCourseList.forEach((c) => {
+          if (c.name === course) {
+            navigate(`/home/courses/${c._id.$oid}/${c?.rooms[0][1].$oid}`, {
+              replace: true,
+            });
+          }
+        });
+      } else {
+        //if the icon is a department or is not set
+        if (course === "") {
+          navigate(`/home`, {
+            replace: true,
+          });
+        } else {
+          navigate(`/home/courses`, {
+            replace: true,
+          });
+        }
+      }
+    }
 
   return (
     <Box>

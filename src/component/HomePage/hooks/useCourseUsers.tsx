@@ -14,7 +14,7 @@ export const useCourseUsers = () => {
     state.setCourseUsers,
   ]);
   const axiosPrivate = useAxiosPrivate();
-  const {courseId, roomId} = useParams()
+  const {courseId} = useParams()
 
   const fetchCourseUsers = async () => {
     return await axiosPrivate.get(getCourseUsersURL + activeIcon.course);

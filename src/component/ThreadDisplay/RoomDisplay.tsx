@@ -20,6 +20,7 @@ import useUserRoomData from "../HomePage/hooks/useUserRoomData";
 import useStore from "./../../store/store";
 import { getRoomURL } from "../../API/CoursesAPI";
 import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
+import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
 
 type WarnOrBan = {
   username: string;
@@ -59,6 +60,8 @@ const RoomDisplay = () => {
       state.setActiveCourseThread,
     ]
   );
+    useUserRoomData();
+    useCourseUsers();
 
   // get course management
   useEffect(() => {

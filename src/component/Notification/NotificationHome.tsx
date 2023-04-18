@@ -16,7 +16,7 @@ const NotificationHome = ({ notifications }: Props) => {
   const findRoomName = (notiString: string) => {
     if (notiString.split(" ")[3] != undefined) {
       const room = userRoomsList?.find((room) => room._id.$oid === notiString.split(" ")[3]);
-      return "new message in " + room.name;
+      return "new message in " + room?.name;
     }
     return notiString;
   }

@@ -23,7 +23,7 @@ const Home = () => {
   const axiosPrivate = useAxiosPrivate();
   const { user } = useAuth();
   console.log("home rerendered");
-
+  useUserRoomData();
   useSockets();
   const { isUserCourseListLoading, userCourseListError } = useUserCourseData();
 

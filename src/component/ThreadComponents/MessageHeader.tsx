@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, Tooltip, IconButton } from "@mui/material";
+import { Box, Typography, Grid, IconButton, Tooltip } from "@mui/material";
 import { Message } from "../../globals/types";
 import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
@@ -8,7 +8,6 @@ import { useState } from "react";
 import { useAuth } from "../../context/context";
 import GavelIcon from "@mui/icons-material/Gavel";
 
-//TODO: this file is causing the messages to lag a lot, need to figure out why
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -61,19 +60,19 @@ export const MessageHeader = ({
   //TODO: dont render modal for every message, move it to a higher level + move username and time to a higher level
 
   return (
-    <Box sx={{ height: 1, alignItems: "top", display: "flex" }}>
+    <div style={{ height: "100%", alignItems: "top", display: "flex" }}>
       {/* <BlockUserModal {...blockUserProps} /> */}
-      <Box display={"inline"}>
+      <div style={{display: "inline"}}>
         <Typography variant="h6" display="inline">{`${message.displayName || message.username}`}</Typography>
         <Tooltip title={getTime(message.timeSent, true)} placement="top" arrow>
           <Typography variant="overline" sx={{ paddingLeft: "5px" }}>
             {getTime(message.timeSent, false)}
           </Typography>
         </Tooltip>
-      </Box>
+      </div>
       {hoveredMessageId === index ? (
-        <Box
-          sx={{
+        <div
+          style={{
             display: "inline",
           }}
         >
@@ -145,8 +144,8 @@ export const MessageHeader = ({
               </Grid>
             ) : null}
           </Grid>
-        </Box>
+        </div>
       ) : null}
-    </Box>
+    </div>
   );
 };

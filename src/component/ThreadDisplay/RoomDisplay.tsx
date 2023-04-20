@@ -1,6 +1,6 @@
 // Display for messages
-import React, { useState, useEffect } from "react";
-import { Box, Divider, IconButton, Typography } from "@mui/material";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { Course, Message, Room } from "../../globals/types";
@@ -11,7 +11,7 @@ import MessageBox from "../ThreadComponents/messageBox";
 import { addCourseModsURL, getCourseManagementURL, getCourseModsURL } from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
-import { MessageEntry } from "../ThreadComponents/MessageEntry";
+import MessageEntry from "../ThreadComponents/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Paper } from "@mui/material";
 import CourseDisplayAppBar from "./CourseDisplayAppBar";
@@ -21,6 +21,7 @@ import useStore from "./../../store/store";
 import { getRoomURL } from "../../API/CoursesAPI";
 import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
 import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
+import { VariableSizeList as List } from "react-window";
 
 type WarnOrBan = {
   username: string;
@@ -60,8 +61,8 @@ const RoomDisplay = () => {
       state.setActiveCourseThread,
     ]
   );
-    useUserRoomData();
-    useCourseUsers();
+  useUserRoomData();
+  useCourseUsers();
 
   // get course management
   useEffect(() => {
@@ -122,9 +123,11 @@ const RoomDisplay = () => {
   }, [roomId]);
 
   useEffect(() => {
-    return () => {
-      updateLastSeenMessage();
-    };
+    if (messages == null) {
+      return;
+    }
+
+    updateLastSeenMessage();
   }, [messages]);
 
   const updateLastSeenMessage = async () => {
@@ -251,21 +254,22 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   //   console.log("messages changed");
   // }, [messages]);
 
-  function handleReply(isReplying, index) {
+  const handleReply = useCallback((isReplying, index) => {
     setIsReplying(isReplying);
     if (isReplying) {
       setReplyIndex(index);
     } else {
       setReplyIndex(null);
     }
-  }
-  const updateReaction = (reaction: string, index: number) => {
+  }, []);
+
+  const updateReaction = useCallback((reaction: string, index: number) => {
     if (reaction === null && index === null) {
       setReaction(null);
       return;
     }
     setReaction({ reaction, index });
-  };
+  }, []);
   const messageBoxProps = {
     isReplying,
     handleReply,
@@ -283,7 +287,7 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
           p: APP_STYLES.DEFAULT_PADDING,
           width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
           maxHeight: `calc(100% - ${APP_STYLES.APP_BAR_HEIGHT * 2 + 30}px)`,
-          overflowY: "auto",
+          overflowY: "hidden",
           display: "flex",
           flexDirection: "column-reverse",
           scrollBehavior: "smooth",
@@ -298,29 +302,72 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   );
 };
 
-const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages, bannedUsers }) => {
-  const { user, profile } = useAuth();
+const MessagesList = ({ handleReply, updateReaction, messages }) => {
+  const { profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const axiosPrivate = useAxiosPrivate();
-  const { roomId, courseId } = useParams();
+  const { roomId } = useParams();
+  const listRef = useRef(null);
+
+  // useEffect(() => {
+  //   //update profile pic every 5 minutes
+  //   const interval = setInterval(() => {
+  //     setProfilePicLastUpdated(Date.now());
+  //   }, 300000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
-    //update profile pic every 5 minutes
-    const interval = setInterval(() => {
-      setProfilePicLastUpdated(Date.now());
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
+    if (listRef.current) {
+      //scroll to bottom and resize list entries
+      listRef.current.resetAfterIndex(0, true);
+      listRef.current.scrollToItem(messages.length - 1, { align: "bottom" });
+    }
+  }, [messages[0]]);
 
-  const setCurrentRoomMods = async (username: string) => {
-    // return await axiosPrivate.get(getCourseModsURL + courseId);
-    return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
+  const getItemSize = (index: number) => {
+    const message = messages[index];
+    // Compute the height of the message based on its contents
+    // You can use any algorithm that suits your needs
+    // Here's an example based on the message text length
+    const lineHeight = 40; // You can adjust this value to match your font size
+    const emojiSpace = message?.reactions?.length > 0 ? 45 : 0; // Add some extra space for emojis
+    const reply = Number.isInteger(message.replyIndex) ? 40 : 0;
+    const linesCount = Math.ceil(message?.message.length / 140); // Break lines every 50 characters
+    const finalHeight = linesCount * lineHeight + 40 + getDividerHeight(index) + emojiSpace + reply; // Add some extra space for the message container
+    console.log(index, linesCount, getDividerHeight(index), finalHeight);
+    return finalHeight;
   };
-  console.log(profile?.lastSeenMessage);
+
+  const setCurrentRoomMods = useCallback(
+    async (username: string) => {
+      // return await axiosPrivate.get(getCourseModsURL + courseId);
+      return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
+    },
+    [currentCourse?._id.$oid]
+  );
+
+  const getDividerHeight = (index: number) => {
+    const options = { year: "numeric", month: "long", day: "numeric" } as const;
+    const message = messages[index];
+    const messageBefore = messages[index - 1];
+    if (!messageBefore) {
+      return 31;
+    }
+    const messageTime = new Date(message.timeSent);
+    const messageBeforeTime = new Date(messageBefore.timeSent);
+    console.log(messageTime.toLocaleDateString(undefined, options), messageBeforeTime.toLocaleDateString(undefined, options));
+
+    const isSameDay = messageTime.toLocaleDateString(undefined, options) === messageBeforeTime.toLocaleDateString(undefined, options);
+    console.log(message.message, !isSameDay ? "has a divider" : "does not have a divider");
+
+    return isSameDay ? 0 : 31;
+  };
 
   const ConditionalLineBreak = ({ index }) => {
     //console.log(profile?.lastSeenMessage[roomId]?.message.timeSent, messages?.[index]?.timeSent);
+    const theme = useTheme();
     const options = { year: "numeric", month: "long", day: "numeric" } as const;
     if (messages?.length === 0) {
       return null;
@@ -328,66 +375,90 @@ const MessagesList = ({ isReplying, handleReply, replyIndex, updateReaction, rea
 
     const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(undefined, options);
     const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
-    
+
     //render new message divider if message before is the last seen message
     if (profile?.lastSeenMessage[roomId]?.message.timeSent === messages[index - 1]?.timeSent) {
       return (
-        <Divider
-        sx={{
-          paddingBottom: "10px",
-          textAlign: "center",
-          color: "error.main",
-        }}
+        <div
+          style={{
+            paddingBottom: "10px",
+            color: theme.palette.error.main,
+          }}
         >
-          <Typography variant="overline">{msgDateAfter} (New)</Typography>
-        </Divider>
+          <Divider>
+            <Typography variant="overline">{msgDateAfter} (New)</Typography>
+          </Divider>
+        </div>
       );
     }
     // if message after is the next day
     if (msgDateBefore === undefined || msgDateAfter !== msgDateBefore) {
       return (
-        <Divider
-          sx={{
+        <div
+          style={{
             paddingBottom: "10px",
-            textAlign: "center",
           }}
         >
-          <Typography variant="overline">{msgDateAfter}</Typography>
-        </Divider>
+          <Divider>
+            <Typography variant="overline">{msgDateAfter}</Typography>
+          </Divider>
+        </div>
       );
     }
     return null;
   };
 
-  return messages?.length > 0 ? (
-    <Box>
+  const Row = ({ index, style }) => {
+    const message = messages[index];
+    const isReply = useCallback(
+      (isReplying: boolean) => {
+        handleReply(isReplying, index);
+      },
+      [handleReply]
+    );
+    const MessageEntryProps = {
+      profilePicLastUpdated,
+      messages,
+      message,
+      index,
+      isReply,
+      isRoomMod: profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2",
+      promoteUser: setCurrentRoomMods,
+      addReaction: updateReaction,
+      course: currentCourse,
+    };
+    // Render a message entry using the message data
+    return (
+      <div key={index} style={{ ...style, scrollBehavior: "smooth" }}>
+        <ConditionalLineBreak index={index} />
+        <MessageEntry {...MessageEntryProps}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div>
       <Typography variant="h4" paddingBottom={"5px"}>
         Messages
       </Typography>
-      <Box>
-        {messages?.slice().map((message, index) => {
-          //displays messages
-          return user?.blockedUsers.includes(message.username) ? null : (
-            <Box key={index} sx={{ paddingBottom: "12px" }}>
-              <ConditionalLineBreak index={index} />
-              <MessageEntry
-                profilePicLastUpdated={profilePicLastUpdated}
-                messages={messages}
-                message={message}
-                index={index}
-                isReply={(isReplying) => handleReply(isReplying, index)}
-                isRoomMod={profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2"}
-                promoteUser={setCurrentRoomMods}
-                addReaction={updateReaction}
-                course={currentCourse}
-              />
-            </Box>
-          );
-        })}
-      </Box>
-    </Box>
-  ) : (
-    <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
+      {messages?.length > 0 ? (
+        <List
+          height={850} // set the height of the list
+          itemCount={messages?.length} // set the number of items in the list
+          itemSize={getItemSize}
+          estimatedItemSize={100} // set the height of each item in the list
+          width="100%" // set the width of the list
+          ref={listRef}
+          style={{ overflowX: "hidden" }}
+          className="scrollBar"
+        >
+          {Row}
+        </List>
+      ) : (
+        <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
+      )}
+    </div>
   );
 };
 export default React.memo(RoomDisplay);

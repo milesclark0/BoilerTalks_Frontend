@@ -7,7 +7,7 @@ import {
   MenuItem,
   Tooltip,
 } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Message, Room } from "../../globals/types";
 import { MessageHeader } from "./MessageHeader";
 import MessageIcon from "@mui/icons-material/Message";
@@ -17,7 +17,6 @@ import React from "react";
 import { Course } from "../../globals/types";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../../context/context";
-import { Visibility } from "@mui/icons-material";
 
 type MessageEntryProps = {
   message: Message;
@@ -31,7 +30,7 @@ type MessageEntryProps = {
   profilePicLastUpdated: number;
 };
 
-export const MessageEntry = ({
+const MessageEntry = ({
   message,
   messages,
   index,
@@ -54,9 +53,17 @@ export const MessageEntry = ({
   const openUserMenu = Boolean(anchorEl);
   const { themeSetting } = useAuth();
 
-  const handleUserClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUserClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
+
+  const handleHoverEnter = useCallback(() => {
+    setHoveredMessageId(index);
+  }, [index]);
+
+  const handleHoverLeave = useCallback(() => {
+    setHoveredMessageId(null);
+  }, []);
 
   return (
     <Box
@@ -70,16 +77,13 @@ export const MessageEntry = ({
           backgroundColor: themeSetting === "dark" ? "#2f2f2f" : "#e0e0e0",
         },
       }}
-      onMouseEnter={() => {
-        setHoveredMessageId(index);
-      }}
-      onMouseLeave={() => setHoveredMessageId(null)}
+      onMouseEnter={handleHoverEnter}
+      onMouseLeave={handleHoverLeave}
     >
       {/* ----MESSAGE THREAD UI */}
 
       <GetProfilePicture
-        index={index}
-        messages={messages}
+        src={message.profilePic}
         handleUserClick={handleUserClick}
         profilePicLastUpdated={profilePicLastUpdated}
       />
@@ -90,8 +94,8 @@ export const MessageEntry = ({
         }}
       >
         {Number.isInteger(message.replyIndex) ? (
-          <Box
-            sx={{
+          <div
+            style={{
               display: "flex",
               alignItems: "center",
             }}
@@ -103,9 +107,9 @@ export const MessageEntry = ({
                 `: ` +
                 messages[message.replyIndex].message}
             </Typography>
-          </Box>
+          </div>
         ) : null}
-        <Box>
+        <div>
           <MessageHeader
             message={message}
             index={index}
@@ -117,17 +121,16 @@ export const MessageEntry = ({
             setReactingIndex={setReactingIndex}
           />
           <Typography
-            variant="body1"
-            sx={{ wordWrap: "break-word", paddingBottom: "5px" }}
+            style={{ wordWrap: "break-word", paddingBottom: "5px" }}
           >
             {message.message}
           </Typography>
-        </Box>
+        </div>
 
         {message.reactions?.map((reaction, index) => {
           return (
             <React.Fragment key={index}>
-              {reaction.reaction !== "" && (
+              {reaction.reaction  && (
                 <Tooltip
                   title={reaction.username + `'s reaction`}
                   placement="bottom"
@@ -181,21 +184,20 @@ export const MessageEntry = ({
   );
 };
 const GetProfilePicture = ({
-  index,
-  messages,
+  src,
   handleUserClick,
   profilePicLastUpdated,
 }) => {
   // only show profile picture if it is the first message or if the username is different from the previous message
   // const show = index === 0 || messages[index].username !== messages[index - 1].username;
   // const visibility = show ? "visible" : "hidden";
-  const message = messages[index];
   return (
     <IconButton
       onClick={handleUserClick}
       sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}
     >
-      <Avatar src={message.profilePic + `?${profilePicLastUpdated}`} />
+      <Avatar src={src + `?${profilePicLastUpdated}`} />
     </IconButton>
   );
 };
+export default React.memo(MessageEntry);

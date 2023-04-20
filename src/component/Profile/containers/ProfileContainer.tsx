@@ -1,10 +1,10 @@
 import { Button, Card, Box, Stack, Typography, Avatar, TextField, Alert } from "@mui/material";
 import React, { useState } from "react";
-import { editProfileURL } from "../../API/ProfileAPI";
-import { useAuth } from "../../context/context";
-import { User, Profile, ClassYear } from "../../globals/types";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { CancelButton, CheckButton, EditButton } from "./components";
+import { editProfileURL } from "../../../API/ProfileAPI";
+import { useAuth } from "../../../context/context";
+import { User, Profile, ClassYear } from "../../../globals/types";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { CancelButton, CheckButton, EditButton } from "../components/components";
 
 interface GridProps {
   viewedUser: User;
@@ -17,9 +17,19 @@ interface GridProps {
   setChangeMessage: React.Dispatch<React.SetStateAction<string>>;
   changeMessageSeverity: "success" | "error" | "info";
   setChangeMessageSeverity: React.Dispatch<React.SetStateAction<"success" | "error" | "info">>;
-
 }
-export const ProfileContainer = ({ uploadProfilePicture, viewedUser, isLoggedUserProfile, profileInfo, setProfileInfo, image, changeMessage, setChangeMessage, changeMessageSeverity, setChangeMessageSeverity}: GridProps) => {
+export const ProfileContainer = ({
+  uploadProfilePicture,
+  viewedUser,
+  isLoggedUserProfile,
+  profileInfo,
+  setProfileInfo,
+  image,
+  changeMessage,
+  setChangeMessage,
+  changeMessageSeverity,
+  setChangeMessageSeverity,
+}: GridProps) => {
   const { themeSetting } = useAuth();
   const [classYear, setClassYear] = useState<string>(null);
   const [major, setMajor] = useState<string>(null);
@@ -182,7 +192,7 @@ const MajorText = ({ major, setMajor, profileInfo, infoStyle, editMode }) => {
   if (editMode === false) {
     return (
       <Box display={"flex"} sx={{ alignItems: "center" }}>
-        <Typography variant="h6" sx={{ ...infoStyle, width: "150px" }} noWrap>
+        <Typography variant="h6" sx={{ ...infoStyle, maxWidth: "150px" }} noWrap>
           {profileInfo?.major || "-"}
         </Typography>
       </Box>

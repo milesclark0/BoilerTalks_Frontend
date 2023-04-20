@@ -1,7 +1,8 @@
 import { Tabs, Tab, Box, Typography, Paper, useTheme } from "@mui/material";
 import React from "react";
-import { useAuth } from "../../context/context";
-import { User, Profile } from "../../globals/types";
+import { useAuth } from "../../../context/context";
+import { User, Profile } from "../../../globals/types";
+import CoursesTab from "../components/CoursesTab";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -15,7 +16,7 @@ function TabPanel(props: TabPanelProps) {
   return (
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, width:500 }}>
           <Box>{children}</Box>
         </Box>
       )}
@@ -41,13 +42,22 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
   const [value, setValue] = React.useState(0);
   const theme = useTheme();
   const { themeSetting } = useAuth();
+  // public tabs: Courses, Modded Courses
+  const publicTabsIndexCutOff = 1
   const tabPanelOptions = ["Courses", "Modded Courses", "Blocked Users", "Change Password", "Change Theme", "Change Display Name"];
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const CurrentTab = ({index}) => {
+    switch (index) {
+      case 0:
+        return <CoursesTab {...props} />;
+    }
+  }
   return (
-    <Paper sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", borderRadius: "2%", height:1 }}>
+    <Paper sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", borderRadius: "2%", height: 1 }}>
       <Tabs
         sx={{
           borderRight: 1,
@@ -67,19 +77,19 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
         onChange={handleChange}
       >
         {tabPanelOptions.map((option, index) => {
-          if (!props.isLoggedUserProfile && index > 0) {
+          if (!props.isLoggedUserProfile && index > publicTabsIndexCutOff) {
             return null;
           }
-          return <CustomTab label={option} key={index} tabPanelOptions={tabPanelOptions} />;
+          return <CustomTab label={option} key={index} />;
         })}
       </Tabs>
       {tabPanelOptions.map((option, index) => {
-        if (!props.isLoggedUserProfile && index > 0) {
+        if (!props.isLoggedUserProfile && index > publicTabsIndexCutOff) {
           return null;
         }
         return (
           <TabPanel value={value} index={index} key={index}>
-            <Typography>{option}</Typography>
+            <CurrentTab index={index} />
           </TabPanel>
         );
       })}

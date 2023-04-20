@@ -8,8 +8,8 @@ import { Profile, User } from "../globals/types";
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import { APP_STYLES } from "../globals/globalStyles";
-import { ProfileContainer } from "../component/Profile/ProfileContainer";
-import ProfileTabBar from "../component/Profile/ProfileTabBar";
+import { ProfileContainer } from "../component/Profile/containers/ProfileContainer";
+import ProfileTabBar from "../component/Profile/containers/ProfileTabBar";
 
 const ProfilePage = () => {
   const { requestUsername } = useParams();
@@ -110,14 +110,14 @@ const ProfilePage = () => {
               <Button onClick={() => navigate("/home")}>Back to Home</Button>
             </Toolbar>
           </AppBar>
-          <Card id="view-profile-container" sx={{ p: 10, bgcolor: "primary.main", borderRadius: "2%",}}>
-          <Alert
-            severity={changeMessageSeverity}
-            sx={{ visibility: changeMessage ? "visible" : "hidden", w: 1, mb: 1 }}
-            onClose={() => setChangeMessage(null)}
-          >
-            {changeMessage}
-          </Alert>
+          <Card id="view-profile-container" sx={{ p: 10, bgcolor: "primary.main", borderRadius: "2%" }}>
+            <Alert
+              severity={changeMessageSeverity}
+              sx={{ visibility: changeMessage ? "visible" : "hidden", w: 1, mb: 1 }}
+              onClose={() => setChangeMessage(null)}
+            >
+              {changeMessage}
+            </Alert>
             <Grid container spacing={4}>
               <Grid item xs={4}>
                 <ProfileContainer {...gridProps} />

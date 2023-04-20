@@ -1,13 +1,13 @@
 import { Close, Check, Edit } from "@mui/icons-material";
 import { IconButton, IconButtonProps } from "@mui/material";
-import { useAuth } from "../../context/context";
-import { User } from "../../globals/types";
+import { useAuth } from "../../../context/context";
+import { User } from "../../../globals/types";
 
 interface ButtonProps extends IconButtonProps {
   isEditMode: boolean;
   viewedUser?: User;
 }
-export const CancelButton = ({  isEditMode, viewedUser,...props }: ButtonProps) => {
+export const CancelButton = ({ isEditMode, viewedUser, ...props }: ButtonProps) => {
   if (!isEditMode) return null;
 
   return (

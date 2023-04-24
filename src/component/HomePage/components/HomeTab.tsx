@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Tab, Tabs, Paper, Badge } from "@mui/material";
+import { Box, Tab, Tabs, Paper, Badge, useTheme } from "@mui/material";
 import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import NotificationHome from "../../Notification/NotificationHome";
@@ -34,6 +34,7 @@ type Props = {
 const HomeTab = ({ notifications, badgeCount, setBadgeCount }: Props) => {
   const [value, setValue] = useState<number>(0);
   const { themeSetting, user } = useAuth();
+  const theme = useTheme();
   const axiosPrivate = useAxiosPrivate();
 
   const updateSeenNotification = async () => {
@@ -57,10 +58,7 @@ const HomeTab = ({ notifications, badgeCount, setBadgeCount }: Props) => {
   };
 
   return (
-    <Paper
-      elevation={5}
-      sx={{ borderRadius: 2, height: "100%", display: "flex", flexDirection: "row" }}
-    >
+    <Paper elevation={5} sx={{ borderRadius: 2, height: "100%", display: "flex", flexDirection: "row" }}>
       <Tabs
         orientation="vertical"
         variant="scrollable"
@@ -70,20 +68,14 @@ const HomeTab = ({ notifications, badgeCount, setBadgeCount }: Props) => {
           borderRight: 1,
           borderColor: "rgba(7, 7, 7, 0.199)",
           ".Mui-selected": {
-            color: themeSetting === "light" ? "blue !important" : "teal !important",
+            color: `${theme.palette.secondary.main} !important`,
           },
-        }}
-        TabIndicatorProps={{
-          style: {
-            backgroundColor: themeSetting === "light" ? "blue" : "teal",
+          "& .MuiTabs-indicator": {
+            backgroundColor: `${theme.palette.secondary.main} !important`,
           },
         }}
       >
-        <Tab
-          label="Release Notes"
-          icon={<AnnouncementIcon />}
-          sx={{ color: themeSetting === "light" ? "black" : "white" }}
-        />
+        <Tab label="Release Notes" icon={<AnnouncementIcon />} sx={{ color: themeSetting === "light" ? "black" : "white" }} />
         <Tab
           label="Notifications"
           icon={

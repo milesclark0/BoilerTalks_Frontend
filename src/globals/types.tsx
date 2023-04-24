@@ -90,7 +90,7 @@ export type Message = {
   profilePic: string;
   replyIndex?: number;
   replyID?: string;//unused? maybe delete this?
-  reactions?: [{ username: string; reaction: string }];
+  reactions?: [{ username: string; reaction: string, displayName?: string }];
   displayName?: string;
 };
 

@@ -1,4 +1,4 @@
-import { Drawer, Box, List, ListItem, ListItemText, Typography, Button, Avatar, Badge } from "@mui/material";
+import { Drawer, Box, List, ListItem, ListItemText, Typography, Button, Avatar, Badge, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/context";
 import { Course, Room } from "../../../globals/types";
@@ -14,6 +14,7 @@ const UserBar = () => {
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const [currentCourse, userRoomsList, courseUsers] = useStore((state) => [state.currentCourse, state.userRoomsList, state.courseUsers]);
   const {courseId, roomId} = useParams();
+  const theme = useTheme();
   useEffect(() => {
     //update profile pic every 5 minutes
     const interval = setInterval(() => {
@@ -65,7 +66,7 @@ const UserBar = () => {
   const UserDisplay = ({ user, online }) => {
     const {themeSetting} = useAuth();
     const linkColor = themeSetting === "dark" ? "white" : "black";
-    const hoverColor = themeSetting === "dark" ? "teal" : "darkblue";
+    const hoverColor = theme.palette.secondary.main;
     return (
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         <Badge

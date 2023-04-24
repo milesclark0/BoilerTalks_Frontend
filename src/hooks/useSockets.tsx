@@ -41,7 +41,7 @@ const useSockets = () => {
       console.log("disconnected");
     });
 
-    socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string }) => {
+    socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string, displayName: string }) => {
       addReactionMessage(data);
     });
 

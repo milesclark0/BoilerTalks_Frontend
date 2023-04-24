@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Tab, Tabs, AppBar } from "@mui/material";
+import { Box, Tab, Tabs, AppBar, useTheme } from "@mui/material";
 import { APP_STYLES } from "../../../globals/globalStyles";
 import AddIcon from "@mui/icons-material/Add";
 import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
@@ -46,6 +46,7 @@ const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
   const [value, setValue] = useState<number>(0);
   const [showCourses, setShowCourses] = useState<boolean>(false);
   const { themeSetting } = useAuth();
+  const theme = useTheme();
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     if (newValue === 1) {
@@ -77,25 +78,17 @@ const TabBar = ({ badgeCount, setBadgeCount, notifications }: Props) => {
           display: "flex",
           alignItems: "center",
           ".Mui-selected": {
-            color: themeSetting === "light" ? "blue !important" : "teal !important",
+            color: `${theme.palette.secondary.main} !important`,
           },
         }}
         // TabIndicatorProps={{ style: { backgroundColor: "white" } }}
         centered
       >
-        <Tab
-          icon={<HomeIcon />}
-          label="Home"
-          sx={{ color: themeSetting === "light" ? "black" : "white" }}
-        />
-        <Tab
-          icon={<AddIcon />}
-          label="Add Courses"
-          sx={{ color: themeSetting === "light" ? "black" : "white" }}
-        />
+        <Tab icon={<HomeIcon />} label="Home" sx={{ color: themeSetting === "light" ? "black" : "white" }} />
+        <Tab icon={<AddIcon />} label="Add Courses" sx={{ color: themeSetting === "light" ? "black" : "white" }} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <HomeTab notifications={notifications} badgeCount={badgeCount} setBadgeCount={setBadgeCount}/>
+        <HomeTab notifications={notifications} badgeCount={badgeCount} setBadgeCount={setBadgeCount} />
       </TabPanel>
       <SearchCourseModal {...searchCourseProps} />
     </AppBar>

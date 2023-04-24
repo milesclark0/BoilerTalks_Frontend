@@ -11,3 +11,5 @@ export const updateNotificationPreferenceURL = "/profile/updateNotificationPrefe
 export const updateLastSeenMessageURL = "/profile/updateLastSeenMessage/";
 
 export const updateSeenNotificationURL = "/profile/updateSeenNotification/";
+
+export const changeDisplayNameURL = "/profile/changeDisplayName/";

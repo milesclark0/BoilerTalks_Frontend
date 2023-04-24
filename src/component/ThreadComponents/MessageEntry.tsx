@@ -82,11 +82,7 @@ const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture
-        src={message.profilePic}
-        handleUserClick={handleUserClick}
-        profilePicLastUpdated={profilePicLastUpdated}
-      />
+      <GetProfilePicture src={message.profilePic} handleUserClick={handleUserClick} profilePicLastUpdated={profilePicLastUpdated} />
       <Box
         sx={{
           overflow: "hidden",
@@ -102,10 +98,7 @@ const MessageEntry = ({
           >
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
-              {`Replied To: ` +
-                messages[message.replyIndex]?.username +
-                `: ` +
-                messages[message.replyIndex]?.message}
+              {messages[message.replyIndex] ? `Replied To: ` + messages[message.replyIndex].username + `: ` + messages[message.replyIndex].message :  "Message Deleted"}
             </Typography>
           </div>
         ) : null}
@@ -120,22 +113,16 @@ const MessageEntry = ({
             isReacting={handleEmojiPanelChange}
             setReactingIndex={setReactingIndex}
           />
-          <Typography
-            style={{ wordWrap: "break-word", paddingBottom: "5px" }}
-          >
-            {message.message}
-          </Typography>
+          <Typography style={{ wordWrap: "break-word", paddingBottom: "5px" }}>{message.message}</Typography>
         </div>
 
         {message.reactions?.map((reaction, index) => {
+          console.log(message);
+          
           return (
             <React.Fragment key={index}>
-              {reaction.reaction  && (
-                <Tooltip
-                  title={reaction.username + `'s reaction`}
-                  placement="bottom"
-                  arrow
-                >
+              {reaction.reaction && (
+                <Tooltip title={`${reaction.displayName || reaction.username}'s reaction`} placement="bottom" arrow>
                   <Box
                     sx={{
                       display: "inline-flex",
@@ -145,19 +132,14 @@ const MessageEntry = ({
                       width: "30px",
                       height: "30px",
                       ":hover": {
-                        backgroundColor:
-                          themeSetting === "dark" ? "#222222" : "#d3d3d3",
+                        backgroundColor: themeSetting === "dark" ? "#222222" : "#d3d3d3",
                       },
                       border: "0.5px ridge grey",
                       borderRadius: "20%",
                       textAlign: "center",
                     }}
                   >
-                    <Emoji
-                      unified={reaction.reaction}
-                      emojiStyle={EmojiStyle.APPLE}
-                      size={20}
-                    />
+                    <Emoji unified={reaction.reaction} emojiStyle={EmojiStyle.APPLE} size={20} />
                   </Box>
                 </Tooltip>
               )}
@@ -165,21 +147,9 @@ const MessageEntry = ({
           );
         })}
 
-        {reactingIndex === index && emojiPanelShow ? (
-          <EmojiPanel
-            message={message}
-            index={index}
-            addReaction={addReaction}
-          />
-        ) : null}
+        {reactingIndex === index && emojiPanelShow ? <EmojiPanel message={message} index={index} addReaction={addReaction} /> : null}
       </Box>
-      <UserMenu
-        username={message.username}
-        course={course}
-        openUserMenu={openUserMenu}
-        anchorEl={anchorEl}
-        setAnchorEl={setAnchorEl}
-      />
+      <UserMenu username={message.username} course={course} openUserMenu={openUserMenu} anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
     </Box>
   );
 };

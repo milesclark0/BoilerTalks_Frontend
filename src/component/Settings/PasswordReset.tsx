@@ -1,12 +1,7 @@
 import { useAuth } from "../../context/context";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useState } from "react";
-import {
-  Alert,
-  Box,
-  InputAdornment,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, InputAdornment, Stack, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import WarningIcon from "@mui/icons-material/Warning";
 import { ChangePasswordAPI } from "../../API/RegisterAPI";
@@ -62,83 +57,54 @@ const PasswordReset = () => {
         </Alert>
       )}
       <Typography variant="h5">Password Reset</Typography>
-      <Typography variant="body2">
-        Passwords must contain one uppercase letter, one special character, and one numerical value.
-      </Typography>
-      <Box
-        sx={{ display: "inline-flex", paddingTop: "10px" }}
-        onSubmit={tryResetPassword}
-        component="form"
-      >
-        <TextField
-          label="Password"
-          type="password"
-          id="password"
-          value={password}
-          inputProps={{ maxLength: 30 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                {passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}
-              </InputAdornment>
-            ),
-          }}
-          required
-          error={passwordError}
-          helperText={
-            passwordError
-              ? password === ""
-                ? "Password cannot be empty."
-                : "Passwords do not match."
-              : ""
-          }
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setPasswordError(false);
-          }}
-          sx={{ width: "70%" }}
-        />
-        <TextField
-          id="confpassword"
-          label="Confirm Password"
-          type="password"
-          value={confirmPassword}
-          inputProps={{ maxLength: 30 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                {passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}
-              </InputAdornment>
-            ),
-          }}
-          required
-          error={passwordError}
-          helperText={
-            passwordError
-              ? password === ""
-                ? "Password cannot be empty."
-                : "Passwords do not match."
-              : ""
-          }
-          onChange={(e) => {
-            setConfirmPassword(e.target.value);
-            setPasswordError(false);
-          }}
-          sx={{ width: "70%" }}
-        />
-        <LoadingButton
-          variant="contained"
-          loading={loading}
-          disabled={loading}
-          sx={{ width: "60%", textTransform: "none", fontSize: 16, mt: 2 }}
-          type="submit"
-          color="success"
-        >
-          Change Password
-        </LoadingButton>
+      <Typography variant="body2">Passwords must contain one uppercase letter, one special character, and one numerical value.</Typography>
+      <Box onSubmit={tryResetPassword} component="form">
+        <Stack direction={"row"} spacing={2} sx={{alignItems: "center", mt: 3}}>
+          <TextField
+            label="Password"
+            type="password"
+            id="password"
+            size="small"
+            value={password}
+            inputProps={{ maxLength: 30 }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
+            }}
+            required
+            error={passwordError}
+            helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordError(false);
+            }}
+            sx={{ width: "70%" }}
+          />
+          <TextField
+            id="confpassword"
+            label="Confirm Password"
+            size="small"
+            type="password"
+            value={confirmPassword}
+            inputProps={{ maxLength: 30 }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">{passwordError ? <WarningIcon sx={{ color: "red" }} /> : ""}</InputAdornment>,
+            }}
+            required
+            error={passwordError}
+            helperText={passwordError ? (password === "" ? "Password cannot be empty." : "Passwords do not match.") : ""}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              setPasswordError(false);
+            }}
+            sx={{ width: "70%" }}
+          />
+          <LoadingButton variant="contained" loading={loading} disabled={loading} sx={{ textTransform: "none", width: "60%" }} type="submit" color="success">
+            Change Password
+          </LoadingButton>
+        </Stack>
       </Box>
     </Box>
   );
 };
 
-export default PasswordReset
+export default PasswordReset;

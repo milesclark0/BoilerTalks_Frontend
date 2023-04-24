@@ -44,14 +44,14 @@ export const light: ThemeOptions = {
   palette: {
     mode: "light",
     primary: {
-      main: "#bebebefc",
+      main: "#9e9e9efb",
     },
     secondary: {
       main: "#586fa8d5",
     },
     background: {
       default: "#ffffff",
-      paper: "#f3f3f3",
+      paper: "#f0eeee",
     },
     text: {
       primary: "#161616dd",

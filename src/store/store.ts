@@ -84,6 +84,7 @@ const useStore = create<IState>((set, get) => ({
         let index = data["index"];
         let reaction = data["reaction"];
         let username = data["username"];
+        let displayName = data["displayName"];
         let newMessages = [...get().messages];
           newMessages[index].reactions
             ? newMessages[index].reactions.push({ username, reaction })

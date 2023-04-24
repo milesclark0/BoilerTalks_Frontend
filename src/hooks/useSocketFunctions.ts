@@ -72,6 +72,7 @@ const useSocketFunctions = () => {
                         username: user?.username,
                         reaction,
                         index,
+                        displayName : profile?.displayName,
                     });
                 } else {
                     message.message = `---${message.message}---${reaction}---`;
@@ -81,6 +82,7 @@ const useSocketFunctions = () => {
                         username: user?.username,
                         reaction,
                         index,
+                        displayName : profile?.displayName,
                     });
                 }
             } else {

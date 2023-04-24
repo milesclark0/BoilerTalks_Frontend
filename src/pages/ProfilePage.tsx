@@ -10,6 +10,7 @@ import React from "react";
 import { APP_STYLES } from "../globals/globalStyles";
 import { ProfileContainer } from "../component/Profile/containers/ProfileContainer";
 import ProfileTabBar from "../component/Profile/containers/ProfileTabBar";
+import useStore from "../store/store";
 
 const ProfilePage = () => {
   const { requestUsername } = useParams();
@@ -23,6 +24,7 @@ const ProfilePage = () => {
   const [changeMessage, setChangeMessage] = useState<string>(null);
   const [changeMessageSeverity, setChangeMessageSeverity] = useState<"success" | "error" | "info">("success");
   const navigate = useNavigate();
+  const currentCourse = useStore((state) => state.currentCourse);
 
   const axiosPrivate = useAxiosPrivate();
   const defaultPadding = APP_STYLES.DEFAULT_PADDING;
@@ -79,14 +81,21 @@ const ProfilePage = () => {
       console.log(error);
     }
   };
-
+  const handleNav = () => {
+    if (currentCourse) {
+      navigate(`/home/courses/${currentCourse._id.$oid}/${currentCourse.rooms[0][1].$oid}`);
+    } else {
+      navigate("/home");
+    }
+  };
   const isLoggedUserProfile = user?.username === requestUsername;
   const gridProps = {
     viewedUser,
+    setViewedUser,
     profileInfo,
+    setProfileInfo,
     uploadProfilePicture,
     isLoggedUserProfile,
-    setProfileInfo,
     image,
     changeMessage,
     setChangeMessage,
@@ -107,7 +116,7 @@ const ProfilePage = () => {
                 Viewing {`${profileInfo?.displayName ? profileInfo?.displayName : profileInfo?.username}`}
               </Typography>
               <Divider orientation="vertical"></Divider>
-              <Button onClick={() => navigate("/home")}>Back to Home</Button>
+              <Button onClick={handleNav}>Back to Home</Button>
             </Toolbar>
           </AppBar>
           <Card id="view-profile-container" sx={{ p: 10, bgcolor: "primary.main", borderRadius: "2%" }}>

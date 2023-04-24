@@ -21,7 +21,7 @@ export const useCourseUsers = () => {
   };
 
   // will run if currentCourse is not null and the currentCourse changes
-  const { data } = useQuery(["currentCourse", courseId], fetchCourseUsers, {
+  const { data } = useQuery(["courseUsers", courseId], fetchCourseUsers, {
     enabled: !!courseId, // only run if currentCourse is not null
     refetchOnMount: "always",
     refetchInterval: 1000 * 60 * 2, //2 minutes

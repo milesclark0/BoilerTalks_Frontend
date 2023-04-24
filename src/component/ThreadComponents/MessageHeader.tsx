@@ -2,12 +2,14 @@ import { Box, Typography, Grid, IconButton, Tooltip } from "@mui/material";
 import { Message } from "../../globals/types";
 import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
+import TrashIcon from "@mui/icons-material/Delete";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import BlockUserModal from "../HomePage/components/blockUserModal";
 import { useState } from "react";
 import { useAuth } from "../../context/context";
 import GavelIcon from "@mui/icons-material/Gavel";
-
+import useSocketFunctions from "../../hooks/useSocketFunctions";
+import useStore from "../../store/store";
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -32,9 +34,7 @@ const getTime = (timeSent: string, isHovered: boolean) => {
         minute: "numeric",
       } as const);
   const date = new Date(timeSent);
-  return !isHovered
-    ? date.toLocaleTimeString("en-US", options)
-    : date.toLocaleDateString("en-US", options);
+  return !isHovered ? date.toLocaleTimeString("en-US", options) : date.toLocaleDateString("en-US", options);
 };
 
 export const MessageHeader = ({
@@ -50,6 +50,10 @@ export const MessageHeader = ({
   const { user } = useAuth();
   const [userToBlock, setUserToBlock] = useState<string>("");
   const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
+  const [showDeleteMessage, setShowDeleteMessage] = useState<boolean>(false);
+  const {deleteMessage} = useSocketFunctions()
+  const currentRoom = useStore((state) => state.currentRoom);
+  
 
   const blockUserProps = {
     requestUsername: user.username,
@@ -57,12 +61,16 @@ export const MessageHeader = ({
     showBlockUser,
     setShowBlockUser,
   };
-  //TODO: dont render modal for every message, move it to a higher level + move username and time to a higher level
+
+  function handleDeleteMessage() {
+    deleteMessage(message, currentRoom);
+    //show confirmation message
+
+  }
 
   return (
     <div style={{ height: "100%", alignItems: "top", display: "flex" }}>
-      {/* <BlockUserModal {...blockUserProps} /> */}
-      <div style={{display: "inline"}}>
+      <div style={{ display: "inline" }}>
         <Typography variant="h6" display="inline">{`${message.displayName || message.username}`}</Typography>
         <Tooltip title={getTime(message.timeSent, true)} placement="top" arrow>
           <Typography variant="overline" sx={{ paddingLeft: "5px" }}>
@@ -72,10 +80,11 @@ export const MessageHeader = ({
       </div>
       {hoveredMessageId === index ? (
         <div
-          style={{
-            display: "inline",
-          }}
+        style={{
+          display: "inline",
+        }}
         >
+        <BlockUserModal {...blockUserProps} />
           <Grid
             container
             sx={{
@@ -119,7 +128,7 @@ export const MessageHeader = ({
                 <Tooltip title="Block" placement="top" arrow>
                   <IconButton
                     onClick={() => {
-                      setUserToBlock(message.displayName || message.username);
+                      setUserToBlock(message.username);
                       setShowBlockUser(true);
                     }}
                     size="small"
@@ -139,6 +148,18 @@ export const MessageHeader = ({
                     size="small"
                   >
                     <GavelIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : null}
+            {message.username === user?.username ? (
+              <Grid item xs={6} sx={{ display: "inline" }}>
+                <Tooltip title="Delete Message" placement="top" arrow>
+                  <IconButton
+                    onClick={handleDeleteMessage}
+                    size="small"
+                  >
+                    <TrashIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>

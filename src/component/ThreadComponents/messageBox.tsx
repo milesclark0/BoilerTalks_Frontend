@@ -37,7 +37,6 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
 
   useEffect(() => {
     //when the current room changes, connect to the room and set the messages to the messages in the room
-    console.log("connecting to room")
     const connect = async (room: Room) => {
       if (room) {
         await connectToRoom(room);

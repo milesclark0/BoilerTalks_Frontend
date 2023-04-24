@@ -9,16 +9,18 @@ const namespace = {
   connect: "connect",
   disconnect: "disconnect",
   message: "send_message",
+  delete_message: "delete_message",
   join: "join",
   leave: "leave",
   react: "react",
 };
 
 const useSockets = () => {
-  const [socket, setSocket, addMessage, addReactionMessage] = useStore((state) => [
+  const [socket, setSocket, addMessage, deleteMessage, addReactionMessage] = useStore((state) => [
     state.socket,
     state.setSocket,
     state.addMessage,
+    state.deleteMessage,
     state.addReactionMessage,
   ]);
 
@@ -48,6 +50,12 @@ const useSockets = () => {
       console.log("got msg: ", msg);
       addMessage(msg);
     });
+
+    socket.on(namespace.delete_message, (msg: Message) => {
+      console.log("got msg to delete: ", msg);
+      deleteMessage(msg);
+    });
+
     return () => {
       socket?.off(namespace.connect);
       socket?.off(namespace.disconnect);

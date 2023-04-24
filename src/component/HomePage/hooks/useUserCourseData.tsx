@@ -15,7 +15,7 @@ const useUserCourseData = () => {
     return await axiosPrivate.get(getUserCoursesAndRoomsURL + user?.username);
   };
 
-  const { isLoading, error } = useQuery("courses_rooms: " + user?.username, fetchCourse, {
+  const { isLoading, error } = useQuery("courses: " + user?.username, fetchCourse, {
     enabled: true,
     //refetchInterval: 1000 * 60 * 2, //2 minutes
     staleTime: 1000 * 60 * 10, //10 minutes

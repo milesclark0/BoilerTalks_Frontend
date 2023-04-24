@@ -8,11 +8,12 @@ const useSocketFunctions = () => {
         connect: "connect",
         disconnect: "disconnect",
         message: "send_message",
+        delete_message: "delete_message",
         join: "join",
         leave: "leave",
         react: "react",
     };
-    const {user, profile} = useAuth();
+    const { user, profile } = useAuth();
     const socket = useStore(state => state.socket);
     const [joinedRoom, setJoinedRoom] = useStore(state => [state.joinedRoom, state.setJoinedRoom]);
     // sends a message to the server to be broadcasted to all users in the room
@@ -44,6 +45,21 @@ const useSocketFunctions = () => {
         }
     };
 
+    // used to delete a message from the server
+    const deleteMessage = (message: Message, room: Room) => {
+        if (socket.connected) {
+            console.log("deleting message", message.message.trim(), "from room", room?.name);
+            socket.emit(namespace.delete_message, {
+                message,
+                roomID: room?._id.$oid,
+            });
+        } else {
+            console.log("socket not connected for deletion");
+
+        }
+
+    };
+
     //used currently to add emoji reactions onto messages
     const addReaction = (message: Message, room: Room, isSystemMessage: boolean, reaction: string, index: number) => {
         if (socket.connected) {
@@ -73,7 +89,7 @@ const useSocketFunctions = () => {
         }
     };
 
-    const connectToRoom = async (room: Room) => {        
+    const connectToRoom = async (room: Room) => {
         if (joinedRoom?._id.$oid === room._id.$oid) {
             return;
         }
@@ -92,7 +108,8 @@ const useSocketFunctions = () => {
                         },
                         (response) => {
                             console.log(response.data.message)
-                            resolve(response)}
+                            resolve(response)
+                        }
                     )
                 );
                 setJoinedRoom(room);
@@ -120,6 +137,7 @@ const useSocketFunctions = () => {
         addReaction,
         connectToRoom,
         disconnectFromRoom,
+        deleteMessage,
     };
 };
 export default useSocketFunctions;

@@ -74,6 +74,12 @@ const useStore = create<IState>((set, get) => ({
     setMessage: (message: string) => set({ message }),
     setMessages: (messages: Message[]) => set({ messages }),
     addMessage: (message: Message) => set({ messages: [...get().messages, message] }),
+    deleteMessage(message: Message) {
+        const messages = get().messages;
+        const index = messages.findIndex(m => m.timeSent === message.timeSent && m.username === message.username);
+        messages.splice(index, 1);
+        set({ messages });
+    },
     addReactionMessage: ( data: any) => {
         let index = data["index"];
         let reaction = data["reaction"];

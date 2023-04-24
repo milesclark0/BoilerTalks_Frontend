@@ -1,4 +1,4 @@
-import { Button, Box, Typography, Modal } from "@mui/material";
+import { Button, Box, Typography, Modal, Paper } from "@mui/material";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { blockUserUrl } from "../../../API/BlockingAPI";
 
@@ -33,14 +33,13 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
 
   return (
     <Modal open={showBlockUser} onClose={handleClose}>
-      <Box
+      <Paper
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           width: 740,
           transform: "translate(-50%, -50%)",
-          bgcolor: "white",
           borderRadius: "10px",
           boxShadow: 24,
           p: 2,
@@ -58,7 +57,7 @@ const BlockUserModal = ({ requestUsername, userToBlock, showBlockUser, setShowBl
         <Button type="button" variant="outlined" onClick={handleClose}>
           Cancel
         </Button>
-      </Box>
+      </Paper>
     </Modal>
   );
 };

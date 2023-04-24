@@ -151,7 +151,7 @@ const RoomDisplay = () => {
       if (res.data.statusCode == 200) {
         const newProfile = profile;
         newProfile.lastSeenMessage = res.data.data;
-        console.log(res.data.data, profile);
+        // console.log(res.data.data, profile);
         setProfile(newProfile);
       }
     }
@@ -336,7 +336,7 @@ const MessagesList = ({ handleReply, updateReaction, messages }) => {
     const reply = Number.isInteger(message.replyIndex) ? 40 : 0;
     const linesCount = Math.ceil(message?.message.length / 140); // Break lines every 50 characters
     const finalHeight = linesCount * lineHeight + 40 + getDividerHeight(index) + emojiSpace + reply; // Add some extra space for the message container
-    console.log(index, linesCount, getDividerHeight(index), finalHeight);
+    // console.log(index, linesCount, getDividerHeight(index), finalHeight);
     return finalHeight;
   };
 
@@ -357,10 +357,10 @@ const MessagesList = ({ handleReply, updateReaction, messages }) => {
     }
     const messageTime = new Date(message.timeSent);
     const messageBeforeTime = new Date(messageBefore.timeSent);
-    console.log(messageTime.toLocaleDateString(undefined, options), messageBeforeTime.toLocaleDateString(undefined, options));
+    // console.log(messageTime.toLocaleDateString(undefined, options), messageBeforeTime.toLocaleDateString(undefined, options));
 
     const isSameDay = messageTime.toLocaleDateString(undefined, options) === messageBeforeTime.toLocaleDateString(undefined, options);
-    console.log(message.message, !isSameDay ? "has a divider" : "does not have a divider");
+    // console.log(message.message, !isSameDay ? "has a divider" : "does not have a divider");
 
     return isSameDay ? 0 : 31;
   };
@@ -429,7 +429,7 @@ const MessagesList = ({ handleReply, updateReaction, messages }) => {
     };
     // Render a message entry using the message data
     return (
-      <div key={index} style={{ ...style, scrollBehavior: "smooth" }}>
+      <div key={message.username + message.timeSent} style={{ ...style, scrollBehavior: "smooth" }}>
         <ConditionalLineBreak index={index} />
         <MessageEntry {...MessageEntryProps}
         />

@@ -42,6 +42,7 @@ export interface IState {
     messages: Message[],
     setMessages: (messages: Message[]) => void,
     addMessage: (message: Message) => void,
+    deleteMessage: (message: Message) => void,
     addReactionMessage: (data: any) => void,
 
     socket: Socket | null,
@@ -95,6 +96,7 @@ export const initialState: IState = {
     messages: [],
     setMessages: (messages: Message[]) => { },
     addMessage: (message: Message) => { },
+    deleteMessage: (message: Message) => { },
     addReactionMessage: (data: any) => { },
 
     socket: null,

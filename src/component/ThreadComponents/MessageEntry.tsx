@@ -103,9 +103,9 @@ const MessageEntry = ({
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
               {`Replied To: ` +
-                messages[message.replyIndex].username +
+                messages[message.replyIndex]?.username +
                 `: ` +
-                messages[message.replyIndex].message}
+                messages[message.replyIndex]?.message}
             </Typography>
           </div>
         ) : null}

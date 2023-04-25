@@ -186,11 +186,11 @@ const RoomDisplay = () => {
   );
 };
 
-const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
+const MessageBoxContainer = ({ isReplying, handleReply, replyId, updateReaction, reaction, messages }) => {
   const containerProps = {
     isReplying,
     handleReply,
-    replyIndex,
+    replyId,
     updateReaction,
     reaction,
   };
@@ -209,7 +209,8 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyIndex, updateReacti
   );
 };
 
-const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, reaction, messages }) => {
+const MessageBoxItems = ({ isReplying, handleReply, replyId, updateReaction, reaction, messages }) => {
+  const replyIndex = messages?.findIndex((message) => message.timeSent === replyId?.id && message.username === replyId?.username);
   return (
     <Box>
       {isReplying ? (
@@ -226,18 +227,18 @@ const MessageBoxItems = ({ isReplying, handleReply, replyIndex, updateReaction, 
           </IconButton>
           <Typography variant="overline">
             {/* <ReplyIcon /> */}
-            {`replying to ` + messages[replyIndex].username + `: ` + messages[replyIndex].message}
+            {`replying to ` + messages[replyIndex]?.username + `: ` + messages[replyIndex]?.message}
           </Typography>
         </Box>
       ) : null}
-      <MessageBox replyIndex={replyIndex} handleReply={handleReply} {...{ updateReaction, reaction, messages }} />
+      <MessageBox replyId={replyId} handleReply={handleReply} {...{ updateReaction, reaction, messages }} />
     </Box>
   );
 };
 
 const MessageListContainer = ({ messages, bannedUsers }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
-  const [replyIndex, setReplyIndex] = useState<number>(null);
+  const [replyId, setReplyId] = useState<{id: string, username: string}>(null);
   const [reaction, setReaction] = useState<{
     reaction: string;
     index: number;
@@ -255,11 +256,15 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   // }, [messages]);
 
   const handleReply = useCallback((isReplying, index) => {
+    const message = messages[index];
+    const messageUser = message?.username;
+    const messageId = message?.timeSent;
     setIsReplying(isReplying);
     if (isReplying) {
-      setReplyIndex(index);
+      console.log("replying to", messageUser, messageId)
+      setReplyId({id: messageId, username: messageUser})
     } else {
-      setReplyIndex(null);
+      setReplyId(null);
     }
   }, []);
 
@@ -273,7 +278,7 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   const messageBoxProps = {
     isReplying,
     handleReply,
-    replyIndex,
+    replyId,
     updateReaction,
     reaction,
     bannedUsers,

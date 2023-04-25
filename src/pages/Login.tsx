@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  TextField,
-  Divider,
-  InputAdornment,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Typography, TextField, Divider, InputAdornment, Paper, useTheme } from "@mui/material";
 import logowhite from "../assets/logo_white.png";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const { themeSetting } = useAuth();
   const behindPaperColor = themeSetting === "dark" ? "#141414" : "#bebebefc";
@@ -90,11 +83,7 @@ const Login = () => {
         autoComplete="off"
         onSubmit={handleLogin}
       >
-        {themeSetting === "dark" ? (
-          <img src={logowhite} height={100} alt="logo" />
-        ) : (
-          <img src={logo} height={100} alt="logo" />
-        )}
+        {themeSetting === "dark" ? <img src={logowhite} height={100} alt="logo" /> : <img src={logo} height={100} alt="logo" />}
 
         <TextField
           label="Username"
@@ -102,10 +91,7 @@ const Login = () => {
           sx={{
             width: "60%",
             "& .MuiInputBase-input": {
-              "-webkit-box-shadow":
-                themeSetting == "dark"
-                  ? "0 0 0 100px #333333 inset !important"
-                  : "",
+              "-webkit-box-shadow": `0 0 0 100px ${theme.palette.background.paper} inset !important`,
             },
           }}
           error={error ? true : false}
@@ -126,19 +112,14 @@ const Login = () => {
             width: "60%",
             boxShadow: 0,
             "& .MuiInputBase-input": {
-              "-webkit-box-shadow":
-                themeSetting == "dark"
-                  ? "0 0 0 100px #333333 inset !important"
-                  : "",
+              "-webkit-box-shadow": `0 0 0 100px ${theme.palette.background.paper} inset !important`,
             },
           }}
           helperText={error || ""}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <div onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </div>
+                <div onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</div>
               </InputAdornment>
             ),
             style: { cursor: "pointer" },

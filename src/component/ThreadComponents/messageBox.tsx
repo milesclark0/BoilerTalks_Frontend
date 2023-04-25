@@ -9,13 +9,13 @@ import useStore from "../../store/store";
 
 type Props = {
   updateReaction: ( reaction: string,index: number) => void;
-  replyIndex: any;
+  replyId: {username: string, id: string}
   handleReply: (index: number, isReplying: any) => void;
   reaction: { reaction: string; index: number };
   messages: Message[];
 };
 
-const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, messages }: Props) => {
+const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
   const {sendMessage, connectToRoom, addReaction} = useSocketFunctions();
@@ -66,7 +66,7 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
       message,
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
-      replyIndex: messages[messages.length - 1]?.replyIndex, //set the reply index to the reply index of the last message
+      replyId: messages[messages.length - 1]?.replyId, //set the reply index to the reply index of the last message
       reactions: messages[messages.length - 1]?.reactions, //set the reactions to the reactions of the last message
     };
     //update message fields in currentRoom and roomList
@@ -86,7 +86,7 @@ const MessageBox = ({ updateReaction, replyIndex, handleReply, reaction, message
       message,
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
-      replyIndex,
+      replyId,
     };
     await sendMessage(formattedMessage, currentRoom, false);
     handleReply(null, false);

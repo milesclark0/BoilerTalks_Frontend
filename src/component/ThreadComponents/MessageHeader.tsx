@@ -143,7 +143,7 @@ export const MessageHeader = ({
                 <Tooltip title="Promote To Moderator" placement="top" arrow>
                   <IconButton
                     onClick={() => {
-                      promoteUser(message.displayName || message.username);
+                      promoteUser(message.username);
                     }}
                     size="small"
                   >

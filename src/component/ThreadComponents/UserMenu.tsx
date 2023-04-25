@@ -7,6 +7,7 @@ import { StyledDivider } from "../SideBar/components/StyledDivider";
 import { Course } from "../../globals/types";
 import WarnPrompt from "./WarnPrompt";
 import BanPrompt from "./BanPrompt";
+import SendReportModal from "../SideBar/components/SendReportModal";
 
 type Props = {
   username: string;
@@ -21,14 +22,29 @@ const UserMenu = ({ username, course, openUserMenu, anchorEl, setAnchorEl }: Pro
   const { profile } = useAuth();
   const [openWarningPrompt, setOpenWarningPrompt] = useState<boolean>(false);
   const [openBanPrompt, setOpenBanPrompt] = useState<boolean>(false);
+  const [ReportsOpen, setReportsOpen] = useState<boolean>(false);
 
   const handleUserMenuClose = () => {
     setAnchorEl(null);
   };
 
+  const reportProps = {
+    ReportsOpen,
+    setReportsOpen,
+    course,
+    initialReason: "Student",
+    recipient: username,
+  };
+
+
   const navigateToProfile = () => {
     // console.log(username);
     navigate("/profile/" + username);
+  };
+
+  const reportUser = () => {
+    handleUserMenuClose();
+    setReportsOpen(true);
   };
 
   const handleOpenWarningPrompt = () => {
@@ -41,6 +57,7 @@ const UserMenu = ({ username, course, openUserMenu, anchorEl, setAnchorEl }: Pro
 
   return (
     <React.Fragment>
+      <SendReportModal {...reportProps} />
       <Menu
         open={openUserMenu}
         anchorEl={anchorEl}
@@ -57,12 +74,18 @@ const UserMenu = ({ username, course, openUserMenu, anchorEl, setAnchorEl }: Pro
         <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
           Profile
         </MenuItem>
-        {profile?.modThreads.includes(course?.name) && profile.username !== username && (
+        {profile?.modThreads.includes(course?.name) && profile.username !== username ? (
           <Box>
             <StyledDivider />
             <MenuItem onClick={handleOpenWarningPrompt}>Warn</MenuItem>
             <MenuItem onClick={handleOpenBanPrompt}>Ban</MenuItem>
           </Box>
+        ) : (
+          username !== profile?.username && (
+            <MenuItem onClick={reportUser} sx={{ justifyContent: "center", m: 0 }}>
+              Report
+            </MenuItem>
+          )
         )}
       </Menu>
       <WarnPrompt openWarningPrompt={openWarningPrompt} setOpenWarningPrompt={setOpenWarningPrompt} username={username} />

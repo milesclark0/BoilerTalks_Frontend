@@ -26,20 +26,13 @@ export const CourseNavigation = ({ course }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
-  const [NewReportText, setNewReportText] = useState("");
   const [ReportsList, setReportsList] = useState<{ username: string; reason: string }[]>();
   const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
   const { roomId, courseId } = useParams();
   const navigate = useNavigate();
   const { profile, themeSetting } = useAuth();
-  const [
-    setCurrentCourse,
-    setCurrentRoom,
-    userRoomsList,
-    activeCourseThread,
-    setActiveCourseThread,
-  ] = useStore((state) => [
+  const [setCurrentCourse, setCurrentRoom, userRoomsList, activeCourseThread, setActiveCourseThread] = useStore((state) => [
     state.setCurrentCourse,
     state.setCurrentRoom,
     state.userRoomsList,
@@ -63,8 +56,6 @@ export const CourseNavigation = ({ course }: Props) => {
   };
 
   const SendReportsProps = {
-    setNewReportText,
-    NewReportText,
     setReportsOpen,
     ReportsOpen,
     course: course,
@@ -93,15 +84,12 @@ export const CourseNavigation = ({ course }: Props) => {
     return course?._id.$oid === courseId;
   };
 
-
   //handler for when a room button is clicked
   const handleClickCourseOrRoom = (buttonRoomId?: string) => {
-    // if the user clicks on the same course or room, do nothing    
+    // if the user clicks on the same course or room, do nothing
     if (buttonRoomId === roomId) return;
     if (isActiveCourse() && buttonRoomId === undefined) return;
     //if room is clicked
-    console.log("here");
-    
     setCurrentCourse(course);
     if (buttonRoomId) {
       const room = userRoomsList.find((room) => room._id.$oid === buttonRoomId);
@@ -162,7 +150,7 @@ export const CourseNavigation = ({ course }: Props) => {
   return (
     <List>
       <ListItem>
-        <Button onClick={() => handleClickCourseOrRoom()} variant={isActiveCourse() ? "outlined": "text"} sx={courseButtonStyle()}>
+        <Button onClick={() => handleClickCourseOrRoom()} variant={isActiveCourse() ? "outlined" : "text"} sx={courseButtonStyle()}>
           <Typography variant="body1" noWrap component="div">
             {course?.name}
           </Typography>
@@ -247,7 +235,7 @@ export const CourseNavigation = ({ course }: Props) => {
               </ListItem>
             </Button>
           )}
-          <Button  onClick={handleClickRules} sx={{ ...staticButtonStyle(), width: "100%" }}>
+          <Button onClick={handleClickRules} sx={{ ...staticButtonStyle(), width: "100%" }}>
             <ListItem>
               <Typography variant="body2">Rules</Typography>
             </ListItem>
@@ -259,11 +247,13 @@ export const CourseNavigation = ({ course }: Props) => {
                 <Typography variant="body2">New thread</Typography>
               </ListItem>
             </Button>
-          ):          <Button onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
-            <ListItem>
-              <Typography variant="body2">Create Report</Typography>
-            </ListItem>
-          </Button>}
+          ) : (
+            <Button onClick={handleClickReport} sx={{ ...staticButtonStyle(), width: "100%" }}>
+              <ListItem>
+                <Typography variant="body2">Create Report</Typography>
+              </ListItem>
+            </Button>
+          )}
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
           <SendReportModal {...SendReportsProps} />

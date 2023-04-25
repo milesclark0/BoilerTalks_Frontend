@@ -65,6 +65,7 @@ const MessageEntry = ({
     setHoveredMessageId(null);
   }, []);
 
+  const replyIndex = messages.findIndex((m) => m.timeSent === message.replyId?.id  && m.username === message.replyId?.username);
   return (
     <Box
       sx={{
@@ -89,7 +90,7 @@ const MessageEntry = ({
           borderColor: "black",
         }}
       >
-        {Number.isInteger(message.replyIndex) ? (
+        {message.replyId ? (
           <div
             style={{
               display: "flex",
@@ -98,7 +99,7 @@ const MessageEntry = ({
           >
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
-              {messages[message.replyIndex] ? `Replied To: ` + messages[message.replyIndex].username + `: ` + messages[message.replyIndex].message :  "Message Deleted"}
+              {messages[replyIndex] ? `Replied To: ` + messages[replyIndex].username + `: ` + messages[replyIndex].message :  "Message Deleted"}
             </Typography>
           </div>
         ) : null}
@@ -116,9 +117,7 @@ const MessageEntry = ({
           <Typography style={{ wordWrap: "break-word", paddingBottom: "5px" }}>{message.message}</Typography>
         </div>
 
-        {message.reactions?.map((reaction, index) => {
-          console.log(message);
-          
+        {message.reactions?.map((reaction, index) => {          
           return (
             <React.Fragment key={index}>
               {reaction.reaction && (

@@ -79,7 +79,8 @@ const NotificationHome = ({ notifications }: Props) => {
 
   const marginBottomStyle = (index: number) => {
     let marginBottom = 2;
-    if (index === notifications.length - 1) {
+    // last index since we only render 15
+    if (index === 14) {
       marginBottom = 0;
     }
     return {

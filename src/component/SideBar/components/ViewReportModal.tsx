@@ -43,22 +43,25 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
 
       var rawReports: { username: string; reason: string }[] = data.data.data.reports;
 
-      console.log("Reports: " + rawReports);
+      console.log("Reports: " + rawReports[0].username);
 
       // tally the number of bans and warnings for the reported user in this course
       var reportsWithTallies: { username: string; reason: string, numBans: number, numWarns: number }[] = [];
+
+      const prevBanList = data.data.data.prevBannedUsers;
+      const prevWarnList = data.data.data.prevWarnedUsers;
 
       for (var report of rawReports) {
         var banTally = 0;
         var warnTally = 0;
 
-        for (var ban of PrevBanList) {
+        for (var ban of prevBanList) {
           if (report.username === ban.username) {
             banTally++;
           }
         }
 
-        for (var warn of PrevWarnList) {
+        for (var warn of prevWarnList) {
           if (report.username === warn.username) {
             warnTally++;
           }
@@ -67,7 +70,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
         reportsWithTallies.push({username: report.username, reason: report.reason, numBans: banTally, numWarns: warnTally});
       }
 
-      console.log("Reports with tallies: " + reportsWithTallies);
+      console.log("Reports with tallies: " + reportsWithTallies[0].username);
 
       setReportsList(reportsWithTallies);
     },
@@ -98,7 +101,15 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
             display: "flex",
           }}
         >
-          {report.reason}
+          {report.username + ": " + report.reason}
+        </Typography>
+        <Typography
+          sx={{
+            width: 550,
+            display: "flex",
+          }}
+        >
+          {"Times banned: " + report.numBans + "; Times warned: " + report.numWarns}
         </Typography>
         <IconButton aria-label="delete" onClick={() => handleRemoveReport(index)}>
           <DeleteIcon />
@@ -111,7 +122,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       <Box component={"form"}>
         <DialogTitle>Reports</DialogTitle>
         <DialogContent>
-          <DialogContentText>Reports for this course discussion:</DialogContentText>
+          
           {ReportsList?.map((report, index) => {
             return (
               <Box key={index}>

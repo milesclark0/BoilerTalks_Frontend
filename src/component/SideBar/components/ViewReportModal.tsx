@@ -9,18 +9,22 @@ import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 type ViewReportProps = {
-  ReportsList: { username: string; reason: string }[];
-  ReportsOpen: boolean;
-  setReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  ReportsList: { username: string; reason: string, numBans: number, numWarns: number }[];
+  PrevBanList: { username: string; reason: string }[];
+  PrevWarnList: { username: string; reason: string }[];  
+  ViewReportsOpen: boolean;
+  setViewReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setReportsList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
+  setPrevBanList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
+  setPrevWarnList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   course: Course;
 };
 
-const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsOpen, course }: ViewReportProps) => {
+const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOpen, setReportsList, setPrevBanList, setPrevWarnList, setViewReportsOpen, course }: ViewReportProps) => {
   const api = useAxiosPrivate();
 
   const handleCloseReports = () => {
-    setReportsOpen(false);
+    setViewReportsOpen(false);
   };
 
   const handleRemoveReport = async (reportIndex: number) => {
@@ -33,7 +37,39 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
   const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
     onSuccess: (data) => {
       console.log(data.data.data);
-      setReportsList(data.data.data.reports);
+
+      setPrevBanList(data.data.data.prevBannedUsers);
+      setPrevWarnList(data.data.data.prevWarnedUsers);
+
+      var rawReports: { username: string; reason: string }[] = data.data.data.reports;
+
+      console.log("Reports: " + rawReports);
+
+      // tally the number of bans and warnings for the reported user in this course
+      var reportsWithTallies: { username: string; reason: string, numBans: number, numWarns: number }[] = [];
+
+      for (var report of rawReports) {
+        var banTally = 0;
+        var warnTally = 0;
+
+        for (var ban of PrevBanList) {
+          if (report.username === ban.username) {
+            banTally++;
+          }
+        }
+
+        for (var warn of PrevWarnList) {
+          if (report.username === warn.username) {
+            warnTally++;
+          }
+        }
+
+        reportsWithTallies.push({username: report.username, reason: report.reason, numBans: banTally, numWarns: warnTally});
+      }
+
+      console.log("Reports with tallies: " + reportsWithTallies);
+
+      setReportsList(reportsWithTallies);
     },
   });
 
@@ -47,13 +83,13 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
     } else {
       console.log(res.data.message);
     }
-    setReportsOpen(false);
+    setViewReportsOpen(false);
   };
 
   if (isLoading) {
     return null;
   }
-  const ReportEntry = ({ report, index }: { report: { username: string; reason: string }; index: number }) => {
+  const ReportEntry = ({ report, index }: { report: { username: string; reason: string, numBans: number, numWarns: number }; index: number }) => {
     return (
       <Stack direction="row" spacing={1}>
         <Typography
@@ -71,7 +107,7 @@ const ViewReportModal = ({ ReportsList, ReportsOpen, setReportsList, setReportsO
     );
   };
   return (
-    <Dialog open={ReportsOpen} onClose={handleCloseReports}>
+    <Dialog open={ViewReportsOpen} onClose={handleCloseReports}>
       <Box component={"form"}>
         <DialogTitle>Reports</DialogTitle>
         <DialogContent>

@@ -1,10 +1,27 @@
 // Display for Q&A
-import { AppBar, Box, Button, MenuItem, Select, Toolbar, Typography, Autocomplete, TextField } from "@mui/material";
-import { useState, useEffect } from "react";
-import { Course, Room, Question} from "../../globals/types";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import { useAuth } from "../../context/context";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { Course, Message, Room, Question } from "../../globals/types";
+import { useParams } from "react-router-dom";
+import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/components/userBar";
-import { useStore } from "zustand";
+import MessageBox from "../ThreadComponents/messageBox";
+import { addCourseModsURL, getCourseManagementURL, getCourseModsURL } from "../../API/CourseManagementAPI";
+import BanDialog from "../ThreadComponents/BanDialog";
+import WarningDialog from "../ThreadComponents/WarningDialog";
+import MessageEntry from "../ThreadComponents/MessageEntry";
+import ClearIcon from "@mui/icons-material/Clear";
+import { Paper } from "@mui/material";
+import CourseDisplayAppBar from "./CourseDisplayAppBar";
+import { APP_STYLES } from "../../globals/globalStyles";
+import useUserRoomData from "../HomePage/hooks/useUserRoomData";
+import useStore from "./../../store/store";
+import { getRoomURL } from "../../API/CoursesAPI";
+import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
+import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
+import { VariableSizeList as List } from "react-window";
 
 type Props = {
   drawerWidth: number;
@@ -14,9 +31,38 @@ type Props = {
   courseUsers: any[];
 };
 
-const QADisplay = () => {
-  const [currentCourse, questions, setQuestions, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore(
+type WarnOrBan = {
+  username: string;
+  reason: string;
+};
 
+type Appeal = {
+  username: string;
+  response: string;
+  reason: string;
+  reviewed: boolean;
+  unban: boolean;
+};
+
+const QADisplay = () => {
+  const { user } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+  const { courseId, roomId } = useParams();
+  const [bannedUsers, setBannedUsers] = useState<string[]>(null);
+  const [banned, setBanned] = useState<boolean>(false);
+  const [bannedData, setBannedData] = useState<WarnOrBan>();
+  const [warned, setWarned] = useState<boolean>(false);
+  const [warnedData, setWarnedData] = useState<WarnOrBan>(null);
+  const [appealData, setAppealData] = useState<Appeal>(null);
+  const [currentCourse, questions, setQuestions, currentRoom, setCurrentRoom, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore(
+    (state) => [
+      state.currentCourse,
+      state.questions,
+      state.setQuestions,
+      state.userCourseList,
+      state.setCurrentCourse,
+      state.setActiveCourseThread,
+    ]
   );
 
   useEffect(() => {
@@ -68,7 +114,7 @@ const QADisplay = () => {
           setCurrentRoom(resData);
           const course = userCourseList?.find((course) => course._id.$oid === courseId);
           setActiveCourseThread(resData.name.replace(course.name, ""));
-          setMessages(resData.messages);
+          setQuestions(resData.questions);
         }
       }
     };

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { Course, Message, Room } from "../globals/types";
+import { Course, Message, Question, Room } from "../globals/types";
 import useSockets from "../hooks/useSockets";
 
 export interface IState {
@@ -44,6 +44,8 @@ export interface IState {
     addMessage: (message: Message) => void,
     deleteMessage: (message: Message) => void,
     addReactionMessage: (data: any) => void,
+    questions: Question[],
+    setQuestions: (questions: Question[]) => void,
 
     socket: Socket | null,
     setSocket: (socket: Socket) => void,
@@ -98,6 +100,8 @@ export const initialState: IState = {
     addMessage: (message: Message) => { },
     deleteMessage: (message: Message) => { },
     addReactionMessage: (data: any) => { },
+    questions: [],
+    setQuestions: (questions: Question[]) => { },
 
     socket: null,
     setSocket: (socket: Socket) => { },

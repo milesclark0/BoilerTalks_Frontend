@@ -45,6 +45,7 @@ export type Profile = {
   lastSeenMessage: {courseName: string; message: {username: string; timeSent: string;}}
   classYear: ClassYear;
   major: string;
+  questions: Question[];
 };
 
 export type CourseManagement = {

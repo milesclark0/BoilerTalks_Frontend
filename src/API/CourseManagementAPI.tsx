@@ -21,3 +21,7 @@ export const removeReportURL = "/courseManagement/removeReport/";
 export const addCourseModsURL = "/courseManagement/addCourseMods/";
 
 export const getCourseModsURL = "/courseManagement/getCourseMods/";
+
+export const getPrevBannedUsersURL = "/courseManagement/getPrevBannedUsers/";
+
+export const getPrevWarnedUsersURL = "/courseManagement/getPrevWarnedUsers/";

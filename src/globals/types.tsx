@@ -53,6 +53,8 @@ export type CourseManagement = {
   rules: string[];
   bannedUsers: [{ username: string; reason: string }];
   warnedUsers: [{ username: string; reason: string }];
+  prevBannedUsers: [{ username: string; reason: string }];
+  prevWarnedUsers: [{ username: string; reason: string }];
   appeals: [
     {
       username: string;

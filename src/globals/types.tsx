@@ -99,3 +99,11 @@ export type Notification = {
   notification: string;
   date: { $date: string };
 };
+
+export type Question = {
+  username: string;
+  title: string;
+  content: string;
+  answered: boolean;
+  responses: {answerUsername: string; response: string}[];
+}

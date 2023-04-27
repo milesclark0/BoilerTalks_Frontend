@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/context";
-import { Message, Room } from "../globals/types";
+import { Message, Room, Question } from "../globals/types";
 import useStore from "../store/store";
 
 const useSocketFunctions = () => {
@@ -13,6 +13,9 @@ const useSocketFunctions = () => {
         join: "join",
         leave: "leave",
         react: "react",
+        send_question: "send_question",
+        send_response: "send_response",
+        update_question: "update_question",
     };
     const { user, profile } = useAuth();
     const socket = useStore(state => state.socket);
@@ -77,6 +80,52 @@ const useSocketFunctions = () => {
         }
 
     };
+
+    const sendQuestion = async (question: Question, room: Room, index: number) => {
+        if (joinedRoom === null) {
+            await connectToRoom(room);
+        }
+        if (question.title.trim() !== "") {
+            if (question.content.trim() !== "") {
+                socket.emit(namespace.send_question, {
+                    question,
+                    roomID: room?._id.$oid,
+                    index,
+                });
+            } else {
+                alert("Please explain your question.")
+            }
+        } else {
+            alert("Please give your post a title.")
+        }
+    }
+
+    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, room: Room, index: number) => {
+        if (joinedRoom === null) {
+            await connectToRoom(room);
+        }
+        if (response.response.trim() !== "") {
+            socket.emit(namespace.send_response, {
+                question,
+                roomID: room?._id.$oid,
+                response,
+                index
+            });
+        } else {
+            alert("Please write a response.")
+        }
+    }
+
+    const updateQuestion = async (question: Question, room: Room, index: number) => {
+        if (joinedRoom === null) {
+            await connectToRoom(room);
+        }
+        socket.emit(namespace.send_response, {
+            question,
+            roomID: room?._id.$oid,
+            index
+        });
+    }
 
     //used currently to add emoji reactions onto messages
     const addReaction = (message: Message, room: Room, isSystemMessage: boolean, reaction: string, index: number) => {
@@ -155,6 +204,9 @@ const useSocketFunctions = () => {
     return {
         sendMessage,
         editMessage,
+        sendQuestion,
+        sendResponse,
+        updateQuestion,
         addReaction,
         connectToRoom,
         disconnectFromRoom,

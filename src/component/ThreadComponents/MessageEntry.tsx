@@ -24,6 +24,7 @@ type MessageEntryProps = {
   index: number;
   isReply: (newValue: boolean) => void;
   isRoomMod: boolean;
+  isEdit: (newValue: boolean) => void;
   promoteUser: (username: string) => void;
   addReaction: (reaction: string, index: number) => void;
   course: Course | null;
@@ -36,6 +37,7 @@ const MessageEntry = ({
   index,
   isReply,
   isRoomMod,
+  isEdit,
   promoteUser,
   addReaction,
   course,
@@ -110,6 +112,7 @@ const MessageEntry = ({
             hoveredMessageId={hoveredMessageId}
             isReply={isReply}
             isRoomMod={isRoomMod}
+            isEdit={isEdit}
             promoteUser={promoteUser}
             isReacting={handleEmojiPanelChange}
             setReactingIndex={setReactingIndex}

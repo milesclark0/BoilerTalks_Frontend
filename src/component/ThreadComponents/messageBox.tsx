@@ -11,14 +11,17 @@ type Props = {
   updateReaction: ( reaction: string,index: number) => void;
   replyId: {username: string, id: string}
   handleReply: (index: number, isReplying: any) => void;
+  editId: number;
+  isEditing: boolean;
+  handleEdit: (index: number, isEditing: any ) => void;
   reaction: { reaction: string; index: number };
   messages: Message[];
 };
 
-const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }: Props) => {
+const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, handleEdit, reaction, messages }: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
-  const {sendMessage, connectToRoom, addReaction} = useSocketFunctions();
+  const {sendMessage, editMessage, connectToRoom, addReaction} = useSocketFunctions();
 
   const [currentRoom, updateRoomMessages, updateCurrentRoom, socket] = useStore((state) => [
     state.currentRoom,
@@ -68,6 +71,7 @@ const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }
       profilePic: user?.profilePicture,
       replyId: messages[messages.length - 1]?.replyId, //set the reply index to the reply index of the last message
       reactions: messages[messages.length - 1]?.reactions, //set the reactions to the reactions of the last message
+      edited: false,
     };
     //update message fields in currentRoom and roomList
     if (currentRoom) {
@@ -87,11 +91,25 @@ const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }
       timeSent: `${getDateTime()}`,
       profilePic: user?.profilePicture,
       replyId,
+      edited: false,
     };
     await sendMessage(formattedMessage, currentRoom, false);
     handleReply(null, false);
     setMessage("");
   };
+
+  const handleEditMessage = async () => {
+    const formattedMessage = {
+      username: user?.username,
+      message,
+      timeSent: `${getDateTime()}`,
+      profilePic: user?.profilePicture,
+      edited: true,
+    };
+    await editMessage(formattedMessage, currentRoom, editId);
+    handleEdit(null, false);
+    setMessage("");
+  }
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -99,7 +117,11 @@ const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }
 
   const handleEnterKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSendMessage();
+      if (isEditing) {
+        handleEditMessage();
+      } else {
+        handleSendMessage();
+      }
     }
   };
 
@@ -123,7 +145,7 @@ const MessageBox = ({ updateReaction, replyId, handleReply, reaction, messages }
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={handleSendMessage}>
+              <IconButton onClick={(isEditing)? handleEditMessage : handleSendMessage}>
                 <SendIcon />
               </IconButton>
             </InputAdornment>

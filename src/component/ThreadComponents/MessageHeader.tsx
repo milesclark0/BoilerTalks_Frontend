@@ -3,6 +3,7 @@ import { Message } from "../../globals/types";
 import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
 import TrashIcon from "@mui/icons-material/Delete";
+import EditIcon from '@mui/icons-material/Edit';
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import BlockUserModal from "../HomePage/components/blockUserModal";
 import { useCallback, useState } from "react";
@@ -17,6 +18,7 @@ type MessageHeaderProps = {
   index: number;
   isReply: (newValue: boolean) => void;
   isRoomMod: boolean;
+  isEdit: (newValue: boolean) => void;
   promoteUser: (username: string) => void;
   isReacting: () => void;
   setReactingIndex: (newValue: number) => void;
@@ -43,6 +45,7 @@ export const MessageHeader = ({
   index,
   isReply,
   isRoomMod,
+  isEdit,
   promoteUser,
   isReacting,
   setReactingIndex,
@@ -51,7 +54,7 @@ export const MessageHeader = ({
   const [userToBlock, setUserToBlock] = useState<string>("");
   const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
   const [showDeleteMessage, setShowDeleteMessage] = useState<boolean>(false);
-  const { deleteMessage } = useSocketFunctions();
+  const {deleteMessage, editMessage} = useSocketFunctions()
   const currentRoom = useStore((state) => state.currentRoom);
 
   const blockUserProps = {
@@ -79,6 +82,9 @@ export const MessageHeader = ({
             {getTime(message.timeSent, false)}
           </Typography>
         </Tooltip>
+        {message.edited ? (
+          <Typography variant="overline"> (Edited)</Typography>
+        ) : null}
       </div>
       {hoveredMessageId === index ? (
         <div
@@ -159,6 +165,19 @@ export const MessageHeader = ({
                 <Tooltip title="Delete Message" placement="top" arrow>
                   <IconButton onClick={handleDeleteMessage} size="small">
                     <TrashIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            ) : null}
+            {message.username === user?.username ? (
+              <Grid item xs={6} sx={{ display: "inline" }}>
+                <Tooltip title="Edit Message" placement="top" arrow>
+                  <IconButton
+                    onClick={() => {
+                      isEdit(true);
+                    }}
+                  >
+                    <EditIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>

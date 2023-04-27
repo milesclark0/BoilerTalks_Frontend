@@ -9,12 +9,12 @@ import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 type ViewReportProps = {
-  ReportsList: { username: string; reason: string, numBans: number, numWarns: number }[];
+  ReportsList: { username: string; reason: string, body: string, numBans: number, numWarns: number }[];
   PrevBanList: { username: string; reason: string }[];
   PrevWarnList: { username: string; reason: string }[];  
   ViewReportsOpen: boolean;
   setViewReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setReportsList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
+  setReportsList: React.Dispatch<React.SetStateAction<{ username: string; reason: string; body: string}[]>>;
   setPrevBanList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   setPrevWarnList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   course: Course;
@@ -41,12 +41,12 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       setPrevBanList(data.data.data.prevBannedUsers);
       setPrevWarnList(data.data.data.prevWarnedUsers);
 
-      var rawReports: { username: string; reason: string }[] = data.data.data.reports;
+      var rawReports: { username: string; reason: string; body: string }[] = data.data.data.reports;
 
       console.log("Reports: " + rawReports[0].username);
 
       // tally the number of bans and warnings for the reported user in this course
-      var reportsWithTallies: { username: string; reason: string, numBans: number, numWarns: number }[] = [];
+      var reportsWithTallies: { username: string; reason: string; body: string; numBans: number, numWarns: number }[] = [];
 
       const prevBanList = data.data.data.prevBannedUsers;
       const prevWarnList = data.data.data.prevWarnedUsers;
@@ -67,7 +67,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
           }
         }
 
-        reportsWithTallies.push({username: report.username, reason: report.reason, numBans: banTally, numWarns: warnTally});
+        reportsWithTallies.push({username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally});
       }
 
       console.log("Reports with tallies: " + reportsWithTallies[0].username);
@@ -92,7 +92,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
   if (isLoading) {
     return null;
   }
-  const ReportEntry = ({ report, index }: { report: { username: string; reason: string, numBans: number, numWarns: number }; index: number }) => {
+  const ReportEntry = ({ report, index }: { report: { username: string; reason: string, body: string, numBans: number, numWarns: number }; index: number }) => {
     return (
       <Stack direction="row" spacing={1}>
         <Typography
@@ -101,7 +101,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
             display: "flex",
           }}
         >
-          {report.username + ": " + report.reason}
+          {report.username + ": "+ report.reason + " report; \"" + report.body + "\""}
         </Typography>
         <Typography
           sx={{

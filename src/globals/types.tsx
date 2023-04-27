@@ -91,6 +91,7 @@ export type Message = {
   replyId?: { username: string; id: string };
   reactions?: [{ username: string; reaction: string, displayName?: string }];
   displayName?: string;
+  edited: boolean;
 };
 
 export type Notification = {

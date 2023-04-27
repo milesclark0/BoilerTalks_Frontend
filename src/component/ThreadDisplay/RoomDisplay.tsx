@@ -186,11 +186,14 @@ const RoomDisplay = () => {
   );
 };
 
-const MessageBoxContainer = ({ isReplying, handleReply, replyId, updateReaction, reaction, messages }) => {
+const MessageBoxContainer = ({ isReplying, handleReply, replyId, editId, isEditing, handleEdit, updateReaction, reaction, messages }) => {
   const containerProps = {
     isReplying,
     handleReply,
     replyId,
+    editId,
+    isEditing,
+    handleEdit,
     updateReaction,
     reaction,
   };
@@ -209,7 +212,7 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyId, updateReaction,
   );
 };
 
-const MessageBoxItems = ({ isReplying, handleReply, replyId, updateReaction, reaction, messages }) => {
+const MessageBoxItems = ({ isReplying, handleReply, replyId, editId, isEditing, handleEdit, updateReaction, reaction, messages }) => {
   const replyIndex = messages?.findIndex((message) => message.timeSent === replyId?.id && message.username === replyId?.username);
   return (
     <Box>
@@ -231,14 +234,35 @@ const MessageBoxItems = ({ isReplying, handleReply, replyId, updateReaction, rea
           </Typography>
         </Box>
       ) : null}
-      <MessageBox replyId={replyId} handleReply={handleReply} {...{ updateReaction, reaction, messages }} />
+
+      {isEditing ? (
+        <Box
+          sx={{
+            width: "50%",
+            display: "flex",
+            transform: "translateX(5%)",
+            overflow: "hidden",
+          }}
+        >
+          <IconButton onClick={() => handleEdit(false, null)}>
+            <ClearIcon />
+          </IconButton>
+          <Typography variant="overline">
+            {/* <ReplyIcon /> */}
+            {`Editing message: `}
+          </Typography>
+        </Box>
+      ) : null}
+      <MessageBox replyId={replyId} handleReply={handleReply} editId={editId} handleEdit={handleEdit} isEditing={isEditing} {...{ updateReaction, reaction, messages }} />
     </Box>
   );
 };
 
 const MessageListContainer = ({ messages, bannedUsers }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [replyId, setReplyId] = useState<{id: string, username: string}>(null);
+  const [editId, setEditId] = useState<number>(null);
   const [reaction, setReaction] = useState<{
     reaction: string;
     index: number;
@@ -268,6 +292,19 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
     }
   }, []);
 
+  const handleEdit = useCallback((isEditing, index) => {
+    const message = messages[index];
+    const messageUser = message?.username;
+    const messageId = message?.timeSent;
+    setIsEditing(isEditing);
+    if (isEditing) {
+      console.log("editing ", messageUser, messageId);
+      setEditId(index);
+    } else {
+      setEditId(null);
+    }
+  }, []);
+
   const updateReaction = useCallback((reaction: string, index: number) => {
     if (reaction === null && index === null) {
       setReaction(null);
@@ -279,6 +316,9 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
     isReplying,
     handleReply,
     replyId,
+    editId, 
+    isEditing,
+    handleEdit,
     updateReaction,
     reaction,
     bannedUsers,
@@ -307,7 +347,7 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   );
 };
 
-const MessagesList = ({ handleReply, updateReaction, messages }) => {
+const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => {
   const { profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
@@ -421,12 +461,19 @@ const MessagesList = ({ handleReply, updateReaction, messages }) => {
       },
       [handleReply]
     );
+    const isEdit = useCallback(
+      (isEditing: boolean) => {
+        handleEdit(isEditing, index);
+      },
+      [handleEdit]
+    );
     const MessageEntryProps = {
       profilePicLastUpdated,
       messages,
       message,
       index,
       isReply,
+      isEdit,
       isRoomMod: profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2",
       promoteUser: setCurrentRoomMods,
       addReaction: updateReaction,

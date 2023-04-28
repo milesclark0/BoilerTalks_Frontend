@@ -67,11 +67,15 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
           reviewed: false,
           unban: false,
         });
+        console.log(res)
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
             setSubmittedAppeal(true);
             setOpenForm(false);
             setSubmitLoading(false);
+          } else {
+            setSubmitLoading(false);
+            alert("Error")
           }
         }
       } catch (error) {

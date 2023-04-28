@@ -31,7 +31,7 @@ const PasswordReset = () => {
     if (!missing) {
       try {
         const res = await ChangePasswordAPI(user?.username, password);
-        console.log(res);
+        //console.log(res);
         if (res.data.statusCode === 200) {
           setResetStatus(true);
           setPassword("");

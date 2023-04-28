@@ -123,7 +123,7 @@ const MessageBox = ({
     const formattedMessage = {
       username: user?.username,
       message,
-      timeSent: `${getDateTime()}`,
+      timeSent: messages[editId].timeSent,
       profilePic: user?.profilePicture,
       edited: true,
     };

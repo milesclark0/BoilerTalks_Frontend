@@ -68,7 +68,7 @@ const ProfileTabBar = ({ ...props }: GridProps) => {
       if (data.data.statusCode === 200) {
         const sortedCourses = sortCoursesByDepartment(data.data.data[0]);
         setCurrentUserCourses(sortedCourses);
-        console.log(sortedCourses);
+        //console.log(sortedCourses);
       }
     },
   });

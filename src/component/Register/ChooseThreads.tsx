@@ -171,7 +171,7 @@ const ChooseThreads = () => {
         //returns all the courses the user is in
         const matchingCourses = courses.filter((course) => courseNames.includes(course.name));
         // setUserCourses([...userCourses, ...matchingCourses]);
-        console.log(matchingCourses);
+        //console.log(matchingCourses);
         navigate("/home");
       } else {
         console.log(response.data.message);

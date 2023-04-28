@@ -37,7 +37,7 @@ export const ShowPollList = () => {
     console.log(res);
     if (res.status == 200) {
       setPolls(res.data.data);
-      console.log("BELOW");
+      console.log("Polls:");
       console.log(res.data.data);
     }
   };
@@ -426,7 +426,7 @@ export const PollPromptBox = ({ toggleShowPollBox }: PollPromptBoxProps) => {
 
   const handleQuestionChange = (event) => {
     console.log(pollsCount);
-    console.log("above");
+    console.log("Pollscount");
     setQuestion(event.target.value);
   };
 

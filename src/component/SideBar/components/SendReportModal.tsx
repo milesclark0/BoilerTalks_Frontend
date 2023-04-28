@@ -39,6 +39,7 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
   const handleCloseNewReport = () => {
     setReportBody("");
     setReportReason("");
+    setReportRecipient("");
     setReportsOpen(false);
   };
 

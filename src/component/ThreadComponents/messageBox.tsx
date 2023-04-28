@@ -172,8 +172,8 @@ const MessageBox = ({
                 <SendIcon />
               </IconButton>
               <Tooltip title={"Add Poll"} placement="top" arrow>
-                <IconButton>
-                  <PollIcon onClick={toggleShowPollBox} />
+                <IconButton onClick={toggleShowPollBox} >
+                  <PollIcon />
                 </IconButton>
               </Tooltip>
             </InputAdornment>

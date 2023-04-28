@@ -19,7 +19,6 @@ export const CourseView = () => {
       setDistinctCoursesByDepartment(getDistinctCoursesByDepartment(activeIcon.course));
     }
   }, [activeIcon]);
-
   // gets the distinct courses for a department
   const getDistinctCoursesByDepartment = (department: string) => {
     const courses = userCourseList?.filter((course) => course.name.split(" ")[0] === department);

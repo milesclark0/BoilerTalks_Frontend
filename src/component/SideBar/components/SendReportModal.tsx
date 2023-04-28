@@ -75,7 +75,7 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
       username: user?.username,
       reason: reportReason,
       body: reportBody,
-      recipient: recipient,
+      recipient: reportRecipient,
     });
     if (res.data.statusCode === 200) {
       console.log(res.data.data);

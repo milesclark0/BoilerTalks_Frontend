@@ -7,7 +7,6 @@ import { useQuery } from "react-query";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 
 type ViewReportProps = {

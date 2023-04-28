@@ -81,16 +81,11 @@ const useSocketFunctions = () => {
 
     };
 
-    const sendQuestion = async (question: Question, room: Room, index: number) => {
-        if (joinedRoom === null) {
-            await connectToRoom(room);
-        }
+    const sendQuestion = async (question: Question) => {
         if (question.title.trim() !== "") {
             if (question.content.trim() !== "") {
                 socket.emit(namespace.send_question, {
                     question,
-                    roomID: room?._id.$oid,
-                    index,
                 });
             } else {
                 alert("Please explain your question.")
@@ -100,14 +95,10 @@ const useSocketFunctions = () => {
         }
     }
 
-    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, room: Room, index: number) => {
-        if (joinedRoom === null) {
-            await connectToRoom(room);
-        }
+    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number) => {
         if (response.response.trim() !== "") {
             socket.emit(namespace.send_response, {
                 question,
-                roomID: room?._id.$oid,
                 response,
                 index
             });
@@ -116,13 +107,9 @@ const useSocketFunctions = () => {
         }
     }
 
-    const updateQuestion = async (question: Question, room: Room, index: number) => {
-        if (joinedRoom === null) {
-            await connectToRoom(room);
-        }
+    const updateQuestion = async (question: Question, index: number) => {
         socket.emit(namespace.send_response, {
             question,
-            roomID: room?._id.$oid,
             index
         });
     }

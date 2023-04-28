@@ -95,7 +95,7 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     } else {
       console.log(res.data.message);
     }
-    setReportsOpen(false);
+    handleCloseNewReport();
   };
 
   return (

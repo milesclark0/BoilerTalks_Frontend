@@ -117,14 +117,13 @@ const QADisplay = () => {
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
-          const course = userCourseList?.find((course) => course._id.$oid === courseId);
           setActiveCourseThread("Q&A");
           setQuestions(resData.questions);
         }
       }
     };
     fetchQuestions();
-  }, [questions]);
+  }, [courseId]);
 
   return (
     <Paper sx={{ height: "100%", width: "100%" }} id="room">
@@ -169,7 +168,6 @@ const AskQuestionBoxContainer = ({questions}) => {
 };
 
 const QuestionListContainer = ({ questions, bannedUsers }) => {
-  const [respondId, setRespondId] = useState<number>(null);
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}>

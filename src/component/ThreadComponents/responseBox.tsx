@@ -39,7 +39,7 @@ const ResponseBox = ({ question, index, course }: Props) => {
         const answerUsername = user?.username;
         question.responses.push({answerUsername, response});
 
-        await sendResponse(question, {answerUsername, response}, index, course);
+        await sendResponse(question, {answerUsername, response}, index, course._id.$oid);
         setResponse("");
     }
 

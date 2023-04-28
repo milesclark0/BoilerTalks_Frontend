@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { initialState, IState } from './initialState';
-import { Course, Message, Room } from '../globals/types';
+import { Course, Message, Question, Room } from '../globals/types';
 import useSockets from '../hooks/useSockets';
 import { Socket } from 'socket.io-client';
 
@@ -94,6 +94,7 @@ const useStore = create<IState>((set, get) => ({
     setJoinedRoom: (room: Room) => set({ joinedRoom: room }),
 
 
+    setQuestions: (questions: Question[]) => set({ questions }),
 }));
 
 export default useStore;

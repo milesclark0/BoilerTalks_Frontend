@@ -81,7 +81,7 @@ const useSocketFunctions = () => {
 
     };
 
-    const sendQuestion = async (question: Question, course: Course) => {
+    const sendQuestion = async (question: Question, course: string) => {
         if (question.title.trim() !== "") {
             if (question.content.trim() !== "") {
                 console.log("Socket received question, sending to namespace");
@@ -97,7 +97,7 @@ const useSocketFunctions = () => {
         }
     }
 
-    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number, course: Course) => {
+    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number, course: string) => {
         if (response.response.trim() !== "") {
             socket.emit(namespace.send_response, {
                 question,
@@ -110,7 +110,7 @@ const useSocketFunctions = () => {
         }
     }
 
-    const updateQuestion = async (question: Question, index: number, course: Course) => {
+    const updateQuestion = async (question: Question, index: number, course: string) => {
         socket.emit(namespace.send_response, {
             question,
             index,

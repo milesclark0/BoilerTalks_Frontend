@@ -3,7 +3,6 @@ import {
     Box,
     Typography,
     IconButton,
-    List,
   } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Question, Room } from "../../globals/types";
@@ -16,6 +15,7 @@ import { Course } from "../../globals/types";
 import UserMenu from "./UserMenu";
 import { useAuth } from "../../context/context";
 import ResponseBox from "./responseBox";
+import { FixedSizeList as List } from "react-window";
 
 type QuestionEntryProps = {
     question: Question;

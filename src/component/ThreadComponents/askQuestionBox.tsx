@@ -44,7 +44,7 @@ const AskQuestionBox = ({ questions, course }: Props) => {
             responses: [],
         };
         console.log("Trying to send a new question " + formattedQuestion.title);
-        await sendQuestion(formattedQuestion, course);
+        await sendQuestion(formattedQuestion, course._id.$oid);
         setTitle("");
         setContent("");
     }

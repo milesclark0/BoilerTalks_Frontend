@@ -53,6 +53,10 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
       alert("Please select a reason for your report.");
       return false;
     }
+    if (reportReason === "Student" && reportRecipient === "") {
+      alert("Please select a recipient for your report.");
+      return false;
+    }
     if (reportBody === "") {
       alert("Please enter a report body.");
       return false;

@@ -124,7 +124,7 @@ const RoomDisplay = () => {
   //fetch currentRoom to update it
   useEffect(() => {
     const fetchCurrentRoom = async () => {
-      console.log("fetching current room", roomId);
+      //console.log("fetching current room", roomId);
       const res = await axiosPrivate.get(getRoomURL + roomId);
       if (res.status == 200) {
         if (res.data.statusCode == 200) {
@@ -153,7 +153,7 @@ const RoomDisplay = () => {
     if (messages[messages.length - 1] == undefined || profile == undefined) {
       return;
     }
-    console.log("updating last seen message", roomId);
+    //console.log("updating last seen message", roomId);
     const data = {
       roomId: roomId,
       data: {

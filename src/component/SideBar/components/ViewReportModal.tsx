@@ -47,7 +47,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
 
       var rawReports: {id: string; username: string; reason: string; body: string; numBans: number, numWarns: number}[] = data.data.data.reports;
 
-      console.log("Reports: " + rawReports[0].username);
+      //console.log("Reports: " + rawReports[0].username);
 
       // tally the number of bans and warnings for the reported user in this course
       var reportsWithTallies: {id: string; username: string; reason: string; body: string; numBans: number, numWarns: number }[] = [];
@@ -74,7 +74,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
         reportsWithTallies.push({id: report.id, username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally});
       }
 
-      console.log("Reports with tallies: " + reportsWithTallies[0].username);
+      //console.log("Reports with tallies: " + reportsWithTallies[0].username);
 
       setReportsList(reportsWithTallies);
     },

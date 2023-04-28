@@ -27,9 +27,12 @@ export const CourseNavigation = ({ course }: Props) => {
   const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
   const [ViewReportsOpen, setViewReportsOpen] = useState(false);
-  const [ReportsList, setReportsList] = useState<{ username: string; reason: string; numBans: number; numWarns: number }[]>();
-  const [PrevBanList, setPrevBanList] = useState<{ username: string; reason: string }[]>();
-  const [PrevWarnList, setPrevWarnList] = useState<{ username: string; reason: string }[]>();
+  const [ReportsList, setReportsList] =
+    useState<{id: string; username: string; reason: string; body:string; numBans: number; numWarns: number }[]>([]);
+  const [PrevBanList, setPrevBanList] =
+    useState<{ username: string; reason: string }[]>();
+  const [PrevWarnList, setPrevWarnList] =
+    useState<{ username: string; reason: string }[]>();
   const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
   const { roomId, courseId } = useParams();

@@ -9,6 +9,7 @@ const useSocketFunctions = () => {
         disconnect: "disconnect",
         message: "send_message",
         delete_message: "delete_message",
+        edit_message: "edit_message",
         join: "join",
         leave: "leave",
         react: "react",
@@ -43,6 +44,23 @@ const useSocketFunctions = () => {
                 alert("Please enter a message");
             }
         }
+    };
+
+    const editMessage = async (message: Message, room: Room, index: number) => {
+        if (joinedRoom === null) {
+            await connectToRoom(room);
+        }
+        if (message.message.trim() !== "") {
+                console.log("editing message", message.message.trim(), "to room", room?.name);
+
+                socket.emit(namespace.edit_message, {
+                    message,
+                    roomID: room?._id.$oid,
+                    index,
+                });
+        } else {
+            alert("Please enter a message");
+        }   
     };
 
     // used to delete a message from the server
@@ -136,6 +154,7 @@ const useSocketFunctions = () => {
 
     return {
         sendMessage,
+        editMessage,
         addReaction,
         connectToRoom,
         disconnectFromRoom,

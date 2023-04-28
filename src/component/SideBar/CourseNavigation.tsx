@@ -26,7 +26,10 @@ export const CourseNavigation = ({ course }: Props) => {
   const [RulesOpen, setRulesOpen] = useState(false); //whether the rules dialogue is open or not
   const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
-  const [ReportsList, setReportsList] = useState<{ username: string; reason: string }[]>();
+  const [ViewReportsOpen, setViewReportsOpen] = useState(false);
+  const [ReportsList, setReportsList] = useState<{ username: string; reason: string, numBans: number, numWarns: number }[]>();
+  const [PrevBanList, setPrevBanList] = useState<{ username: string; reason: string }[]>();
+  const [PrevWarnList, setPrevWarnList] = useState<{ username: string; reason: string }[]>();
   const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
   const { roomId, courseId } = useParams();
@@ -62,9 +65,13 @@ export const CourseNavigation = ({ course }: Props) => {
   };
   const ViewReportProps = {
     ReportsList,
-    ReportsOpen,
-    setReportsOpen,
+    PrevBanList,
+    PrevWarnList,
+    ViewReportsOpen,
+    setViewReportsOpen,
     setReportsList,
+    setPrevBanList,
+    setPrevWarnList,
     course: course,
   };
 
@@ -79,6 +86,10 @@ export const CourseNavigation = ({ course }: Props) => {
   const handleClickReport = () => {
     setReportsOpen(true);
   };
+
+  const handleClickViewReport = () => {
+    setViewReportsOpen(true);
+  }
 
   const isActiveCourse = () => {
     return course?._id.$oid === courseId;
@@ -257,6 +268,13 @@ export const CourseNavigation = ({ course }: Props) => {
           <AddThreadModal course={course} {...CreateNewThreadProps} />
           <RulesModal {...RulesProps} />
           <SendReportModal {...SendReportsProps} />
+          {profile?.modThreads?.includes(course?.name) ? (
+            <Button onClick={handleClickViewReport} sx={staticButtonStyle()}>
+              <ListItem>
+                <Typography variant="body2">View Reports</Typography>
+              </ListItem>
+            </Button>
+          ) : null}
           {profile?.modThreads?.includes(course?.name) && <ViewReportModal {...ViewReportProps} />}
         </List>
       </ListItem>

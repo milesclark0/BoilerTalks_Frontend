@@ -17,7 +17,8 @@ import { useAuth } from "../../../context/context";
 import { Course, Room } from "../../../globals/types";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useStore from "../../../store/store";
 
 type SendReportProps = {
   ReportsOpen: boolean;
@@ -31,6 +32,8 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
   const api = useAxiosPrivate();
   const [reportBody, setReportBody] = useState("");
   const [reportReason, setReportReason] = useState(initialReason || "");
+  const [reportRecipient, setReportRecipient] = useState(recipient || "");
+  const courseUsers = useStore((state) => state.courseUsers);
   const { user } = useAuth();
 
   const handleCloseNewReport = () => {
@@ -39,9 +42,19 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     setReportsOpen(false);
   };
 
+  useEffect(() => {
+    if (recipient) {
+      setReportRecipient(recipient);
+    }
+  }, [recipient]);
+
   const validateInput = () => {
     if (reportReason === "") {
       alert("Please select a reason for your report.");
+      return false;
+    }
+    if (reportReason === "Student" && reportRecipient === "") {
+      alert("Please select a recipient for your report.");
       return false;
     }
     if (reportBody === "") {
@@ -79,12 +92,35 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
         <DialogContent>
           <Typography sx={{ mb: 1 }}>Specify what you would like to report to moderators.</Typography>
           <Stack spacing={1}>
-            <TextField select sx={{ width: "10vw" }} label="Reason" size="small" onChange={(e) => setReportReason(e.target.value)} value={reportReason}>
-              <MenuItem value="Student">Student</MenuItem>
-              <MenuItem value="Course">Course</MenuItem>
-              <MenuItem value="Thread">Thread</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
-            </TextField>
+            <Stack direction={"row"} spacing={1}>
+              <TextField
+                select
+                sx={{ width: "10vw" }}
+                label="Reason"
+                size="small"
+                onChange={(e) => setReportReason(e.target.value)}
+                value={reportReason}
+              >
+                <MenuItem value="Student">Student</MenuItem>
+                <MenuItem value="Course">Course</MenuItem>
+                <MenuItem value="Thread">Thread</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </TextField>
+              {reportReason === "Student" && (
+                <TextField
+                  select
+                  sx={{ width: "10vw" }}
+                  label="Recipient"
+                  size="small"
+                  onChange={(e) => setReportRecipient(e.target.value)}
+                  value={reportRecipient}
+                >
+                  {courseUsers.map((user) => (
+                    <MenuItem value={user.username}>{user.username}</MenuItem>
+                  ))}
+                </TextField>
+              )}
+            </Stack>
             <TextField
               onChange={(e) => setReportBody(e.target.value)}
               id="newThreadName"

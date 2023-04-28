@@ -53,6 +53,8 @@ export type CourseManagement = {
   rules: string[];
   bannedUsers: [{ username: string; reason: string }];
   warnedUsers: [{ username: string; reason: string }];
+  prevBannedUsers: [{ username: string; reason: string }];
+  prevWarnedUsers: [{ username: string; reason: string }];
   appeals: [
     {
       username: string;
@@ -91,6 +93,7 @@ export type Message = {
   replyId?: { username: string; id: string };
   reactions?: [{ username: string; reaction: string, displayName?: string }];
   displayName?: string;
+  edited: boolean;
 };
 
 export type Notification = {

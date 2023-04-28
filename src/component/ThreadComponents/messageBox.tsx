@@ -7,6 +7,7 @@ import { useAuth } from "../../context/context";
 import SendIcon from "@mui/icons-material/Send";
 import useStore from "../../store/store";
 import PollIcon from "@mui/icons-material/Poll";
+import { Tooltip } from "@mui/material";
 
 type Props = {
   toggleShowPollBox: () => void;
@@ -170,9 +171,11 @@ const MessageBox = ({
               >
                 <SendIcon />
               </IconButton>
-              <IconButton>
-                <PollIcon onClick={toggleShowPollBox} />
-              </IconButton>
+              <Tooltip title={"Add Poll"} placement="top" arrow>
+                <IconButton>
+                  <PollIcon onClick={toggleShowPollBox} />
+                </IconButton>
+              </Tooltip>
             </InputAdornment>
           ),
         }}

@@ -9,6 +9,19 @@ const ReleaseNotes = () => {
       <StyledDivider />
       <CardContent sx={{ overflowY: "auto", mb: 2 }} className="scrollBar">
         <Typography variant="body1" sx={{ mt: 2 }}>
+          v1.0.3
+        </Typography>
+        <Typography variant="body1">- Added notifications for different coursees.</Typography>
+        <Typography variant="body1">
+          - Added ability to change notification preference within a course.
+        </Typography>
+        <Typography variant="body1">- Added ability to edit sent message.</Typography>
+        <Typography variant="body1">- Added ability to delete sent message.</Typography>
+        <Typography variant="body1">- Users can now send a poll to a room.</Typography>
+        <Typography variant="body1">- Cleaned up UI for profile page.</Typography>
+        <Typography variant="body1">- Fixed light mode and dark mode color palette.</Typography>
+        <Typography variant="body1">- Moderators can now filter in reports.</Typography>
+        <Typography variant="body1" sx={{ mt: 2 }}>
           v1.0.2
         </Typography>
         <Typography variant="body1">- Added more functionality for mods.</Typography>

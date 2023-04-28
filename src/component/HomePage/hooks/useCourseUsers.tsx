@@ -8,8 +8,8 @@ import { useParams } from "react-router-dom";
 
 
 export const useCourseUsers = () => {
-  const  [activeIcon, courseUsers, setCourseUsers] = useStore((state) => [
-    state.activeIcon,
+  const  [currentCourse, courseUsers, setCourseUsers] = useStore((state) => [
+    state.currentCourse,
     state.courseUsers,
     state.setCourseUsers,
   ]);
@@ -17,11 +17,11 @@ export const useCourseUsers = () => {
   const {courseId} = useParams()
 
   const fetchCourseUsers = async () => {
-    return await axiosPrivate.get(getCourseUsersURL + activeIcon.course);
+    return await axiosPrivate.get(getCourseUsersURL + currentCourse?.name);
   };
 
   // will run if currentCourse is not null and the currentCourse changes
-  const { data } = useQuery(["courseUsers", courseId], fetchCourseUsers, {
+  const { data } = useQuery(["courseUsers", currentCourse._id.$oid], fetchCourseUsers, {
     enabled: !!courseId, // only run if currentCourse is not null
     refetchOnMount: "always",
     refetchInterval: 1000 * 60 * 2, //2 minutes
@@ -32,7 +32,7 @@ export const useCourseUsers = () => {
     onSuccess: (data) => {
       console.log("Course Users: ", data.data.data);
       setCourseUsers(data.data.data);
-    }
+    },
   });
 
   return { courseUsers };

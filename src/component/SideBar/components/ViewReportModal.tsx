@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
 
 type ViewReportProps = {
   ReportsList: {id: string, username: string; reason: string, body: string, numBans: number, numWarns: number }[];
@@ -28,17 +29,15 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
     setViewReportsOpen(false);
   };
 
-  const handleRemoveReport = async (reportIndex: number) => {
+  const handleRemoveReport = async (reportID: string) => {
     const reportlist = ReportsList;
-    reportlist?.splice(reportIndex, 1);
+    const index = ReportsList.findIndex((report) => report.id === reportID);
+    reportlist?.splice(index, 1);
     setReportsList(reportlist);
-    await RemoveReport(reportIndex); //update backend
+    await RemoveReport(index); //update backend
   };
-  console.log("HHHh");
-  console.log(ReportsList);
 
   const reportListKeys = ["id", "username", "reason", "body", "numBans", "numWarns", "recipient"];
-
   const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
     onSuccess: (data) => {
       console.log(data.data.data);
@@ -80,7 +79,38 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       setReportsList(reportsWithTallies);
     },
   });
-
+  const [reportStateText, setReportStateText] = useState("Unsorted"); //What the sorted name string is
+  const handleClickSort = () => {
+    if(reportStateText === "Unsorted")
+      {
+        setReportStateText("Reason");
+        ReportsList.sort(function(a, b){
+          let x = a.reason.toLowerCase();
+          let y = b.reason.toLowerCase();
+          if (x < y) {return -1;}
+          if (x > y) {return 1;}
+          return 0;
+        }); 
+      }
+    else if(reportStateText === "Reason")
+      {
+        setReportStateText("Username");
+        ReportsList.sort(function(a, b){
+          let x = a.username.toLowerCase();
+          let y = b.username.toLowerCase();
+          if (x < y) {return -1;}
+          if (x > y) {return 1;}
+          return 0;
+        }); 
+      }
+    else
+      {
+        setReportStateText("Unsorted");
+        //ReportsList.sort(function(a, b){return a.index - b.index});\
+        ReportsList.reverse();
+      }
+  };
+  
   const RemoveReport = async (reportIndex: number) => {
     //fetch course management api
     const res = await api.post(removeReportURL + course?._id.$oid, {
@@ -97,31 +127,6 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
   if (isLoading) {
     return null;
   }
-  const ReportEntry = ({ report, index }: { report: {id: string; username: string; reason: string, body: string, numBans: number, numWarns: number }; index: number }) => {
-    return (
-      <Stack direction="row" spacing={1}>
-        <Typography
-          sx={{
-            width: 500,
-            display: "flex",
-          }}
-        >
-          {report.username + ": "+ report.reason + " report; \"" + report.body + "\""}
-        </Typography>
-        <Typography
-          sx={{
-            width: 550,
-            display: "flex",
-          }}
-        >
-          {"Times banned: " + report.numBans + "; Times warned: " + report.numWarns}
-        </Typography>
-        <IconButton aria-label="delete" onClick={() => handleRemoveReport(index)}>
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    );
-  };
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'reason', headerName: 'First name', width: 130 },
@@ -131,17 +136,25 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
   ];
 
   return (
-    <Dialog open={ViewReportsOpen} onClose={handleCloseReports}>
-      <Box component={"form"}>
+    <Dialog open={ViewReportsOpen} onClose={handleCloseReports} fullWidth maxWidth="md" >
+      <Box component={"form"} 
+        sx={
+          {
+         
+          
+          }
+        }
+      >
         <DialogTitle>Reports</DialogTitle>
         <DialogContent>
             <Box 
               sx={
                 {
-                width:"70%",
-                height:250,
+                width:"100%",
                 }
               }>
+            
+            <Box>Sort By: <Button variant="outlined" onClick={handleClickSort}>{reportStateText}</Button></Box>
             <Table  sx={{ width:"40%" }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -159,7 +172,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
                   {reportListKeys.map((key) => (
                   <TableCell>{report[key]}</TableCell>
                   ))}
-  
+                  <IconButton onClick={() => handleRemoveReport(report["id"])}><DeleteIcon/></IconButton>
                 </TableRow>
               ))}
             </TableBody>

@@ -72,23 +72,27 @@ const About = () => {
       email: "wang4621@purdue.edu",
       caption: "My name is Jeff.",
       github: "https://github.com/wang4621",
-      picture: "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Jeff",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Jeff",
     },
     {
       id: "1",
       title: "Sam",
       email: "sboynton@purdue.edu",
-      caption: "Senior in Software Engineering",
+      caption:
+        "If I had a dollar for every time I got distracted, I wish I had some ice cream.",
       github: "https://github.com/sboynton1",
-      picture: "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Sam",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Sam",
     },
     {
       id: "2",
       title: "Chris",
       email: "bradle82@purdue.edu",
-      caption: "Hello my name is Chris",
+      caption: "Somebody threw a rock at my window.",
       github: "https://github.com/cgbradley",
-      picture: "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Chris",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Chris",
     },
     {
       id: "3",
@@ -96,15 +100,17 @@ const About = () => {
       email: "zhan3461@purdue.edu",
       caption: "Graphic design is my passion",
       github: "https://github.com/oneKZhang",
-      picture: "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Katie",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Katie",
     },
     {
       id: "4",
       title: "Miles",
       email: "clark658@purdue.edu",
-      caption: "Hello my name is Miles",
+      caption: "Hooper and a coder.",
       github: "https://github.com/milesclark0",
-      picture: "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Miles",
+      picture:
+        "https://boilertalks-profile-images.s3.amazonaws.com/DevProfile-Miles",
     },
   ];
 
@@ -129,7 +135,13 @@ const About = () => {
         </Toolbar>
       </AppBar>
       <Box flexGrow={1}>
-        <Grid container wrap="nowrap" flexDirection="row" spacing={2} alignItems="center">
+        <Grid
+          container
+          wrap="nowrap"
+          flexDirection="row"
+          spacing={2}
+          alignItems="center"
+        >
           {devs.map((dev) => (
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <Box sx={{ margin: "15%" }}>
@@ -150,13 +162,22 @@ const About = () => {
                     setSelectedGithub(dev.github);
                   }}
                 >
-                  <CardMedia component="img" height="240" src={dev.picture} alt="ProfilePicture" />
-                  <CardContent>
+                  <CardMedia
+                    component="img"
+                    height="240"
+                    src={dev.picture}
+                    alt="ProfilePicture"
+                  />
+                  <CardContent sx={{ backgroundColor: "primary.main" }}>
                     <Typography gutterBottom variant="h5" component="div">
                       {dev.title}
                     </Typography>
 
-                    <Typography variant="body2" color="text.secondary" align="center">
+                    <Typography
+                      variant="body2"
+                      color="text.primary"
+                      align="center"
+                    >
                       Learn More
                     </Typography>
                   </CardContent>
@@ -170,11 +191,18 @@ const About = () => {
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)}>
         <DialogTitle sx={{ alignContent: "center" }}>About Me</DialogTitle>
         <DialogContent>
-          <DialogContentText>{selectedCaption}</DialogContentText>
+          <DialogContentText sx={{ color: "text.primary" }}>
+            {selectedCaption}
+          </DialogContentText>
           <Link to={selectedGithub}>
-            <IconButton>
-              <GitHubIcon />
-            </IconButton>
+            <Box sx={{ display: "inline-flex" }}>
+              <IconButton size="large">
+                <GitHubIcon />
+              </IconButton>
+              <Typography sx={{ paddingTop: "12px" }}>
+                Check out my github!
+              </Typography>
+            </Box>
           </Link>
         </DialogContent>
       </Dialog>

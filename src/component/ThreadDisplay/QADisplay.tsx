@@ -22,6 +22,7 @@ import { getRoomURL, getCourseURL } from "../../API/CoursesAPI";
 import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
 import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
 import { VariableSizeList as List } from "react-window";
+import QuestionEntry from "../ThreadComponents/questionEntry";
 
 type Props = {
   drawerWidth: number;
@@ -48,6 +49,7 @@ const QADisplay = () => {
   const { user } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const { courseId } = useParams();
+  const [roomId, setRoomId ] = useState<string>(null);
   const [bannedUsers, setBannedUsers] = useState<string[]>(null);
   const [banned, setBanned] = useState<boolean>(false);
   const [bannedData, setBannedData] = useState<WarnOrBan>();
@@ -105,6 +107,10 @@ const QADisplay = () => {
   }, [courseId]);
 
   useEffect(() => {
+    setRoomId("Q&A");
+  }, [roomId])
+
+  useEffect(() => {
     const fetchQuestions = async () => {
       console.log("fetching current questions for ", courseId);
       const res = await axiosPrivate.get(getCourseURL + courseId);
@@ -146,6 +152,7 @@ const QADisplay = () => {
 };
 
 const AskQuestionBoxContainer = ({questions}) => {
+  const [currentCourse] = useStore((state) => [state.currentCourse]);
   return (
     <Box
       sx={{
@@ -156,13 +163,107 @@ const AskQuestionBoxContainer = ({questions}) => {
         left: `${APP_STYLES.DRAWER_WIDTH}px`,
       }}
     >
-      <AskQuestionBox questions={questions} />
+      <AskQuestionBox questions={questions} course={currentCourse} />
     </Box>
   );
-}
+};
 
 const QuestionListContainer = ({ questions, bannedUsers }) => {
-  
+  const [respondId, setRespondId] = useState<number>(null);
+
+  return (
+    <Box sx={{ height: "100%", width: "100%" }}>
+      <AskQuestionBoxContainer questions={questions} />
+      <Box
+        id="message-container"
+        sx={{
+          p: APP_STYLES.DEFAULT_PADDING,
+          width: `calc(100% - ${APP_STYLES.DRAWER_WIDTH}px)`,
+          maxHeight: `calc(100% - ${APP_STYLES.APP_BAR_HEIGHT * 2 + 30}px)`,
+          overflowY: "hidden",
+          display: "flex",
+          flexDirection: "column-reverse",
+          scrollBehavior: "smooth",
+        }}
+        className="scrollBar"
+      >
+        <QuestionsList questions={questions} />
+      </Box>
+      {/* <UserBar /> */}
+    </Box>
+  );
+};
+
+const QuestionsList = ({ questions }) => {
+  const { profile } = useAuth();
+  const [currentCourse] = useStore((state) => [state.currentCourse]);
+  const axiosPrivate = useAxiosPrivate();
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    if (listRef.current) {
+      //scroll to bottom and resize list entries
+      listRef.current.resetAfterIndex(0, true);
+      listRef.current.scrollToItem(questions.length - 1, { align: "bottom" });
+    }
+  }, [questions[0]]);
+
+  const getItemSize = (index: number) => {
+    const question = questions[index];
+    // Compute the height of the message based on its contents
+    // You can use any algorithm that suits your needs
+    // Here's an example based on the message text length
+    const lineHeight = 40; // You can adjust this value to match your font size
+    const titleHeight = 60 //tentative, see how large the title text is
+    const linesCount = Math.ceil(question?.content.length / 140); // Break lines every 50 characters
+    var responseLineCount = 0;
+    question?.responses.forEach((response) => {
+      responseLineCount += Math.ceil(response.length / 140);
+    })
+
+    const finalHeight = linesCount * lineHeight + 40 + titleHeight + responseLineCount * lineHeight; // Add some extra space for the message container
+    // console.log(index, linesCount, getDividerHeight(index), finalHeight);
+    return finalHeight;
+  };
+
+  const Row = ({ index, style }) => {
+    const question = questions[index];
+    const QuestionEntryProps = {
+      questions,
+      question,
+      index,
+      course: currentCourse,
+    };
+    // Render a message entry using the message data
+    return (
+      <div key={question.username} style={{ ...style, scrollBehavior: "smooth" }}>
+        {/* <ConditionalLineBreak index={index} /> */}
+        <QuestionEntry {...QuestionEntryProps}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {questions?.length > 0 ? (
+        <List
+          height={850} // set the height of the list
+          itemCount={questions?.length} // set the number of items in the list
+          itemSize={getItemSize}
+          estimatedItemSize={100} // set the height of each item in the list
+          width="100%" // set the width of the list
+          ref={listRef}
+          style={{ overflowX: "hidden" }}
+          className="scrollBar"
+        >
+          {Row}
+        </List>
+      ) : (
+        <Box>{questions? <Typography variant="h6">No questions yet!</Typography> : <Typography>Loading...</Typography>}</Box>
+      )}
+    </div>
+  );
 }
 
 export default QADisplay;

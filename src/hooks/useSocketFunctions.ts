@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/context";
-import { Message, Room, Question } from "../globals/types";
+import { Message, Room, Question, Course } from "../globals/types";
 import useStore from "../store/store";
 
 const useSocketFunctions = () => {
@@ -81,11 +81,13 @@ const useSocketFunctions = () => {
 
     };
 
-    const sendQuestion = async (question: Question) => {
+    const sendQuestion = async (question: Question, course: Course) => {
         if (question.title.trim() !== "") {
             if (question.content.trim() !== "") {
+                console.log("Socket received question, sending to namespace");
                 socket.emit(namespace.send_question, {
                     question,
+                    course,
                 });
             } else {
                 alert("Please explain your question.")
@@ -95,22 +97,24 @@ const useSocketFunctions = () => {
         }
     }
 
-    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number) => {
+    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number, course: Course) => {
         if (response.response.trim() !== "") {
             socket.emit(namespace.send_response, {
                 question,
                 response,
-                index
+                index,
+                course,
             });
         } else {
             alert("Please write a response.")
         }
     }
 
-    const updateQuestion = async (question: Question, index: number) => {
+    const updateQuestion = async (question: Question, index: number, course: Course) => {
         socket.emit(namespace.send_response, {
             question,
-            index
+            index,
+            course,
         });
     }
 

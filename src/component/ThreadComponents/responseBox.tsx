@@ -8,15 +8,15 @@ import SendIcon from "@mui/icons-material/Send";
 import useStore from "../../store/store";
 
 type Props = {
-    questions: Question[];
-    course: Course
+    question: Question;
+    index: number;
+    course: Course;
 };
 
-const AskQuestionBox = ({ questions, course }: Props) => {
+const ResponseBox = ({ question, index, course }: Props) => {
     const { user } = useAuth();
-    const [title, setTitle] = useState<string>("");
-    const [content, setContent] = useState<string>("");
-    const { sendQuestion } = useSocketFunctions();
+    const [ response, setResponse] = useState<string>("");
+    const { sendResponse } = useSocketFunctions();
 
     const [socket] = useStore(
         (state) =>[
@@ -35,27 +35,23 @@ const AskQuestionBox = ({ questions, course }: Props) => {
         };
     };
 
-    const handleSendQuestion = async () => {
-        const formattedQuestion = {
-            username: user?.username,
-            title,
-            content,
-            answered: false,
-            responses: [],
-        };
-        console.log("Trying to send a new question " + formattedQuestion.title);
-        await sendQuestion(formattedQuestion, course);
-        setTitle("");
-        setContent("");
+    const handleSendResponse = async () => {
+        const answerUsername = user?.username;
+        question.responses.push({answerUsername, response});
+
+        await sendResponse(question, {answerUsername, response}, index, course);
+        setResponse("");
     }
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value);
+    const handleResponseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setResponse(e.target.value);
     };
 
-    const handleContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setContent(e.target.value);
-    };
+    const handleEnterKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            handleSendResponse();
+        }
+      };
 
     return(
         <Box
@@ -66,26 +62,18 @@ const AskQuestionBox = ({ questions, course }: Props) => {
           }}
         >
           <TextField
-            label="Enter a post title"
-            value={title}
+            label="Type your answer"
+            value={response}
             disabled={!socket?.connected}
             sx={{
               width: "100%",
             }}
-            onChange={handleTitleChange}
-          />
-          <TextField
-            label="What's your question?"
-            value={content}
-            disabled={!socket?.connected}
-            sx={{
-              width: "100%",
-            }}
-            onChange={handleContentChange}
+            onChange={handleResponseChange}
+            onKeyDown={handleEnterKeyPress}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleSendQuestion}>
+                  <IconButton onClick={handleSendResponse}>
                     <SendIcon />
                   </IconButton>
                 </InputAdornment>
@@ -96,4 +84,4 @@ const AskQuestionBox = ({ questions, course }: Props) => {
       );
 }
 
-export default React.memo(AskQuestionBox);
+export default React.memo(ResponseBox);

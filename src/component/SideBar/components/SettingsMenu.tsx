@@ -59,12 +59,6 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
         {user?.username}
       </MenuItem>
       <StyledDivider />
-      <MenuItem onClick={navigateToBlocklist}>
-        <ListItemIcon>
-          <BlockIcon />
-        </ListItemIcon>
-        Blocked Users
-      </MenuItem>
       <MenuItem onClick={navigateToAbout}>
         <ListItemIcon>
           <InfoIcon />

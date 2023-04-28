@@ -44,7 +44,7 @@ export const ShowPollList = () => {
 
   useEffect(() => {
     fetchPolls();
-  }, []);
+  }, [creatingPoll]);
 
   const { themeSetting } = useAuth();
   const selectedIconColor =

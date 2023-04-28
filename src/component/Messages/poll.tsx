@@ -252,8 +252,12 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography variant="button">{poll.option1}</Typography>
-                        <Typography variant="button">
+                        <Typography
+                          sx={{ fontSize: "12px", paddingRight: "5px" }}
+                        >
+                          {poll.option1}
+                        </Typography>
+                        <Typography sx={{ fontSize: "12px" }}>
                           {calculateWidth(poll, 1)}
                         </Typography>
                       </Button>
@@ -270,8 +274,12 @@ export const ShowPollList = () => {
                         minWidth: "10%",
                       }}
                     >
-                      <Typography variant="button">{poll.option2}</Typography>
-                      <Typography variant="button">
+                      <Typography
+                        sx={{ fontSize: "12px", paddingRight: "5px" }}
+                      >
+                        {poll.option2}
+                      </Typography>
+                      <Typography sx={{ fontSize: "12px" }}>
                         {calculateWidth(poll, 2)}
                       </Typography>
                     </Button>
@@ -288,8 +296,12 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography variant="button">{poll.option3}</Typography>
-                        <Typography variant="button">
+                        <Typography
+                          sx={{ fontSize: "12px", paddingRight: "5px" }}
+                        >
+                          {poll.option3}
+                        </Typography>
+                        <Typography sx={{ fontSize: "12px" }}>
                           {calculateWidth(poll, 3)}
                         </Typography>
                       </Button>
@@ -307,8 +319,12 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography variant="button">{poll.option4}</Typography>
-                        <Typography variant="button">
+                        <Typography
+                          sx={{ fontSize: "12px", paddingRight: "5px" }}
+                        >
+                          {poll.option4}
+                        </Typography>
+                        <Typography sx={{ fontSize: "12px" }}>
                           {calculateWidth(poll, 4)}
                         </Typography>
                       </Button>

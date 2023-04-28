@@ -11,12 +11,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 
 type ViewReportProps = {
-  ReportsList: {id: string, timeSent: string; username: string; reason: string, body: string, numBans: number, numWarns: number }[];
+  ReportsList: {id: string, timeSent: string; username: string; reason: string, body: string, numBans: number, numWarns: number, recipient: string }[];
   PrevBanList: { username: string; reason: string }[];
   PrevWarnList: { username: string; reason: string }[];  
   ViewReportsOpen: boolean;
   setViewReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setReportsList: React.Dispatch<React.SetStateAction<{id: string; timeSent: string; username: string; reason: string; body: string; numBans: number; numWarns: number}[]>>;
+  setReportsList: React.Dispatch<React.SetStateAction<{id: string; timeSent: string; username: string; reason: string; body: string; numBans: number; numWarns: number; recipient: string}[]>>;
   setPrevBanList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   setPrevWarnList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   course: Course;
@@ -45,12 +45,12 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       setPrevBanList(data.data.data.prevBannedUsers);
       setPrevWarnList(data.data.data.prevWarnedUsers);
 
-      var rawReports: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number}[] = data.data.data.reports;
+      var rawReports: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number, recipient: string}[] = data.data.data.reports;
 
       //console.log("Reports: " + rawReports[0].username);
 
       // tally the number of bans and warnings for the reported user in this course
-      var reportsWithTallies: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number }[] = [];
+      var reportsWithTallies: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number, recipient: string }[] = [];
 
       const prevBanList = data.data.data.prevBannedUsers;
       const prevWarnList = data.data.data.prevWarnedUsers;
@@ -71,7 +71,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
           }
         }
 
-        reportsWithTallies.push({id: report.id, timeSent: report.timeSent, username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally});
+        reportsWithTallies.push({id: report.id, timeSent: report.timeSent, username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally, recipient: report.recipient});
       }
 
       //console.log("Reports with tallies: " + reportsWithTallies[0].username);

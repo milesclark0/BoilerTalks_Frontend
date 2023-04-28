@@ -43,20 +43,22 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
   };
 
   return (
-    <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose} sx={{ pt: 0 }}>
-      <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
+    <Menu
+      open={settingsOpen}
+      anchorEl={anchorEl}
+      onClose={handleSettingsClose}
+      sx={{ pt: 0 }}
+    >
+      <MenuItem
+        onClick={navigateToProfile}
+        sx={{ justifyContent: "center", m: 0 }}
+      >
         <ListItemIcon>
           <AccountCircleIcon />
         </ListItemIcon>
         {user?.username}
       </MenuItem>
       <StyledDivider />
-      <MenuItem onClick={navigateToSettings}>
-        <ListItemIcon>
-          <SettingsIcon />
-        </ListItemIcon>
-        Settings
-      </MenuItem>
       <MenuItem onClick={navigateToBlocklist}>
         <ListItemIcon>
           <BlockIcon />

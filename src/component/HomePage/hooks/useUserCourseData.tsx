@@ -23,7 +23,7 @@ const useUserCourseData = () => {
     onSuccess: (data) => {
       if (data.data.statusCode === 200) {
         const sortedCourses = sortCoursesByDepartment(data.data.data[0]);
-        sortedCourses.forEach((course) => {
+        sortedCourses?.forEach((course) => {
           course.rooms = sortRoomsByName(course.rooms);
         });
         setUserCourseList(sortedCourses);

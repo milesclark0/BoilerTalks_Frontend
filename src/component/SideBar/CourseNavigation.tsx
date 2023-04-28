@@ -28,7 +28,7 @@ export const CourseNavigation = ({ course }: Props) => {
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
   const [ViewReportsOpen, setViewReportsOpen] = useState(false);
   const [ReportsList, setReportsList] =
-    useState<{id: string; username: string; reason: string; body:string; numBans: number; numWarns: number }[]>([]);
+    useState<{id: string; timeSent: string; username: string; reason: string; body:string; numBans: number; numWarns: number }[]>([]);
   const [PrevBanList, setPrevBanList] =
     useState<{ username: string; reason: string }[]>();
   const [PrevWarnList, setPrevWarnList] =

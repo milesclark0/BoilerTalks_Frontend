@@ -11,12 +11,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 
 type ViewReportProps = {
-  ReportsList: {id: string, username: string; reason: string, body: string, numBans: number, numWarns: number }[];
+  ReportsList: {id: string, timeSent: string; username: string; reason: string, body: string, numBans: number, numWarns: number }[];
   PrevBanList: { username: string; reason: string }[];
   PrevWarnList: { username: string; reason: string }[];  
   ViewReportsOpen: boolean;
   setViewReportsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setReportsList: React.Dispatch<React.SetStateAction<{id: string; username: string; reason: string; body: string; numBans: number; numWarns: number}[]>>;
+  setReportsList: React.Dispatch<React.SetStateAction<{id: string; timeSent: string; username: string; reason: string; body: string; numBans: number; numWarns: number}[]>>;
   setPrevBanList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   setPrevWarnList: React.Dispatch<React.SetStateAction<{ username: string; reason: string }[]>>;
   course: Course;
@@ -37,7 +37,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
     await RemoveReport(index); //update backend
   };
 
-  const reportListKeys = ["id", "username", "reason", "body", "numBans", "numWarns", "recipient"];
+  const reportListKeys = ["id", "timeSent", "username", "reason", "body", "numBans", "numWarns", "recipient"];
   const { isLoading, error, data } = useQuery(["course_mngmt", course?._id.$oid], () => api.get(getCourseManagementURL + course?._id.$oid), {
     onSuccess: (data) => {
       console.log(data.data.data);
@@ -45,12 +45,12 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       setPrevBanList(data.data.data.prevBannedUsers);
       setPrevWarnList(data.data.data.prevWarnedUsers);
 
-      var rawReports: {id: string; username: string; reason: string; body: string; numBans: number, numWarns: number}[] = data.data.data.reports;
+      var rawReports: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number}[] = data.data.data.reports;
 
       //console.log("Reports: " + rawReports[0].username);
 
       // tally the number of bans and warnings for the reported user in this course
-      var reportsWithTallies: {id: string; username: string; reason: string; body: string; numBans: number, numWarns: number }[] = [];
+      var reportsWithTallies: {id: string; timeSent: string; username: string; reason: string; body: string; numBans: number, numWarns: number }[] = [];
 
       const prevBanList = data.data.data.prevBannedUsers;
       const prevWarnList = data.data.data.prevWarnedUsers;
@@ -71,7 +71,7 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
           }
         }
 
-        reportsWithTallies.push({id: report.id, username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally});
+        reportsWithTallies.push({id: report.id, timeSent: report.timeSent, username: report.username, reason: report.reason, body: report.body, numBans: banTally, numWarns: warnTally});
       }
 
       //console.log("Reports with tallies: " + reportsWithTallies[0].username);
@@ -79,9 +79,9 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       setReportsList(reportsWithTallies);
     },
   });
-  const [reportStateText, setReportStateText] = useState("Unsorted"); //What the sorted name string is
+  const [reportStateText, setReportStateText] = useState("Date"); //What the sorted name string is
   const handleClickSort = () => {
-    if(reportStateText === "Unsorted")
+    if(reportStateText === "Date")
       {
         setReportStateText("Reason");
         ReportsList.sort(function(a, b){
@@ -105,9 +105,22 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
       }
     else
       {
-        setReportStateText("Unsorted");
-        //ReportsList.sort(function(a, b){return a.index - b.index});\
-        ReportsList.reverse();
+        setReportStateText("Date");
+        
+        //ReportsList.sort(function(a, b){return b.timeSent - a.timeSent});
+        ReportsList.sort(function(a, b){
+          var d1 = new Date(a.timeSent);
+          var d2 = new Date(b.timeSent);
+          if(d1 > d2)
+            {
+              return 1;
+            }
+          else
+            {
+              return -1;
+            }
+        });
+        //ReportsList.reverse();
       }
   };
   
@@ -127,13 +140,6 @@ const ViewReportModal = ({ ReportsList, PrevBanList, PrevWarnList, ViewReportsOp
   if (isLoading) {
     return null;
   }
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'reason', headerName: 'First name', width: 130 },
-    { field: 'body', headerName: 'Last name', width: 130 },
-    { field: 'numBans', headerName: 'Bans', width: 130 },
-    { field: 'numWarns', headerName: 'Warns', width: 130 },
-  ];
 
   return (
     <Dialog open={ViewReportsOpen} onClose={handleCloseReports} fullWidth maxWidth="md" >

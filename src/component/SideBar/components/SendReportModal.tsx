@@ -63,7 +63,18 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     }
     return true;
   };
-
+  // get the current date and time in the format of YYYY-MM-DD HH:MM:SS
+  const getDateTime = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+    //const millisecond = date.getMilliseconds();
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  };
   const handleSubmitNewReport = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateInput()) {
@@ -72,6 +83,7 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     //fetch course management api
     const res = await api.post(addReportURL + course?._id.$oid, {
       id: uuidv4().toString(),
+      timeSent: `${getDateTime()}`,
       username: user?.username,
       reason: reportReason,
       body: reportBody,

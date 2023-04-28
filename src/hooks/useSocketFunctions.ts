@@ -81,13 +81,13 @@ const useSocketFunctions = () => {
 
     };
 
-    const sendQuestion = async (question: Question, course: string) => {
+    const sendQuestion = async (question: Question, courseId: string) => {
         if (question.title.trim() !== "") {
             if (question.content.trim() !== "") {
                 console.log("Socket received question, sending to namespace");
                 socket.emit(namespace.send_question, {
                     question,
-                    course,
+                    courseId,
                 });
             } else {
                 alert("Please explain your question.")
@@ -97,24 +97,24 @@ const useSocketFunctions = () => {
         }
     }
 
-    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number, course: string) => {
+    const sendResponse = async (question: Question, response: {answerUsername: string, response: string}, index: number, courseId: string) => {
         if (response.response.trim() !== "") {
             socket.emit(namespace.send_response, {
                 question,
                 response,
                 index,
-                course,
+                courseId,
             });
         } else {
             alert("Please write a response.")
         }
     }
 
-    const updateQuestion = async (question: Question, index: number, course: string) => {
+    const updateQuestion = async (question: Question, index: number, courseId: string) => {
         socket.emit(namespace.send_response, {
             question,
             index,
-            course,
+            courseId,
         });
     }
 

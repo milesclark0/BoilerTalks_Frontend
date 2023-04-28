@@ -6,34 +6,55 @@ import { Course, Message, Room } from "../../globals/types";
 import { useAuth } from "../../context/context";
 import SendIcon from "@mui/icons-material/Send";
 import useStore from "../../store/store";
+import PollIcon from "@mui/icons-material/Poll";
 
 type Props = {
-  updateReaction: ( reaction: string,index: number) => void;
-  replyId: {username: string, id: string}
+  toggleShowPollBox: () => void;
+  updateReaction: (reaction: string, index: number) => void;
+  replyId: { username: string; id: string };
   handleReply: (index: number, isReplying: any) => void;
   editId: number;
   isEditing: boolean;
-  handleEdit: (index: number, isEditing: any ) => void;
+  handleEdit: (index: number, isEditing: any) => void;
   reaction: { reaction: string; index: number };
   messages: Message[];
 };
 
-const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, handleEdit, reaction, messages }: Props) => {
+const MessageBox = ({
+  updateReaction,
+  replyId,
+  handleReply,
+  editId,
+  isEditing,
+  handleEdit,
+  reaction,
+  messages,
+  toggleShowPollBox,
+}: Props) => {
   const { user } = useAuth();
   const [message, setMessage] = useState<string>("");
-  const {sendMessage, editMessage, connectToRoom, addReaction} = useSocketFunctions();
+  const { sendMessage, editMessage, connectToRoom, addReaction } =
+    useSocketFunctions();
 
-  const [currentRoom, updateRoomMessages, updateCurrentRoom, socket] = useStore((state) => [
-    state.currentRoom,
-    state.updateRoomMessages,
-    state.updateCurrentRoom,
-    state.socket,
-  ]);
+  const [currentRoom, updateRoomMessages, updateCurrentRoom, socket] = useStore(
+    (state) => [
+      state.currentRoom,
+      state.updateRoomMessages,
+      state.updateCurrentRoom,
+      state.socket,
+    ]
+  );
 
   //listen to reaction change and send the reaction to the server
   useEffect(() => {
     if (reaction != null) {
-      addReaction(messages[reaction.index], currentRoom, false, reaction.reaction, reaction.index);
+      addReaction(
+        messages[reaction.index],
+        currentRoom,
+        false,
+        reaction.reaction,
+        reaction.index
+      );
       updateReaction(null, null);
     }
   }, [reaction]);
@@ -47,7 +68,6 @@ const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, h
     };
     connect(currentRoom);
   }, [currentRoom]);
-
 
   // get the current date and time in the format of YYYY-MM-DD HH:MM:SS
   const getDateTime = () => {
@@ -109,7 +129,7 @@ const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, h
     await editMessage(formattedMessage, currentRoom, editId);
     handleEdit(null, false);
     setMessage("");
-  }
+  };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -125,7 +145,7 @@ const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, h
     }
   };
 
-  return(
+  return (
     <Box
       display={"flex"}
       sx={{
@@ -145,8 +165,13 @@ const MessageBox = ({ updateReaction, replyId, handleReply, editId, isEditing, h
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={(isEditing)? handleEditMessage : handleSendMessage}>
+              <IconButton
+                onClick={isEditing ? handleEditMessage : handleSendMessage}
+              >
                 <SendIcon />
+              </IconButton>
+              <IconButton>
+                <PollIcon onClick={toggleShowPollBox} />
               </IconButton>
             </InputAdornment>
           ),

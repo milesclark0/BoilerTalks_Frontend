@@ -21,6 +21,7 @@ import { darkTheme, lightTheme } from "./assets/theme";
 import { useAuth } from "./context/context";
 import NotificationPreference from "./component/Notification/NotificationPreference";
 import PasswordReset from "./component/Settings/PasswordReset";
+import { ShowPollList } from "./component/Messages/poll";
 
 function App() {
   const { themeSetting } = useAuth();
@@ -43,16 +44,29 @@ function App() {
           <Route element={<PersistLogin />}>
             <Route element={<ProtectedRoutes />}>
               <Route path="/chooseThreads" element={<ChooseThreads />} />
-              <Route path="/profile/:requestUsername" element={<ProfilePage />} />
+              <Route
+                path="/profile/:requestUsername"
+                element={<ProfilePage />}
+              />
               <Route path="/settings" element={<Settings />}>
                 <Route path="passwordReset" element={<PasswordReset />} />
                 {/* <Route path="notification" element={<NotificationPreference />} /> */}
               </Route>
               <Route path="/home/courses" element={<Home />} />
               <Route path="/home" element={<Home />}>
-                <Route path="courses/:courseId/:roomId" element={<RoomDisplay />} />
-                <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
+                <Route
+                  path="courses/:courseId/:roomId"
+                  element={<RoomDisplay />}
+                />
+                <Route
+                  path="courses/:courseId/Appeals"
+                  element={<AppealsDisplay />}
+                />
                 <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
+                <Route
+                  path="courses/:courseId/Polls"
+                  element={<ShowPollList />}
+                />
               </Route>
               <Route path="/blocklist" element={<Blocklist />} />
             </Route>

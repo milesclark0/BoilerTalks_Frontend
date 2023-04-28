@@ -25,3 +25,9 @@ export const getCourseModsURL = "/courseManagement/getCourseMods/";
 export const getPrevBannedUsersURL = "/courseManagement/getPrevBannedUsers/";
 
 export const getPrevWarnedUsersURL = "/courseManagement/getPrevWarnedUsers/";
+
+export const createPollURL = "/courseManagement/createPoll/";
+
+export const getPollsURL = "/courseManagement/getPolls/";
+
+export const pollVoteURL = "/courseManagement/pollVote/";

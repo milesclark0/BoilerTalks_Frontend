@@ -8,7 +8,11 @@ import { useParams } from "react-router-dom";
 import useSockets from "../../hooks/useSockets";
 import UserBar from "../HomePage/components/userBar";
 import MessageBox from "../ThreadComponents/messageBox";
-import { addCourseModsURL, getCourseManagementURL, getCourseModsURL } from "../../API/CourseManagementAPI";
+import {
+  addCourseModsURL,
+  getCourseManagementURL,
+  getCourseModsURL,
+} from "../../API/CourseManagementAPI";
 import BanDialog from "../ThreadComponents/BanDialog";
 import WarningDialog from "../ThreadComponents/WarningDialog";
 import MessageEntry from "../ThreadComponents/MessageEntry";
@@ -22,6 +26,7 @@ import { getRoomURL } from "../../API/CoursesAPI";
 import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
 import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
 import { VariableSizeList as List } from "react-window";
+import { PollPromptBox, ShowPollList } from "../Messages/poll";
 
 type WarnOrBan = {
   username: string;
@@ -49,18 +54,28 @@ const RoomDisplay = () => {
   const { setProfile, profile } = useAuth();
   // const [messages, setMessagesL] = useState<Message[]>(null);
   const [emojiShow, setEmojiShow] = useState<boolean>(false);
-  const [currentCourse, currentRoom, setCurrentRoom, messages, setMessages, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore(
-    (state) => [
-      state.currentCourse,
-      state.currentRoom,
-      state.setCurrentRoom,
-      state.messages,
-      state.setMessages,
-      state.userCourseList,
-      state.setCurrentCourse,
-      state.setActiveCourseThread,
-    ]
-  );
+
+  const [showPollBox, setShowPollBox] = useState<boolean>(false);
+
+  const [
+    currentCourse,
+    currentRoom,
+    setCurrentRoom,
+    messages,
+    setMessages,
+    userCourseList,
+    setCurrentCourse,
+    setActiveCourseThread,
+  ] = useStore((state) => [
+    state.currentCourse,
+    state.currentRoom,
+    state.setCurrentRoom,
+    state.messages,
+    state.setMessages,
+    state.userCourseList,
+    state.setCurrentCourse,
+    state.setActiveCourseThread,
+  ]);
   useUserRoomData();
   useCourseUsers();
 
@@ -100,7 +115,9 @@ const RoomDisplay = () => {
   }, [courseId]);
 
   useEffect(() => {
-    const course = userCourseList?.find((course) => course._id.$oid === courseId);
+    const course = userCourseList?.find(
+      (course) => course._id.$oid === courseId
+    );
     setCurrentCourse(course);
   }, [courseId]);
 
@@ -113,7 +130,9 @@ const RoomDisplay = () => {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
           setCurrentRoom(resData);
-          const course = userCourseList?.find((course) => course._id.$oid === courseId);
+          const course = userCourseList?.find(
+            (course) => course._id.$oid === courseId
+          );
           setActiveCourseThread(resData.name.replace(course.name, ""));
           setMessages(resData.messages);
         }
@@ -145,7 +164,10 @@ const RoomDisplay = () => {
         },
       },
     };
-    const res = await axiosPrivate.post(updateLastSeenMessageURL + user?.username, data);
+    const res = await axiosPrivate.post(
+      updateLastSeenMessageURL + user?.username,
+      data
+    );
     console.log(res);
     if (res.status == 200) {
       if (res.data.statusCode == 200) {
@@ -156,6 +178,10 @@ const RoomDisplay = () => {
       }
     }
   };
+
+  function toggleShowPollBox() {
+    setShowPollBox(!showPollBox);
+  }
 
   // useEffect(() => {
   //   setActiveCourseThread(currentRoom.name.replace(currentCourse.name, ""));
@@ -174,19 +200,39 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
+          {banned ? (
+            <BanDialog bannedData={bannedData} appealData={appealData} />
+          ) : (
+            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
+          )}
         </Box>
       )}
       {!banned && !warned && (
         <Box sx={{ height: "100%", width: "100%" }}>
-          <MessageListContainer messages={messages} bannedUsers={bannedUsers} />
+          <MessageListContainer
+            messages={messages}
+            bannedUsers={bannedUsers}
+            toggleShowPollBox={toggleShowPollBox}
+            isShowPollBox={showPollBox}
+          />
         </Box>
       )}
     </Paper>
   );
 };
 
-const MessageBoxContainer = ({ isReplying, handleReply, replyId, editId, isEditing, handleEdit, updateReaction, reaction, messages }) => {
+const MessageBoxContainer = ({
+  isReplying,
+  handleReply,
+  replyId,
+  editId,
+  isEditing,
+  handleEdit,
+  updateReaction,
+  reaction,
+  messages,
+  toggleShowPollBox,
+}) => {
   const containerProps = {
     isReplying,
     handleReply,
@@ -196,6 +242,7 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyId, editId, isEditi
     handleEdit,
     updateReaction,
     reaction,
+    toggleShowPollBox,
   };
   return (
     <Box
@@ -203,7 +250,9 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyId, editId, isEditi
         height: `${APP_STYLES.APP_BAR_HEIGHT}px`,
         position: "absolute",
         bottom: 20,
-        right: `${APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8}px`,
+        right: `${
+          APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8
+        }px`,
         left: `${APP_STYLES.DRAWER_WIDTH}px`,
       }}
     >
@@ -212,8 +261,22 @@ const MessageBoxContainer = ({ isReplying, handleReply, replyId, editId, isEditi
   );
 };
 
-const MessageBoxItems = ({ isReplying, handleReply, replyId, editId, isEditing, handleEdit, updateReaction, reaction, messages }) => {
-  const replyIndex = messages?.findIndex((message) => message.timeSent === replyId?.id && message.username === replyId?.username);
+const MessageBoxItems = ({
+  isReplying,
+  handleReply,
+  replyId,
+  editId,
+  isEditing,
+  handleEdit,
+  updateReaction,
+  reaction,
+  messages,
+  toggleShowPollBox,
+}) => {
+  const replyIndex = messages?.findIndex(
+    (message) =>
+      message.timeSent === replyId?.id && message.username === replyId?.username
+  );
   return (
     <Box>
       {isReplying ? (
@@ -230,7 +293,10 @@ const MessageBoxItems = ({ isReplying, handleReply, replyId, editId, isEditing, 
           </IconButton>
           <Typography variant="overline">
             {/* <ReplyIcon /> */}
-            {`replying to ` + messages[replyIndex]?.username + `: ` + messages[replyIndex]?.message}
+            {`replying to ` +
+              messages[replyIndex]?.username +
+              `: ` +
+              messages[replyIndex]?.message}
           </Typography>
         </Box>
       ) : null}
@@ -253,15 +319,31 @@ const MessageBoxItems = ({ isReplying, handleReply, replyId, editId, isEditing, 
           </Typography>
         </Box>
       ) : null}
-      <MessageBox replyId={replyId} handleReply={handleReply} editId={editId} handleEdit={handleEdit} isEditing={isEditing} {...{ updateReaction, reaction, messages }} />
+      <MessageBox
+        toggleShowPollBox={toggleShowPollBox}
+        replyId={replyId}
+        handleReply={handleReply}
+        editId={editId}
+        handleEdit={handleEdit}
+        isEditing={isEditing}
+        {...{ updateReaction, reaction, messages }}
+      />
     </Box>
   );
 };
 
-const MessageListContainer = ({ messages, bannedUsers }) => {
+const MessageListContainer = ({
+  messages,
+  bannedUsers,
+  toggleShowPollBox,
+  isShowPollBox,
+}) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [replyId, setReplyId] = useState<{id: string, username: string}>(null);
+  const [replyId, setReplyId] = useState<{ id: string; username: string }>(
+    null
+  );
+  const [currentCourse] = useStore((state) => [state.currentCourse]);
   const [editId, setEditId] = useState<number>(null);
   const [reaction, setReaction] = useState<{
     reaction: string;
@@ -285,8 +367,8 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
     const messageId = message?.timeSent;
     setIsReplying(isReplying);
     if (isReplying) {
-      console.log("replying to", messageUser, messageId)
-      setReplyId({id: messageId, username: messageUser})
+      console.log("replying to", messageUser, messageId);
+      setReplyId({ id: messageId, username: messageUser });
     } else {
       setReplyId(null);
     }
@@ -316,12 +398,13 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
     isReplying,
     handleReply,
     replyId,
-    editId, 
+    editId,
     isEditing,
     handleEdit,
     updateReaction,
     reaction,
     bannedUsers,
+    toggleShowPollBox,
   };
 
   return (
@@ -339,7 +422,13 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
         }}
         className="scrollBar"
       >
-        <MessagesList {...messageBoxProps} messages={messages} />
+        {isShowPollBox ? (
+          <React.Fragment>
+            <PollPromptBox toggleShowPollBox={toggleShowPollBox} />
+          </React.Fragment>
+        ) : (
+          <MessagesList {...messageBoxProps} messages={messages} />
+        )}
       </Box>
       <MessageBoxContainer {...messageBoxProps} messages={messages} />
       <UserBar />
@@ -347,10 +436,17 @@ const MessageListContainer = ({ messages, bannedUsers }) => {
   );
 };
 
-const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => {
+const MessagesList = ({
+  handleReply,
+  handleEdit,
+  updateReaction,
+  messages,
+}) => {
   const { profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
+  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(
+    Date.now()
+  );
   const axiosPrivate = useAxiosPrivate();
   const { roomId } = useParams();
   const listRef = useRef(null);
@@ -380,7 +476,12 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
     const emojiSpace = message?.reactions?.length > 0 ? 45 : 0; // Add some extra space for emojis
     const reply = Number.isInteger(message.replyIndex) ? 40 : 0;
     const linesCount = Math.ceil(message?.message.length / 140); // Break lines every 50 characters
-    const finalHeight = linesCount * lineHeight + 40 + getDividerHeight(index) + emojiSpace + reply; // Add some extra space for the message container
+    const finalHeight =
+      linesCount * lineHeight +
+      40 +
+      getDividerHeight(index) +
+      emojiSpace +
+      reply; // Add some extra space for the message container
     // console.log(index, linesCount, getDividerHeight(index), finalHeight);
     return finalHeight;
   };
@@ -388,7 +489,9 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
   const setCurrentRoomMods = useCallback(
     async (username: string) => {
       // return await axiosPrivate.get(getCourseModsURL + courseId);
-      return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse._id.$oid);
+      return await axiosPrivate.post(
+        addCourseModsURL + username + "/" + currentCourse._id.$oid
+      );
     },
     [currentCourse?._id.$oid]
   );
@@ -404,7 +507,9 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
     const messageBeforeTime = new Date(messageBefore.timeSent);
     // console.log(messageTime.toLocaleDateString(undefined, options), messageBeforeTime.toLocaleDateString(undefined, options));
 
-    const isSameDay = messageTime.toLocaleDateString(undefined, options) === messageBeforeTime.toLocaleDateString(undefined, options);
+    const isSameDay =
+      messageTime.toLocaleDateString(undefined, options) ===
+      messageBeforeTime.toLocaleDateString(undefined, options);
     // console.log(message.message, !isSameDay ? "has a divider" : "does not have a divider");
 
     return isSameDay ? 0 : 31;
@@ -418,11 +523,19 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
       return null;
     }
 
-    const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(undefined, options);
-    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
+    const msgDateBefore = new Date(
+      messages[index - 1]?.timeSent
+    ).toLocaleDateString(undefined, options);
+    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(
+      undefined,
+      options
+    );
 
     //render new message divider if message before is the last seen message
-    if (profile?.lastSeenMessage[roomId]?.message.timeSent === messages[index - 1]?.timeSent) {
+    if (
+      profile?.lastSeenMessage[roomId]?.message.timeSent ===
+      messages[index - 1]?.timeSent
+    ) {
       return (
         <div
           style={{
@@ -474,17 +587,21 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
       index,
       isReply,
       isEdit,
-      isRoomMod: profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2",
+      isRoomMod:
+        profile?.modThreads?.includes(currentCourse?.name) ||
+        profile?.username == "user2",
       promoteUser: setCurrentRoomMods,
       addReaction: updateReaction,
       course: currentCourse,
     };
     // Render a message entry using the message data
     return (
-      <div key={message.username + message.timeSent} style={{ ...style, scrollBehavior: "smooth" }}>
+      <div
+        key={message.username + message.timeSent}
+        style={{ ...style, scrollBehavior: "smooth" }}
+      >
         <ConditionalLineBreak index={index} />
-        <MessageEntry {...MessageEntryProps}
-        />
+        <MessageEntry {...MessageEntryProps} />
       </div>
     );
   };
@@ -508,7 +625,13 @@ const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => 
           {Row}
         </List>
       ) : (
-        <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
+        <Box>
+          {messages ? (
+            <Typography variant="h6">No messages yet!</Typography>
+          ) : (
+            <Typography>Loading...</Typography>
+          )}
+        </Box>
       )}
     </div>
   );

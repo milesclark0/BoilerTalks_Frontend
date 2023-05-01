@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, TextField, Divider, InputAdornment, Paper, useTheme } from "@mui/material";
-import logowhite from "../assets/logo_white.png";
-import logo from "../assets/logo.png";
+import { Box, Button, Typography, TextField, Divider, InputAdornment, Paper, useTheme } from "globals/mui";
+import logowhite from "assets/logo_white.png";
+import logo from "assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
-import { LoginAPI } from "../API/AuthAPI";
-import { useAuth } from "../context/context";
+import { LoginAPI } from "API/AuthAPI";
+import { useAuth } from "context/context";
 import { useLocation } from "react-router-dom";
 
 const Login = () => {

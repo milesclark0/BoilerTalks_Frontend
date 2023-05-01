@@ -1,9 +1,9 @@
-import { useAuth } from "../context/context";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useState } from "react";
-import SideBar from "../component/HomePage/components/sideBar";
-import { Box, Button } from "@mui/material";
-import { Course } from "../globals/types";
+import SideBar from "component/SideBar/containers/sideBar";
+import { Box, Button } from "globals/mui";
+import { Course } from "globals/types";
 
 const Policies = () => {
   const { user } = useAuth();

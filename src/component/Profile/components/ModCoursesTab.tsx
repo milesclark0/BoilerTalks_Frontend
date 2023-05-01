@@ -1,7 +1,7 @@
 import React from "react";
-import { User, Profile, Course } from "../../../globals/types";
+import { User, Profile, Course } from "globals/types";
 import CourseBox from "./courseCard";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "globals/mui";
 
 interface Props {
   viewedUser: User;

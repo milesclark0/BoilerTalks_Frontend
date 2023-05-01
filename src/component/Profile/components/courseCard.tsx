@@ -1,6 +1,6 @@
 import React from "react";
-import { Course } from "../../../globals/types";
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { Course } from "globals/types";
+import { Card, CardContent, CardHeader, Typography } from "globals/mui";
 import { Login } from "@mui/icons-material";
 
 const CourseBox = ({ course }: { course: Course }) => {

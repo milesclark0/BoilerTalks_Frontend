@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Box, Tab, Tabs, AppBar, useTheme } from "@mui/material";
-import { APP_STYLES } from "../../../globals/globalStyles";
+import { Box, Tab, Tabs, AppBar, useTheme } from "globals/mui";
+import { APP_STYLES } from "globals/globalStyles";
 import AddIcon from "@mui/icons-material/Add";
-import SearchCourseModal from "../../ThreadDisplay/searchCourseModal";
-import { useAuth } from "../../../context/context";
+import SearchCourseModal from "component/ThreadDisplay/components/searchCourseModal";
+import { useAuth } from "context/context";
 import HomeIcon from "@mui/icons-material/Home";
-import { Notification } from "../../../globals/types";
+import { Notification } from "globals/types";
 import HomeTab from "./HomeTab";
 
 interface TabPanelProps {
@@ -27,7 +27,7 @@ function TabPanel(props: TabPanelProps) {
             height: `calc(100vh - ${APP_STYLES.APP_BAR_HEIGHT}px)`,
             boxSizing: "border-box",
           }}
-          id={"tab"+index}
+          id={"tab" + index}
         >
           {children}
         </Box>

@@ -1,5 +1,5 @@
-import { ListItem, IconButton, Avatar, Typography } from "@mui/material";
-import useStore from "../../../store/store";
+import { ListItem, IconButton, Avatar, Typography } from "globals/mui";
+import useStore from "store/store";
 
 type Props = {
   labelText: string;

@@ -1,18 +1,9 @@
 // This file is used to give a ban to a user
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "globals/mui";
 import { LoadingButton } from "@mui/lab";
-import { banUserURL } from "../../API/CourseManagementAPI";
-import { axiosPrivate } from "../../API/axios";
+import { banUserURL } from "API/CourseManagementAPI";
+import { axiosPrivate } from "API/axios";
 import { useParams } from "react-router-dom";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
@@ -90,13 +81,7 @@ const BanPrompt = ({ openBanPrompt, setOpenBanPrompt, username }: Props) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseBanPrompt}>Cancel</Button>
-            <LoadingButton
-              onClick={sendBan}
-              variant="outlined"
-              loading={sendLoading}
-              endIcon={<SendIcon />}
-              loadingPosition="end"
-            >
+            <LoadingButton onClick={sendBan} variant="outlined" loading={sendLoading} endIcon={<SendIcon />} loadingPosition="end">
               Send
             </LoadingButton>
           </DialogActions>

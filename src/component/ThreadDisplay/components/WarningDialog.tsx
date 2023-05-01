@@ -1,9 +1,9 @@
 // This file is used to display the warning to the user
 import React, { useState } from "react";
-import { Button, Box, CardContent, Typography, CardActions, TextField } from "@mui/material";
+import { Button, Box, CardContent, Typography, CardActions, TextField } from "globals/mui";
 import WarningIcon from "@mui/icons-material/Warning";
-import { axiosPrivate } from "../../API/axios";
-import { updateWarnListURL } from "../../API/CourseManagementAPI";
+import { axiosPrivate } from "API/axios";
+import { updateWarnListURL } from "API/CourseManagementAPI";
 import { useParams } from "react-router-dom";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const WarningDialog = ({ setWarned, warnedData }: Props) => {
-  const {courseId} = useParams();
+  const { courseId } = useParams();
 
   const handleCloseWarning = () => {
     updateWarningListForCourse();
@@ -22,7 +22,7 @@ const WarningDialog = ({ setWarned, warnedData }: Props) => {
     try {
       const res = await axiosPrivate.post(updateWarnListURL + courseId, {
         username: warnedData.username,
-        reason: warnedData.reason
+        reason: warnedData.reason,
       });
       console.log(res);
       if (res.status == 200) {
@@ -34,7 +34,6 @@ const WarningDialog = ({ setWarned, warnedData }: Props) => {
       console.log(error);
     }
   };
-
 
   return (
     <Box
@@ -53,9 +52,7 @@ const WarningDialog = ({ setWarned, warnedData }: Props) => {
         <WarningIcon sx={{ color: "red", mr: 2, width: 45, height: 45 }} />
         <Typography variant="h4">You have been warned!</Typography>
       </CardContent>
-      <CardContent
-        sx={{ display: "flex", justifyContent: "center", overflowY: "auto", width: "80%" }}
-      >
+      <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto", width: "80%" }}>
         <TextField
           fullWidth
           multiline

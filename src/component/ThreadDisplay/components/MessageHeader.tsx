@@ -1,16 +1,16 @@
-import { Box, Typography, Grid, IconButton, Tooltip } from "@mui/material";
-import { Message } from "../../globals/types";
+import { Box, Typography, Grid, IconButton, Tooltip } from "globals/mui";
+import { Message } from "globals/types";
 import ReplyIcon from "@mui/icons-material/Reply";
 import BlockIcon from "@mui/icons-material/Block";
 import TrashIcon from "@mui/icons-material/Delete";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import AddReactionIcon from "@mui/icons-material/AddReaction";
-import BlockUserModal from "../HomePage/components/blockUserModal";
+import BlockUserModal from "component/HomePage/components/blockUserModal";
 import { useCallback, useState } from "react";
-import { useAuth } from "../../context/context";
+import { useAuth } from "context/context";
 import GavelIcon from "@mui/icons-material/Gavel";
-import useSocketFunctions from "../../hooks/useSocketFunctions";
-import useStore from "../../store/store";
+import useSocketFunctions from "hooks/useSocketFunctions";
+import useStore from "store/store";
 
 type MessageHeaderProps = {
   hoveredMessageId: number;
@@ -54,7 +54,7 @@ export const MessageHeader = ({
   const [userToBlock, setUserToBlock] = useState<string>("");
   const [showBlockUser, setShowBlockUser] = useState<boolean>(false);
   const [showDeleteMessage, setShowDeleteMessage] = useState<boolean>(false);
-  const {deleteMessage, editMessage} = useSocketFunctions()
+  const { deleteMessage, editMessage } = useSocketFunctions();
   const currentRoom = useStore((state) => state.currentRoom);
 
   const blockUserProps = {
@@ -82,9 +82,7 @@ export const MessageHeader = ({
             {getTime(message.timeSent, false)}
           </Typography>
         </Tooltip>
-        {message.edited ? (
-          <Typography variant="overline"> (Edited)</Typography>
-        ) : null}
+        {message.edited ? <Typography variant="overline"> (Edited)</Typography> : null}
       </div>
       {hoveredMessageId === index ? (
         <div

@@ -1,16 +1,16 @@
-import { useAuth } from "../context/context";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { getProfileURL, uploadProfilePictureURL } from "../API/ProfileAPI";
-import { Alert, AppBar, Box, Button, Card, Divider, Grid, Paper, Toolbar, Typography, styled } from "@mui/material";
-import { Profile, User } from "../globals/types";
+import { getProfileURL, uploadProfilePictureURL } from "API/ProfileAPI";
+import { Alert, AppBar, Box, Button, Card, Divider, Grid, Paper, Toolbar, Typography, styled } from "globals/mui";
+import { Profile, User } from "globals/types";
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
-import { APP_STYLES } from "../globals/globalStyles";
-import { ProfileContainer } from "../component/Profile/containers/ProfileContainer";
-import ProfileTabBar from "../component/Profile/containers/ProfileTabBar";
-import useStore from "../store/store";
+import { APP_STYLES } from "globals/globalStyles";
+import { ProfileContainer } from "component/Profile/containers/ProfileContainer";
+import ProfileTabBar from "component/Profile/containers/ProfileTabBar";
+import useStore from "store/store";
 
 const ProfilePage = () => {
   const { requestUsername } = useParams();

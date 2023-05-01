@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Autocomplete, TextField, Checkbox, FormHelperText, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
-import useAxiosPrivate from "./../../hooks/useAxiosPrivate";
+import { Box, Button, Autocomplete, TextField, AppBar, Toolbar, Typography, IconButton } from "globals/mui";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
-import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
-import { useAuth } from "../../context/context";
-import { Course } from "../../globals/types";
+import { getAllCoursesURL, subscribeToCourseURL } from "API/CoursesAPI";
+import { useAuth } from "context/context";
+import { Course } from "globals/types";
 import AddIcon from "@mui/icons-material/Add";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Stack, Tooltip } from "@mui/material";
+import { Stack, Tooltip } from "globals/mui";
 
 const emptyCourse: Course = {
   _id: { $oid: "" },
@@ -17,17 +17,9 @@ const emptyCourse: Course = {
   description: "",
   instructor: "",
   memberCount: 0,
-  userThread: { $oid: "" },
-  modRoom: { $oid: "" },
-  rooms: [
-    {
-      _id: { $oid: "" },
-      name: "",
-      courseId: { $oid: "" },
-      connected: [{ username: "", sid: "" }],
-      messages: [{ username: "", message: "", timeSent: { $date: "" } }],
-    },
-  ],
+  userThread: undefined,
+  modRoom: undefined,
+  rooms: [],
   owner: "",
   creationDate: { $date: "" },
   department: "",

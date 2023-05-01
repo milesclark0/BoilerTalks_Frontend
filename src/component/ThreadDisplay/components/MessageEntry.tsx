@@ -1,22 +1,13 @@
-import {
-  Avatar,
-  Box,
-  Typography,
-  IconButton,
-  Menu,
-  MenuItem,
-  Tooltip,
-} from "@mui/material";
+import { Avatar, Box, Typography, IconButton, Tooltip } from "globals/mui";
 import { useCallback, useState } from "react";
-import { Message, Room } from "../../globals/types";
+import { Message, Course } from "globals/types";
 import { MessageHeader } from "./MessageHeader";
 import MessageIcon from "@mui/icons-material/Message";
 import { EmojiPanel } from "./emojiPanel";
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 import React from "react";
-import { Course } from "../../globals/types";
 import UserMenu from "./UserMenu";
-import { useAuth } from "../../context/context";
+import { useAuth } from "context/context";
 
 type MessageEntryProps = {
   message: Message;
@@ -28,21 +19,9 @@ type MessageEntryProps = {
   promoteUser: (username: string) => void;
   addReaction: (reaction: string, index: number) => void;
   course: Course | null;
-  profilePicLastUpdated: number;
 };
 
-const MessageEntry = ({
-  message,
-  messages,
-  index,
-  isReply,
-  isRoomMod,
-  isEdit,
-  promoteUser,
-  addReaction,
-  course,
-  profilePicLastUpdated,
-}: MessageEntryProps) => {
+const MessageEntry = ({ message, messages, index, isReply, isRoomMod, isEdit, promoteUser, addReaction, course }: MessageEntryProps) => {
   const [hoveredMessageId, setHoveredMessageId] = useState<number>(null);
   const [emojiPanelShow, setEmojiPanelShow] = useState<boolean>(false);
 
@@ -67,7 +46,7 @@ const MessageEntry = ({
     setHoveredMessageId(null);
   }, []);
 
-  const replyIndex = messages.findIndex((m) => m.timeSent === message.replyId?.id  && m.username === message.replyId?.username);
+  const replyIndex = messages.findIndex((m) => m.timeSent === message.replyId?.id && m.username === message.replyId?.username);
   return (
     <Box
       sx={{
@@ -85,7 +64,7 @@ const MessageEntry = ({
     >
       {/* ----MESSAGE THREAD UI */}
 
-      <GetProfilePicture src={message.profilePic} handleUserClick={handleUserClick} profilePicLastUpdated={profilePicLastUpdated} />
+      <GetProfilePicture src={message.profilePic} handleUserClick={handleUserClick} />
       <Box
         sx={{
           overflow: "hidden",
@@ -101,7 +80,7 @@ const MessageEntry = ({
           >
             <MessageIcon sx={{ paddingRight: "9px", color: "grey" }} />
             <Typography sx={{ fontSize: "12px" }}>
-              {messages[replyIndex] ? `Replied To: ` + messages[replyIndex].username + `: ` + messages[replyIndex].message :  "Message Deleted"}
+              {messages[replyIndex] ? `Replied To: ` + messages[replyIndex].username + `: ` + messages[replyIndex].message : "Message Deleted"}
             </Typography>
           </div>
         ) : null}
@@ -120,7 +99,7 @@ const MessageEntry = ({
           <Typography style={{ wordWrap: "break-word", paddingBottom: "5px" }}>{message.message}</Typography>
         </div>
 
-        {message.reactions?.map((reaction, index) => {          
+        {message.reactions?.map((reaction, index) => {
           return (
             <React.Fragment key={index}>
               {reaction.reaction && (
@@ -155,20 +134,13 @@ const MessageEntry = ({
     </Box>
   );
 };
-const GetProfilePicture = ({
-  src,
-  handleUserClick,
-  profilePicLastUpdated,
-}) => {
+const GetProfilePicture = ({ src, handleUserClick }) => {
   // only show profile picture if it is the first message or if the username is different from the previous message
   // const show = index === 0 || messages[index].username !== messages[index - 1].username;
   // const visibility = show ? "visible" : "hidden";
   return (
-    <IconButton
-      onClick={handleUserClick}
-      sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}
-    >
-      <Avatar src={src + `?${profilePicLastUpdated}`} />
+    <IconButton onClick={handleUserClick} sx={{ width: 35, height: 35, mr: 3, visibility: "visible" }}>
+      <Avatar src={src} />
     </IconButton>
   );
 };

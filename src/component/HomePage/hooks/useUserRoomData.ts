@@ -1,10 +1,10 @@
 import { useQuery } from "react-query";
-import { Course, Room } from "../../../globals/types";
-import { useAuth } from "../../../context/context";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { getUserCoursesAndRoomsURL } from "../../../API/CoursesAPI";
+import { Course, Room } from "globals/types";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { getUserCoursesAndRoomsURL } from "API/CoursesAPI";
 import { useState } from "react";
-import useStore from "../../../store/store";
+import useStore from "store/store";
 
 const useUserRoomData = () => {
     const { user } = useAuth();

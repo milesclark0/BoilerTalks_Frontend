@@ -1,9 +1,9 @@
-import { Button, Card, Box, Stack, Typography, Avatar, TextField, Alert } from "@mui/material";
+import { Button, Card, Box, Stack, Typography, Avatar, TextField, Alert } from "globals/mui";
 import React, { useState } from "react";
-import { editProfileURL } from "../../../API/ProfileAPI";
-import { useAuth } from "../../../context/context";
-import { User, Profile, ClassYear } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { editProfileURL } from "API/ProfileAPI";
+import { useAuth } from "context/context";
+import { User, Profile, ClassYear } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { CancelButton, CheckButton, EditButton } from "../components/components";
 
 interface GridProps {

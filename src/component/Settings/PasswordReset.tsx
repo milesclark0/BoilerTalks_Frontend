@@ -1,10 +1,10 @@
-import { useAuth } from "../../context/context";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useState } from "react";
-import { Alert, Box, InputAdornment, Stack, Typography } from "@mui/material";
+import { Alert, Box, InputAdornment, Stack, Typography } from "globals/mui";
 import TextField from "@mui/material/TextField";
 import WarningIcon from "@mui/icons-material/Warning";
-import { ChangePasswordAPI } from "../../API/RegisterAPI";
+import { ChangePasswordAPI } from "API/RegisterAPI";
 import { LoadingButton } from "@mui/lab";
 
 const PasswordReset = () => {
@@ -59,7 +59,7 @@ const PasswordReset = () => {
       <Typography variant="h5">Password Reset</Typography>
       <Typography variant="body2">Passwords must contain one uppercase letter, one special character, and one numerical value.</Typography>
       <Box onSubmit={tryResetPassword} component="form">
-        <Stack direction={"row"} spacing={2} sx={{alignItems: "center", mt: 3}}>
+        <Stack direction={"row"} spacing={2} sx={{ alignItems: "center", mt: 3 }}>
           <TextField
             label="Password"
             type="password"
@@ -98,7 +98,14 @@ const PasswordReset = () => {
             }}
             sx={{ width: "70%" }}
           />
-          <LoadingButton variant="contained" loading={loading} disabled={loading} sx={{ textTransform: "none", width: "60%" }} type="submit" color="success">
+          <LoadingButton
+            variant="contained"
+            loading={loading}
+            disabled={loading}
+            sx={{ textTransform: "none", width: "60%" }}
+            type="submit"
+            color="success"
+          >
             Change Password
           </LoadingButton>
         </Stack>

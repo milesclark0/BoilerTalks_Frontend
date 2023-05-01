@@ -1,13 +1,13 @@
 // This file is used for menu dropdown in chat room
-import { Menu, MenuItem, IconButton, Avatar, Box } from "@mui/material";
+import { Menu, MenuItem, IconButton, Avatar, Box } from "globals/mui";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/context";
-import { StyledDivider } from "../SideBar/components/StyledDivider";
-import { Course } from "../../globals/types";
+import { useAuth } from "context/context";
+import { StyledDivider } from "component/SideBar/components/StyledDivider";
+import { Course } from "globals/types";
 import WarnPrompt from "./WarnPrompt";
 import BanPrompt from "./BanPrompt";
-import SendReportModal from "../SideBar/components/SendReportModal";
+import SendReportModal from "component/SideBar/components/SendReportModal";
 
 type Props = {
   username: string;
@@ -35,7 +35,6 @@ const UserMenu = ({ username, course, openUserMenu, anchorEl, setAnchorEl }: Pro
     initialReason: "Student",
     recipient: username,
   };
-
 
   const navigateToProfile = () => {
     // console.log(username);

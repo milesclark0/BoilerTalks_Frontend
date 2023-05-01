@@ -1,46 +1,34 @@
-import {
-  Drawer,
-  Typography,
-  Avatar,
-  ListItem,
-  List,
-  IconButton,
-  Box,
-  AppBar,
-  Toolbar,
-} from "@mui/material";
-import { Course, Room, User } from "../../../globals/types";
-import { APP_STYLES } from "../../../globals/globalStyles";
+import { Drawer, Typography, Avatar, ListItem, List, IconButton, Box, AppBar, Toolbar } from "globals/mui";
+import { Course, Room, User } from "globals/types";
+import { APP_STYLES } from "globals/globalStyles";
 import React from "react";
 import { useEffect, useState } from "react";
 import { Settings } from "@mui/icons-material";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { useAuth } from "../../../context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
 import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
-import { CourseIcon } from "./CourseIcon";
-import { StyledDivider } from "../../SideBar/components/StyledDivider";
-import { SettingsMenu } from "../../SideBar/components/SettingsMenu";
-import { CourseNavigation } from "../../SideBar/CourseNavigation";
-import { CourseView } from "../../SideBar/CourseView";
+import { CourseIcon } from "../components/CourseIcon";
+import { StyledDivider } from "../components/StyledDivider";
+import { SettingsMenu } from "../components/SettingsMenu";
+import { CourseNavigation } from "./CourseNavigation";
+import { CourseView } from "./CourseView";
 import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import ThemeSwitch from "./themeSwitch";
-import useStore from "../../../store/store";
+import ThemeSwitch from "../components/themeSwitch";
+import useStore from "store/store";
 
 const SideBar = ({ ...props }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeIcon, setActiveIcon, setDistinctDepartments, setCurrentCourse, userCourseList] = useStore(
-    (state) => [
-      state.activeIcon,
-      state.setActiveIcon,
-      state.setDistinctDepartments,
-      state.setCurrentCourse,
-      state.userCourseList,
-    ]
-  );
+  const [activeIcon, setActiveIcon, setDistinctDepartments, setCurrentCourse, userCourseList] = useStore((state) => [
+    state.activeIcon,
+    state.setActiveIcon,
+    state.setDistinctDepartments,
+    state.setCurrentCourse,
+    state.userCourseList,
+  ]);
 
   const OuterDrawerStyles = {
     width: APP_STYLES.DRAWER_WIDTH,
@@ -72,9 +60,7 @@ const SideBar = ({ ...props }) => {
   // get distinct departments from course list
 
   useEffect(() => {
-    const distinctDepartments = [
-      ...new Set(user?.courses.map((course) => course.split(" ")[0])),
-    ];
+    const distinctDepartments = [...new Set(user?.courses.map((course) => course.split(" ")[0]))];
     setDistinctDepartments(distinctDepartments);
   }, []);
 
@@ -90,30 +76,30 @@ const SideBar = ({ ...props }) => {
     updateActiveIcon(course, isActiveCourse);
   };
 
-    function updateActiveIcon(course, isActiveCourse) {
-      //runs when SideBar icon is clicked
-      if (isActiveCourse) {
-        //if the icon is a course, not a department
-        userCourseList.forEach((c) => {
-          if (c.name === course) {
-            navigate(`/home/courses/${c._id.$oid}/${c?.rooms[0][1].$oid}`, {
-              replace: true,
-            });
-          }
-        });
-      } else {
-        //if the icon is a department or is not set
-        if (course === "") {
-          navigate(`/home`, {
-            replace: true,
-          });
-        } else {
-          navigate(`/home/courses`, {
+  function updateActiveIcon(course, isActiveCourse) {
+    //runs when SideBar icon is clicked
+    if (isActiveCourse) {
+      //if the icon is a course, not a department
+      userCourseList.forEach((c) => {
+        if (c.name === course) {
+          navigate(`/home/courses/${c._id.$oid}/${c?.rooms[0][1].$oid}`, {
             replace: true,
           });
         }
+      });
+    } else {
+      //if the icon is a department or is not set
+      if (course === "") {
+        navigate(`/home`, {
+          replace: true,
+        });
+      } else {
+        navigate(`/home/courses`, {
+          replace: true,
+        });
       }
     }
+  }
 
   return (
     <Box>
@@ -140,12 +126,7 @@ const SideBar = ({ ...props }) => {
 
 const GetProfilePicture = () => {
   const { user } = useAuth();
-  return (
-    <Avatar
-      sx={{ width: 50, height: 50, mr: 2 }}
-      src={user?.profilePicture + `?${Date.now()}`}
-    />
-  );
+  return <Avatar sx={{ width: 50, height: 50, mr: 2 }} src={user?.profilePicture + `?${Date.now()}`} />;
 };
 
 type CourseIconProps = {
@@ -154,11 +135,7 @@ type CourseIconProps = {
   selectedIconColor: string;
 };
 
-const BoilerTalksIcon = ({
-  AvatarSize,
-  handleIconClick,
-  selectedIconColor,
-}: CourseIconProps) => {
+const BoilerTalksIcon = ({ AvatarSize, handleIconClick, selectedIconColor }: CourseIconProps) => {
   const activeIcon = useStore((state) => state.activeIcon);
   const outLineColor = activeIcon.course === "" ? selectedIconColor : "";
   const outlineStyle = activeIcon.course === "" ? "solid" : "";
@@ -200,21 +177,13 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
       <StyledDivider />
       {user.activeCourses?.map((course: string) => (
         <React.Fragment key={course}>
-          <CourseIcon
-            labelText={course}
-            isActiveCourse={true}
-            {...CourseIconProps}
-          />
+          <CourseIcon labelText={course} isActiveCourse={true} {...CourseIconProps} />
         </React.Fragment>
       ))}
       {user.activeCourses.length > 0 && <StyledDivider />}
       {distinctDepartments.map((course: string) => (
         <React.Fragment key={course}>
-          <CourseIcon
-            labelText={course}
-            isActiveCourse={false}
-            {...CourseIconProps}
-          />
+          <CourseIcon labelText={course} isActiveCourse={false} {...CourseIconProps} />
         </React.Fragment>
       ))}
     </List>
@@ -224,9 +193,7 @@ const CourseIconsList = ({ handleIconClick }: CourseListProps) => {
 const SideAppBar = () => {
   const { user, profile } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [themeChecked, setThemeChecked] = useState(
-    false || localStorage.getItem("themeSetting") === "dark"
-  );
+  const [themeChecked, setThemeChecked] = useState(false || localStorage.getItem("themeSetting") === "dark");
 
   const { handleThemeSettingChange } = useAuth();
 
@@ -253,16 +220,7 @@ const SideAppBar = () => {
         <Typography variant="body2" noWrap component="div" sx={{ flexGrow: 1 }}>
           {profile?.displayName || user?.username}
         </Typography>
-        <FormControlLabel
-          control={
-            <ThemeSwitch
-              sx={{ m: 1 }}
-              checked={themeChecked}
-              onChange={() => handleThemeChecked()}
-            />
-          }
-          label=""
-        />
+        <FormControlLabel control={<ThemeSwitch sx={{ m: 1 }} checked={themeChecked} onChange={() => handleThemeChecked()} />} label="" />
         <IconButton onClick={handleSettingsClick}>
           <Settings />
         </IconButton>

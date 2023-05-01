@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
-import { Box, CardContent, CardHeader, Divider, Typography } from "@mui/material";
-import { Notification } from "../../globals/types";
-import { StyledDivider } from "../SideBar/components/StyledDivider";
-import useStore from "../../store/store";
+import { Box, CardContent, CardHeader, Divider, Typography } from "globals/mui";
+import { Notification } from "globals/types";
+import { StyledDivider } from "component/SideBar/components/StyledDivider";
+import useStore from "store/store";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FeedIcon from "@mui/icons-material/Feed";
 import MessageIcon from "@mui/icons-material/Message";
 import FlagIcon from "@mui/icons-material/Flag";
-import { useAuth } from "../../context/context";
+import { useAuth } from "context/context";
 
 type Props = {
   notifications: Notification[];
@@ -111,13 +111,9 @@ const NotificationHome = ({ notifications }: Props) => {
                       <Typography sx={{ ml: 2 }}>{dateDisplay(notification.date.$date)}</Typography>
                     </Box>
                   </Box>
-                  <Typography>
-                    {findRoomName(notification.notification, notification.courseName)}
-                  </Typography>
+                  <Typography>{findRoomName(notification.notification, notification.courseName)}</Typography>
                 </Box>
-                {index !== notifications.length - 1 && (
-                  <Divider variant="middle" sx={{ mt: 2, borderColor: "rgba(7, 7, 7, 0.199)" }} />
-                )}
+                {index !== notifications.length - 1 && <Divider variant="middle" sx={{ mt: 2, borderColor: "rgba(7, 7, 7, 0.199)" }} />}
               </Box>
             );
           })}

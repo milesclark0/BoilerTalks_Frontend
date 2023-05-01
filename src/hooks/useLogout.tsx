@@ -1,6 +1,6 @@
-import { LogoutAPI } from "../API/AuthAPI";
-import { useAuth } from "../context/context";
-import { Room } from "../globals/types";
+import { LogoutAPI } from "API/AuthAPI";
+import { useAuth } from "context/context";
+import { Room } from "globals/types";
 import useSockets from "./useSockets";
 
 const useLogout = () => {

@@ -1,9 +1,9 @@
-import { Box, Button, List, ListItem, Paper, Typography } from "@mui/material";
+import { Box, Button, List, ListItem, Paper, Typography } from "globals/mui";
 import React from "react";
-import { User } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { unblockUserUrl } from "../../../API/BlockingAPI";
-import { useAuth } from "../../../context/context";
+import { User } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { unblockUserUrl } from "API/BlockingAPI";
+import { useAuth } from "context/context";
 
 interface Props {
   viewedUser: User;
@@ -60,7 +60,7 @@ const BlockedUsersTab = ({ viewedUser, setViewedUser }: Props) => {
         maxHeight: "53vh",
         bgcolor: "primary.main",
         borderRadius: "3%",
-        minHeight: "53vh"
+        minHeight: "53vh",
       }}
     >
       <Typography variant="h6" sx={{ pb: 1 }}>

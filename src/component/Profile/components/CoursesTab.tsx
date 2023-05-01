@@ -1,11 +1,11 @@
-import { Box, Grid, List, ListItem, Paper, Typography, styled } from "@mui/material";
+import { Box, Grid, List, ListItem, Paper, Typography, styled } from "globals/mui";
 import React, { useEffect } from "react";
-import { useAuth } from "../../../context/context";
+import { useAuth } from "context/context";
 import { useStore } from "zustand";
-import { Course } from "../../../globals/types";
+import { Course } from "globals/types";
 import { useQuery } from "react-query";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { getUserCoursesAndRoomsURL } from "../../../API/CoursesAPI";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { getUserCoursesAndRoomsURL } from "API/CoursesAPI";
 import CourseCard from "./courseCard";
 
 const CoursesTab = ({ viewedUser, profileInfo, currentUserCourses }) => {
@@ -64,7 +64,6 @@ const CoursesTab = ({ viewedUser, profileInfo, currentUserCourses }) => {
         p: 2,
         bgcolor: "primary.main",
         borderRadius: "3%",
-        
       }}
     >
       <Grid container spacing={4}>

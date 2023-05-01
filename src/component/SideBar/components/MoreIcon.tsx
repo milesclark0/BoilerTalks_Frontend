@@ -1,11 +1,11 @@
-import { IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import React, {useState} from "react";
-import { Course, User } from "../../../globals/types";
+import { IconButton, ListItemIcon, Menu, MenuItem } from "globals/mui";
+import React, { useState } from "react";
+import { Course, User } from "globals/types";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import NotificationPreference from "../../Notification/NotificationPreference";
-import LeaveServer from "../../ThreadComponents/LeaveServer";
+import NotificationPreference from "component/Notification/NotificationPreference";
+import LeaveServer from "component/ThreadDisplay/components/LeaveServer";
 
 type Props = {
   course: Course;
@@ -27,11 +27,11 @@ export const MoreIcon = ({ course }: Props) => {
 
   const handleOpenNotification = () => {
     setOpenNoti(true);
-  }
+  };
 
   const handleOpenLeave = () => {
     setOpenLeave(true);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -66,17 +66,8 @@ export const MoreIcon = ({ course }: Props) => {
         </MenuItem>
         {/* {add more options for mods and what not} */}
       </Menu>
-      <NotificationPreference
-        openNoti={openNoti}
-        setOpenNoti={setOpenNoti}
-        courseName={course.name}
-      />
-      <LeaveServer
-        course={course}
-        setAnchorEl={setAnchorEl}
-        openLeave={openLeave}
-        setOpenLeave={setOpenLeave}
-      />
+      <NotificationPreference openNoti={openNoti} setOpenNoti={setOpenNoti} courseName={course.name} />
+      <LeaveServer course={course} setAnchorEl={setAnchorEl} openLeave={openLeave} setOpenLeave={setOpenLeave} />
     </React.Fragment>
   );
 };

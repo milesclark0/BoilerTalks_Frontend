@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import { useAuth } from "../context/context";
-import { Message, Room } from "../globals/types";
-import useStore from "../store/store";
+import { useAuth } from "context/context";
+import { Message, Room } from "globals/types";
+import useStore from "store/store";
 
 let endpoint = "http://127.0.0.1:5000/chat";
 const namespace = {
@@ -41,7 +41,7 @@ const useSockets = () => {
       console.log("disconnected");
     });
 
-    socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string, displayName: string }) => {
+    socket.on(namespace.react, (data: { index: number; reaction: string; message: Message; username: string; displayName: string }) => {
       addReactionMessage(data);
     });
 

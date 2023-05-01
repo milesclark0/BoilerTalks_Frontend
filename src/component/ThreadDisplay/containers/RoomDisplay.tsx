@@ -1,32 +1,26 @@
 // Display for messages
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
-import { useAuth } from "../../context/context";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Course, Message, Room } from "../../globals/types";
+import { Box, Divider, IconButton, Typography, useTheme } from "globals/mui";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useParams } from "react-router-dom";
-import useSockets from "../../hooks/useSockets";
-import UserBar from "../HomePage/components/userBar";
-import MessageBox from "../ThreadComponents/messageBox";
-import {
-  addCourseModsURL,
-  getCourseManagementURL,
-  getCourseModsURL,
-} from "../../API/CourseManagementAPI";
-import BanDialog from "../ThreadComponents/BanDialog";
-import WarningDialog from "../ThreadComponents/WarningDialog";
-import MessageEntry from "../ThreadComponents/MessageEntry";
+import UserBar from "component/HomePage/components/userBar";
+import MessageBox from "component/ThreadDisplay/components/messageBox";
+import { addCourseModsURL, getCourseManagementURL } from "API/CourseManagementAPI";
+import BanDialog from "component/ThreadDisplay/components/BanDialog";
+import WarningDialog from "component/ThreadDisplay/components/WarningDialog";
+import MessageEntry from "component/ThreadDisplay/components/MessageEntry";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Paper } from "@mui/material";
-import CourseDisplayAppBar from "./CourseDisplayAppBar";
-import { APP_STYLES } from "../../globals/globalStyles";
-import useUserRoomData from "../HomePage/hooks/useUserRoomData";
-import useStore from "./../../store/store";
-import { getRoomURL } from "../../API/CoursesAPI";
-import { updateLastSeenMessageURL } from "../../API/ProfileAPI";
-import { useCourseUsers } from "../HomePage/hooks/useCourseUsers";
+import { Paper } from "globals/mui";
+import CourseDisplayAppBar from "../components/CourseDisplayAppBar";
+import { APP_STYLES } from "globals/globalStyles";
+import useUserRoomData from "component/HomePage/hooks/useUserRoomData";
+import useStore from "store/store";
+import { getRoomURL } from "API/CoursesAPI";
+import { updateLastSeenMessageURL } from "API/ProfileAPI";
+import { useCourseUsers } from "component/HomePage/hooks/useCourseUsers";
 import { VariableSizeList as List } from "react-window";
-import { PollPromptBox, ShowPollList } from "../Messages/poll";
+import { PollPromptBox } from "component/Polling/poll";
 
 type WarnOrBan = {
   username: string;
@@ -57,25 +51,18 @@ const RoomDisplay = () => {
 
   const [showPollBox, setShowPollBox] = useState<boolean>(false);
 
-  const [
-    currentCourse,
-    currentRoom,
-    setCurrentRoom,
-    messages,
-    setMessages,
-    userCourseList,
-    setCurrentCourse,
-    setActiveCourseThread,
-  ] = useStore((state) => [
-    state.currentCourse,
-    state.currentRoom,
-    state.setCurrentRoom,
-    state.messages,
-    state.setMessages,
-    state.userCourseList,
-    state.setCurrentCourse,
-    state.setActiveCourseThread,
-  ]);
+  const [currentCourse, currentRoom, setCurrentRoom, messages, setMessages, userCourseList, setCurrentCourse, setActiveCourseThread] = useStore(
+    (state) => [
+      state.currentCourse,
+      state.currentRoom,
+      state.setCurrentRoom,
+      state.messages,
+      state.setMessages,
+      state.userCourseList,
+      state.setCurrentCourse,
+      state.setActiveCourseThread,
+    ]
+  );
   useUserRoomData();
   useCourseUsers();
 
@@ -115,9 +102,7 @@ const RoomDisplay = () => {
   }, [courseId]);
 
   useEffect(() => {
-    const course = userCourseList?.find(
-      (course) => course._id.$oid === courseId
-    );
+    const course = userCourseList?.find((course) => course._id.$oid === courseId);
     setCurrentCourse(course);
   }, [courseId]);
 
@@ -130,9 +115,7 @@ const RoomDisplay = () => {
         if (res.data.statusCode == 200) {
           const resData = res.data.data;
           setCurrentRoom(resData);
-          const course = userCourseList?.find(
-            (course) => course._id.$oid === courseId
-          );
+          const course = userCourseList?.find((course) => course._id.$oid === courseId);
           setActiveCourseThread(resData.name.replace(course.name, ""));
           setMessages(resData.messages);
         }
@@ -164,10 +147,7 @@ const RoomDisplay = () => {
         },
       },
     };
-    const res = await axiosPrivate.post(
-      updateLastSeenMessageURL + user?.username,
-      data
-    );
+    const res = await axiosPrivate.post(updateLastSeenMessageURL + user?.username, data);
     console.log(res);
     if (res.status == 200) {
       if (res.data.statusCode == 200) {
@@ -200,64 +180,15 @@ const RoomDisplay = () => {
             flexDirection: "column",
           }}
         >
-          {banned ? (
-            <BanDialog bannedData={bannedData} appealData={appealData} />
-          ) : (
-            <WarningDialog setWarned={setWarned} warnedData={warnedData} />
-          )}
+          {banned ? <BanDialog bannedData={bannedData} appealData={appealData} /> : <WarningDialog setWarned={setWarned} warnedData={warnedData} />}
         </Box>
       )}
       {!banned && !warned && (
         <Box sx={{ height: "100%", width: "100%" }}>
-          <MessageListContainer
-            messages={messages}
-            bannedUsers={bannedUsers}
-            toggleShowPollBox={toggleShowPollBox}
-            isShowPollBox={showPollBox}
-          />
+          <MessageListContainer messages={messages} bannedUsers={bannedUsers} toggleShowPollBox={toggleShowPollBox} isShowPollBox={showPollBox} />
         </Box>
       )}
     </Paper>
-  );
-};
-
-const MessageBoxContainer = ({
-  isReplying,
-  handleReply,
-  replyId,
-  editId,
-  isEditing,
-  handleEdit,
-  updateReaction,
-  reaction,
-  messages,
-  toggleShowPollBox,
-}) => {
-  const containerProps = {
-    isReplying,
-    handleReply,
-    replyId,
-    editId,
-    isEditing,
-    handleEdit,
-    updateReaction,
-    reaction,
-    toggleShowPollBox,
-  };
-  return (
-    <Box
-      sx={{
-        height: `${APP_STYLES.APP_BAR_HEIGHT}px`,
-        position: "absolute",
-        bottom: 20,
-        right: `${
-          APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8
-        }px`,
-        left: `${APP_STYLES.DRAWER_WIDTH}px`,
-      }}
-    >
-      <MessageBoxItems {...containerProps} messages={messages} />
-    </Box>
   );
 };
 
@@ -273,12 +204,17 @@ const MessageBoxItems = ({
   messages,
   toggleShowPollBox,
 }) => {
-  const replyIndex = messages?.findIndex(
-    (message) =>
-      message.timeSent === replyId?.id && message.username === replyId?.username
-  );
+  const replyIndex = messages?.findIndex((message) => message.timeSent === replyId?.id && message.username === replyId?.username);
   return (
-    <Box>
+    <Box
+      sx={{
+        height: `${APP_STYLES.APP_BAR_HEIGHT}px`,
+        position: "absolute",
+        bottom: 20,
+        right: `${APP_STYLES.DRAWER_WIDTH - APP_STYLES.INNER_DRAWER_WIDTH + 3 * 8}px`,
+        left: `${APP_STYLES.DRAWER_WIDTH}px`,
+      }}
+    >
       {isReplying ? (
         <Box
           sx={{
@@ -293,10 +229,7 @@ const MessageBoxItems = ({
           </IconButton>
           <Typography variant="overline">
             {/* <ReplyIcon /> */}
-            {`replying to ` +
-              messages[replyIndex]?.username +
-              `: ` +
-              messages[replyIndex]?.message}
+            {`replying to ` + messages[replyIndex]?.username + `: ` + messages[replyIndex]?.message}
           </Typography>
         </Box>
       ) : null}
@@ -313,10 +246,7 @@ const MessageBoxItems = ({
           <IconButton onClick={() => handleEdit(false, null)}>
             <ClearIcon />
           </IconButton>
-          <Typography variant="overline">
-            {/* <ReplyIcon /> */}
-            {`Editing message: `}
-          </Typography>
+          <Typography variant="overline">{`Editing message: `}</Typography>
         </Box>
       ) : null}
       <MessageBox
@@ -332,34 +262,16 @@ const MessageBoxItems = ({
   );
 };
 
-const MessageListContainer = ({
-  messages,
-  bannedUsers,
-  toggleShowPollBox,
-  isShowPollBox,
-}) => {
+const MessageListContainer = ({ messages, bannedUsers, toggleShowPollBox, isShowPollBox }) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [replyId, setReplyId] = useState<{ id: string; username: string }>(
-    null
-  );
+  const [replyId, setReplyId] = useState<{ id: string; username: string }>(null);
   const [currentCourse] = useStore((state) => [state.currentCourse]);
   const [editId, setEditId] = useState<number>(null);
   const [reaction, setReaction] = useState<{
     reaction: string;
     index: number;
   } | null>(null);
-  // whens messages change, scroll to bottom
-  // useEffect(() => {
-  //   const messageContainer = document.getElementById("message-container");
-  //   if (messageContainer) {
-  //     //if scroll is close to bottom, scroll to bottom
-  //     if (messageContainer.scrollHeight - messageContainer.scrollTop < messageContainer.clientHeight + 100) {
-  //       messageContainer.scrollTop = messageContainer.scrollHeight;
-  //     }
-  //   }
-  //   console.log("messages changed");
-  // }, [messages]);
 
   const handleReply = useCallback((isReplying, index) => {
     const message = messages[index];
@@ -430,34 +342,18 @@ const MessageListContainer = ({
           <MessagesList {...messageBoxProps} messages={messages} />
         )}
       </Box>
-      <MessageBoxContainer {...messageBoxProps} messages={messages} />
+      <MessageBoxItems {...messageBoxProps} messages={messages} />
       <UserBar />
     </Box>
   );
 };
 
-const MessagesList = ({
-  handleReply,
-  handleEdit,
-  updateReaction,
-  messages,
-}) => {
+const MessagesList = ({ handleReply, handleEdit, updateReaction, messages }) => {
   const { profile } = useAuth();
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(
-    Date.now()
-  );
   const axiosPrivate = useAxiosPrivate();
   const { roomId } = useParams();
   const listRef = useRef(null);
-
-  // useEffect(() => {
-  //   //update profile pic every 5 minutes
-  //   const interval = setInterval(() => {
-  //     setProfilePicLastUpdated(Date.now());
-  //   }, 300000);
-  //   return () => clearInterval(interval);
-  // }, []);
 
   useEffect(() => {
     if (listRef.current) {
@@ -476,12 +372,7 @@ const MessagesList = ({
     const emojiSpace = message?.reactions?.length > 0 ? 45 : 0; // Add some extra space for emojis
     const reply = Number.isInteger(message.replyIndex) ? 40 : 0;
     const linesCount = Math.ceil(message?.message.length / 140); // Break lines every 50 characters
-    const finalHeight =
-      linesCount * lineHeight +
-      40 +
-      getDividerHeight(index) +
-      emojiSpace +
-      reply; // Add some extra space for the message container
+    const finalHeight = linesCount * lineHeight + 40 + getDividerHeight(index) + emojiSpace + reply; // Add some extra space for the message container
     // console.log(index, linesCount, getDividerHeight(index), finalHeight);
     return finalHeight;
   };
@@ -489,9 +380,7 @@ const MessagesList = ({
   const setCurrentRoomMods = useCallback(
     async (username: string) => {
       // return await axiosPrivate.get(getCourseModsURL + courseId);
-      return await axiosPrivate.post(
-        addCourseModsURL + username + "/" + currentCourse._id.$oid
-      );
+      return await axiosPrivate.post(addCourseModsURL + username + "/" + currentCourse?._id.$oid);
     },
     [currentCourse?._id.$oid]
   );
@@ -507,9 +396,7 @@ const MessagesList = ({
     const messageBeforeTime = new Date(messageBefore.timeSent);
     // console.log(messageTime.toLocaleDateString(undefined, options), messageBeforeTime.toLocaleDateString(undefined, options));
 
-    const isSameDay =
-      messageTime.toLocaleDateString(undefined, options) ===
-      messageBeforeTime.toLocaleDateString(undefined, options);
+    const isSameDay = messageTime.toLocaleDateString(undefined, options) === messageBeforeTime.toLocaleDateString(undefined, options);
     // console.log(message.message, !isSameDay ? "has a divider" : "does not have a divider");
 
     return isSameDay ? 0 : 31;
@@ -523,19 +410,11 @@ const MessagesList = ({
       return null;
     }
 
-    const msgDateBefore = new Date(
-      messages[index - 1]?.timeSent
-    ).toLocaleDateString(undefined, options);
-    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(
-      undefined,
-      options
-    );
+    const msgDateBefore = new Date(messages[index - 1]?.timeSent).toLocaleDateString(undefined, options);
+    const msgDateAfter = new Date(messages[index]?.timeSent).toLocaleDateString(undefined, options);
 
     //render new message divider if message before is the last seen message
-    if (
-      profile?.lastSeenMessage[roomId]?.message.timeSent ===
-      messages[index - 1]?.timeSent
-    ) {
+    if (profile?.lastSeenMessage[roomId]?.message.timeSent === messages[index - 1]?.timeSent) {
       return (
         <div
           style={{
@@ -581,25 +460,19 @@ const MessagesList = ({
       [handleEdit]
     );
     const MessageEntryProps = {
-      profilePicLastUpdated,
       messages,
       message,
       index,
       isReply,
       isEdit,
-      isRoomMod:
-        profile?.modThreads?.includes(currentCourse?.name) ||
-        profile?.username == "user2",
+      isRoomMod: profile?.modThreads?.includes(currentCourse?.name) || profile?.username == "user2",
       promoteUser: setCurrentRoomMods,
       addReaction: updateReaction,
       course: currentCourse,
     };
     // Render a message entry using the message data
     return (
-      <div
-        key={message.username + message.timeSent}
-        style={{ ...style, scrollBehavior: "smooth" }}
-      >
+      <div key={message.username + message.timeSent} style={{ ...style, scrollBehavior: "smooth" }}>
         <ConditionalLineBreak index={index} />
         <MessageEntry {...MessageEntryProps} />
       </div>
@@ -608,9 +481,6 @@ const MessagesList = ({
 
   return (
     <div>
-      <Typography variant="h4" paddingBottom={"5px"}>
-        Messages
-      </Typography>
       {messages?.length > 0 ? (
         <List
           height={850} // set the height of the list
@@ -625,13 +495,7 @@ const MessagesList = ({
           {Row}
         </List>
       ) : (
-        <Box>
-          {messages ? (
-            <Typography variant="h6">No messages yet!</Typography>
-          ) : (
-            <Typography>Loading...</Typography>
-          )}
-        </Box>
+        <Box>{messages ? <Typography variant="h6">No messages yet!</Typography> : <Typography>Loading...</Typography>}</Box>
       )}
     </div>
   );

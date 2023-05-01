@@ -1,10 +1,9 @@
-import { Select, MenuItem } from "@mui/material";
+import { Select, MenuItem } from "globals/mui";
 import React from "react";
-import { Course, Room } from "../../../globals/types";
-import useStore from "../../../store/store";
+import { Course, Room } from "globals/types";
+import useStore from "store/store";
 
-type Props = {
-};
+type Props = {};
 export const SemesterSelector = () => {
   const [currentSemester, setCurrentSemester] = React.useState<string | null>(null);
   const [currentCourse, setCurrentCourse, setCurrentRoom, userCourseList, userRoomsList] = useStore((state) => [
@@ -18,7 +17,7 @@ export const SemesterSelector = () => {
   // returns the most recent semester for a given course
   const getMostRecentSemester = (courses: Course[]) => {
     if (!courses) return [];
-    
+
     courses = courses?.filter((course) => course.name === currentCourse?.name);
 
     //sort courses by semester ex Winter 2021 < Spring 2021 < Summer 2021  < Fall 2021
@@ -57,7 +56,7 @@ export const SemesterSelector = () => {
       value={currentSemester || getMostRecentSemester(userCourseList)}
       onChange={(e) => {
         setCurrentSemester(e.target.value as string);
-        const course = userCourseList?.find((course) => course.name === currentCourse.name && course.semester === e.target.value);
+        const course = userCourseList?.find((course) => course.name === currentCourse?.name && course.semester === e.target.value);
         if (course) {
           setCurrentCourse(course);
           const room = userRoomsList?.find((room) => room._id.$oid === course.rooms[0][1]?.$oid);

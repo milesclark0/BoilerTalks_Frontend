@@ -1,14 +1,14 @@
-import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip, Paper } from "@mui/material";
+import { Button, Box, TextField, Typography, IconButton, Stack, Autocomplete, Tooltip, Paper, Modal } from "globals/mui";
 import { useEffect, useState } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { getAllCoursesURL, subscribeToCourseURL } from "../../API/CoursesAPI";
-import { Course, User } from "../../globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { getAllCoursesURL, subscribeToCourseURL } from "API/CoursesAPI";
+import { Course } from "globals/types";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAuth } from "../../context/context";
-import useStore from "../../store/store";
+import { useAuth } from "context/context";
+import useStore from "store/store";
 
 type Props = {
   showCourses: boolean;
@@ -29,7 +29,7 @@ const emptyCourse: Course = {
     name: "",
     courseId: { $oid: "" },
     connected: [{ username: "", sid: "", profilePic: "" }],
-    messages: [{ username: "", message: "", timeSent: "", profilePic: "" }],
+    messages: [{ username: "", message: "", timeSent: "", profilePic: "", edited: false }],
   },
   rooms: [],
   owner: "",
@@ -289,7 +289,7 @@ const SearchCourseModal = ({ showCourses, setShowCourses }: Props) => {
 
   const CourseSelection = () => {
     return (
-      <Paper sx={{p:2}}>
+      <Paper sx={{ p: 2 }}>
         <IconButton
           onClick={() => setShowCourses(false)}
           sx={{

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Box, Tab, Tabs, Paper, Badge, useTheme } from "@mui/material";
-import ReleaseNotes from "../../ReleaseNotes/ReleaseNotes";
+import { Box, Tab, Tabs, Paper, Badge, useTheme } from "globals/mui";
+import ReleaseNotes from "component/ReleaseNotes/ReleaseNotes";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
-import NotificationHome from "../../Notification/NotificationHome";
-import { Notification } from "../../../globals/types";
+import NotificationHome from "component/Notification/NotificationHome";
+import { Notification } from "globals/types";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useAuth } from "../../../context/context";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { updateSeenNotificationURL } from "../../../API/ProfileAPI";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { updateSeenNotificationURL } from "API/ProfileAPI";
 
 interface TabPanelProps {
   children?: React.ReactNode;

@@ -1,9 +1,9 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField } from "globals/mui";
 import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { APP_STYLES } from "../../../globals/globalStyles";
-import { Course } from "../../../globals/types";
-import useStore from "../../../store/store";
+import { APP_STYLES } from "globals/globalStyles";
+import { Course } from "globals/types";
+import useStore from "store/store";
 
 export const SearchUserBox = () => {
   const [value, setValue] = useState<{ username: string } | null>(null);

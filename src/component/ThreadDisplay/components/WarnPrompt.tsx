@@ -1,18 +1,9 @@
 // This file is used to give a warning to a user
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "globals/mui";
 import { LoadingButton } from "@mui/lab";
-import { warnUserURL } from "../../API/CourseManagementAPI";
-import { axiosPrivate } from "../../API/axios";
+import { warnUserURL } from "API/CourseManagementAPI";
+import { axiosPrivate } from "API/axios";
 import { useParams } from "react-router-dom";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,7 +14,7 @@ type Props = {
   username: string;
 };
 
-const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props) => {  
+const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props) => {
   const [reasonError, setReasonError] = useState<boolean>(false);
   const [reason, setReason] = useState<string>("");
   const { courseId } = useParams();
@@ -88,13 +79,7 @@ const WarnPrompt = ({ openWarningPrompt, setOpenWarningPrompt, username }: Props
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseWarningPrompt}>Cancel</Button>
-            <LoadingButton
-              onClick={sendWarning}
-              loading={sendLoading}
-              variant="outlined"
-              endIcon={<SendIcon />}
-              loadingPosition="end"
-            >
+            <LoadingButton onClick={sendWarning} loading={sendLoading} variant="outlined" endIcon={<SendIcon />} loadingPosition="end">
               Send
             </LoadingButton>
           </DialogActions>

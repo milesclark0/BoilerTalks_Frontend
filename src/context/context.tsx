@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
-import { Profile, User } from "../globals/types";
+import { Profile, User } from "globals/types";
 import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
-import useStore from "../store/store";
+import useStore from "store/store";
 
 type AuthProviderType = {
   user: User | undefined;
@@ -64,12 +64,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     setIsLoggedIn(true);
     Cookies.set("user", user?.username);
     console.log("signed in: navigate to", from);
-    if (
-      from.pathname === "/login" ||
-      from.pathname === "/register" ||
-      from.pathname === "/forgotPassword" ||
-      from.pathname === "/policies"
-    ) {
+    if (from.pathname === "/login" || from.pathname === "/register" || from.pathname === "/forgotPassword" || from.pathname === "/policies") {
       navigate("/home", { replace: true });
       return;
     }

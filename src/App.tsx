@@ -11,17 +11,17 @@ import Register from "./pages/Register";
 import ChooseThreads from "./component/Register/ChooseThreads";
 import Policies from "./pages/Policies";
 import ProfilePage from "./pages/ProfilePage";
-import RoomDisplay from "./component/ThreadDisplay/RoomDisplay";
-import AppealsDisplay from "./component/ThreadDisplay/AppealsDisplay";
-import QADisplay from "./component/ThreadDisplay/QADisplay";
+import RoomDisplay from "./component/ThreadDisplay/containers/RoomDisplay";
+import AppealsDisplay from "./component/ThreadDisplay/containers/AppealsDisplay";
+import QADisplay from "./component/ThreadDisplay/containers/QADisplay";
 import Blocklist from "./pages/Blocklist";
 import { useEffect, useState } from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "./globals/mui";
 import { darkTheme, lightTheme } from "./assets/theme";
 import { useAuth } from "./context/context";
 import NotificationPreference from "./component/Notification/NotificationPreference";
 import PasswordReset from "./component/Settings/PasswordReset";
-import { ShowPollList } from "./component/Messages/poll";
+import { ShowPollList } from "./component/Polling/poll";
 
 function App() {
   const { themeSetting } = useAuth();
@@ -44,29 +44,17 @@ function App() {
           <Route element={<PersistLogin />}>
             <Route element={<ProtectedRoutes />}>
               <Route path="/chooseThreads" element={<ChooseThreads />} />
-              <Route
-                path="/profile/:requestUsername"
-                element={<ProfilePage />}
-              />
+              <Route path="/profile/:requestUsername" element={<ProfilePage />} />
               <Route path="/settings" element={<Settings />}>
                 <Route path="passwordReset" element={<PasswordReset />} />
                 {/* <Route path="notification" element={<NotificationPreference />} /> */}
               </Route>
               <Route path="/home/courses" element={<Home />} />
               <Route path="/home" element={<Home />}>
-                <Route
-                  path="courses/:courseId/:roomId"
-                  element={<RoomDisplay />}
-                />
-                <Route
-                  path="courses/:courseId/Appeals"
-                  element={<AppealsDisplay />}
-                />
+                <Route path="courses/:courseId/:roomId" element={<RoomDisplay />} />
+                <Route path="courses/:courseId/Appeals" element={<AppealsDisplay />} />
                 <Route path="courses/:courseId/Q&A" element={<QADisplay />} />
-                <Route
-                  path="courses/:courseId/Polls"
-                  element={<ShowPollList />}
-                />
+                <Route path="courses/:courseId/Polls" element={<ShowPollList />} />
               </Route>
               <Route path="/blocklist" element={<Blocklist />} />
             </Route>

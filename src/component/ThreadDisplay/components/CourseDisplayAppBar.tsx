@@ -1,12 +1,12 @@
-import { AppBar, Toolbar, Box, Typography, Button, Paper } from "@mui/material";
-import React, {useState} from "react";
-import { APP_STYLES } from "../../globals/globalStyles";
-import { SearchUserBox } from "../HomePage/components/searchUserBox";
-import { SemesterSelector } from "../HomePage/components/semesterSelector";
-import { Course, Room } from "../../globals/types";
-import useStore from "../../store/store";
+import { AppBar, Toolbar, Box, Typography, Button, Paper } from "globals/mui";
+import React, { useState } from "react";
+import { APP_STYLES } from "globals/globalStyles";
+import { SearchUserBox } from "component/HomePage/components/searchUserBox";
+import { SemesterSelector } from "component/HomePage/components/semesterSelector";
+import { Course, Room } from "globals/types";
+import useStore from "store/store";
 import AddIcon from "@mui/icons-material/Add";
-import SearchCourseModal from "./searchCourseModal";
+import SearchCourseModal from "component/ThreadDisplay/components/searchCourseModal";
 
 interface CourseAppBarProps {
   setShowCourses: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,11 +14,7 @@ interface CourseAppBarProps {
 
 // const CourseDisplayAppBar = ({ setShowCourses }: CourseAppBarProps) => {
 const CourseDisplayAppBar = () => {
-  const [currentCourse, activeCourseThread, activeIcon] = useStore((state) => [
-    state.currentCourse,
-    state.activeCourseThread,
-    state.activeIcon,
-  ]);
+  const [currentCourse, activeCourseThread, activeIcon] = useStore((state) => [state.currentCourse, state.activeCourseThread, state.activeIcon]);
   const [showCourses, setShowCourses] = useState<boolean>(false);
 
   const searchCourseProps = {
@@ -45,9 +41,7 @@ const CourseDisplayAppBar = () => {
           }}
         >
           <Typography variant="h5" sx={{ p: 2 }} noWrap>
-            {currentCourse?.name
-              ? `${currentCourse?.name}: ${activeCourseThread}`
-              : activeIcon.course || "Select a Department or Course"}
+            {currentCourse?.name ? `${currentCourse?.name}: ${activeCourseThread}` : activeIcon.course || "Select a Department or Course"}
           </Typography>
           <Button
             // variant="contained"

@@ -12,12 +12,12 @@ import {
   DialogTitle,
   TextField,
   Typography,
-} from "@mui/material";
+} from "globals/mui";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import { useParams } from "react-router-dom";
-import { addAppealURL } from "../../API/CourseManagementAPI";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { useAuth } from "../../context/context";
+import { addAppealURL } from "API/CourseManagementAPI";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
 import { LoadingButton } from "@mui/lab";
 import { v4 as uuidv4 } from "uuid";
 
@@ -67,7 +67,7 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
           reviewed: false,
           unban: false,
         });
-        console.log(res)
+        console.log(res);
         if (res.status == 200) {
           if (res.data.statusCode == 200) {
             setSubmittedAppeal(true);
@@ -75,7 +75,7 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
             setSubmitLoading(false);
           } else {
             setSubmitLoading(false);
-            alert("Error")
+            alert("Error");
           }
         }
       } catch (error) {
@@ -107,9 +107,7 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
           Open Appeal Form
         </Button>
         <Dialog open={openForm}>
-          <DialogTitle sx={{ display: "flex", alignItems: "center" }}>
-            {"Appeal your ban"}
-          </DialogTitle>
+          <DialogTitle sx={{ display: "flex", alignItems: "center" }}>{"Appeal your ban"}</DialogTitle>
           <DialogContent>
             <Typography>
               {/* get username and get reason for ban */}
@@ -136,12 +134,7 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
             <Button onClick={closeAppealForm} variant="outlined">
               Cancel
             </Button>
-            <LoadingButton
-              onClick={submitAppeal}
-              variant="contained"
-              loading={submitLoading}
-              disabled={submitLoading}
-            >
+            <LoadingButton onClick={submitAppeal} variant="contained" loading={submitLoading} disabled={submitLoading}>
               Submit
             </LoadingButton>
           </DialogActions>
@@ -183,16 +176,13 @@ const BanDialog = ({ bannedData, appealData }: Props) => {
           </Typography>
           {!keepBanned && (
             <Typography variant="h6" sx={{ textAlign: "center", wordBreak: "break-word", mt: 2 }}>
-              If your appeal has been accepted, you will be able to see the course threads again.
-              Please do not make the same mistake.
+              If your appeal has been accepted, you will be able to see the course threads again. Please do not make the same mistake.
             </Typography>
           )}
         </CardContent>
       )}
       {!submittedAppeal && (
-        <CardContent
-          sx={{ display: "flex", justifyContent: "center", overflowY: "auto", width: "80%" }}
-        >
+        <CardContent sx={{ display: "flex", justifyContent: "center", overflowY: "auto", width: "80%" }}>
           <TextField
             fullWidth
             multiline

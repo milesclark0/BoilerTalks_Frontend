@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
-import { Course, Message, Room } from "../globals/types";
-import useSockets from "../hooks/useSockets";
+import { Course, Message, Room } from "globals/types";
+import useSockets from "hooks/useSockets";
 
 export interface IState {
     activeIcon: { course: string, isActiveCourse: boolean },

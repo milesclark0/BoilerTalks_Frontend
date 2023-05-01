@@ -11,13 +11,13 @@ import {
   FormControlLabel,
   Link,
   FormControl,
-} from "@mui/material";
+} from "globals/mui";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useNavigate } from "react-router-dom";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { LoginAPI } from "../API/AuthAPI";
-import { useAuth } from "../context/context";
-import { RegisterAccountAPI } from "../API/RegisterAPI";
+import { LoginAPI } from "API/AuthAPI";
+import { useAuth } from "context/context";
+import { RegisterAccountAPI } from "API/RegisterAPI";
 
 const Register = () => {
   const [passwordError, setPasswordError] = useState(false);

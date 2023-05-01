@@ -1,9 +1,9 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
-//import { addRoomToCourseURL } from "../../API/CoursesAPI";
-import { useAuth } from "../../../context/context";
-import { Course, Room } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { getCourseManagementURL, updateCourseRulesURL } from "../../../API/CourseManagementAPI";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "globals/mui";
+//import { addRoomToCourseURL } from "API/CoursesAPI";
+import { useAuth } from "context/context";
+import { Course, Room } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { getCourseManagementURL, updateCourseRulesURL } from "API/CourseManagementAPI";
 import { useQuery } from "react-query";
 
 type RulesProps = {

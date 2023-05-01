@@ -1,21 +1,12 @@
 // This file is used for notification preference for a thread.
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/context";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import {
-  Dialog,
-  DialogTitle,
-  Typography,
-  DialogContent,
-  DialogActions,
-  Button,
-  Switch,
-  Alert,
-} from "@mui/material";
-import { getProfileURL } from "../../API/ProfileAPI";
-import { Profile } from "../../globals/types";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { Dialog, DialogTitle, Typography, DialogContent, DialogActions, Button, Switch, Alert } from "globals/mui";
+import { getProfileURL } from "API/ProfileAPI";
+import { Profile } from "globals/types";
 import { LoadingButton } from "@mui/lab";
-import { updateNotificationPreferenceURL } from "../../API/ProfileAPI";
+import { updateNotificationPreferenceURL } from "API/ProfileAPI";
 
 type NotificationPreference = {
   courseName: string;
@@ -70,7 +61,7 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
     try {
       const res = await axiosPrivate.post(updateNotificationPreferenceURL + user.username, {
         courseName: courseName,
-        data: {messages: messageNoti, appeals: appealNoti, reports: reportNoti}
+        data: { messages: messageNoti, appeals: appealNoti, reports: reportNoti },
       });
       console.log(res);
       if (res.status == 200) {
@@ -134,23 +125,13 @@ const NotificationPreference = ({ openNoti, setOpenNoti, courseName }: Props) =>
         {profileData?.modThreads.includes(courseName) && (
           <Typography>
             Appeals
-            <Switch
-              checked={appealNoti}
-              onChange={handleAppealSwitch}
-              color="warning"
-              sx={{ ml: 2 }}
-            />
+            <Switch checked={appealNoti} onChange={handleAppealSwitch} color="warning" sx={{ ml: 2 }} />
           </Typography>
         )}
         {profileData?.modThreads.includes(courseName) && (
           <Typography>
             Reports
-            <Switch
-              checked={reportNoti}
-              onChange={handleReportSwitch}
-              color="warning"
-              sx={{ ml: 2 }}
-            />
+            <Switch checked={reportNoti} onChange={handleReportSwitch} color="warning" sx={{ ml: 2 }} />
           </Typography>
         )}
       </DialogContent>

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "../context/context";
-import { Message, Room } from "../globals/types";
-import useStore from "../store/store";
+import { useAuth } from "context/context";
+import { Message, Room } from "globals/types";
+import useStore from "store/store";
 
 const useSocketFunctions = () => {
     const namespace = {
@@ -51,16 +51,16 @@ const useSocketFunctions = () => {
             await connectToRoom(room);
         }
         if (message.message.trim() !== "") {
-                console.log("editing message", message.message.trim(), "to room", room?.name);
+            console.log("editing message", message.message.trim(), "to room", room?.name);
 
-                socket.emit(namespace.edit_message, {
-                    message,
-                    roomID: room?._id.$oid,
-                    index,
-                });
+            socket.emit(namespace.edit_message, {
+                message,
+                roomID: room?._id.$oid,
+                index,
+            });
         } else {
             alert("Please enter a message");
-        }   
+        }
     };
 
     // used to delete a message from the server
@@ -90,7 +90,7 @@ const useSocketFunctions = () => {
                         username: user?.username,
                         reaction,
                         index,
-                        displayName : profile?.displayName,
+                        displayName: profile?.displayName,
                     });
                 } else {
                     message.message = `---${message.message}---${reaction}---`;
@@ -100,7 +100,7 @@ const useSocketFunctions = () => {
                         username: user?.username,
                         reaction,
                         index,
-                        displayName : profile?.displayName,
+                        displayName: profile?.displayName,
                     });
                 }
             } else {

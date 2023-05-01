@@ -1,15 +1,8 @@
-import { Button, Box, TextField, InputAdornment, Typography, Divider, Modal, IconButton, Stack, Autocomplete, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { getAllCoursesURL, subscribeToCourseURL } from "../../../API/CoursesAPI";
-import { User } from "../../../globals/types";
-import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useAuth } from "../../../context/context";
-import React from "react";
-import { editProfileURL } from "../../../API/ProfileAPI";
+import { Button, Box, TextField, Typography, Modal } from "globals/mui";
+import { useState } from "react";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import { editProfileURL } from "API/ProfileAPI";
 
 type Props = {
   requestUsername: string;

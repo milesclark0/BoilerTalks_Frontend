@@ -1,9 +1,9 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "@mui/material";
-import { addRoomToCourseURL } from "../../../API/CoursesAPI";
-import { useAuth } from "../../../context/context";
-import { Course, Room } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import useStore from "../../../store/store";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Box } from "globals/mui";
+import { addRoomToCourseURL } from "API/CoursesAPI";
+import { useAuth } from "context/context";
+import { Course, Room } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import useStore from "store/store";
 
 type AddThreadProps = {
   newThreadValue: string;
@@ -26,7 +26,7 @@ const AddThreadModal = ({ newThreadValue, newThreadOpen, setNewThreadOpen, setNe
     const newRoomName = event.target[0].value; //newRoomName
     console.log(newRoomName);
 
-    const res = await api.post(addRoomToCourseURL, { courseName: course.name, roomName: newRoomName });
+    const res = await api.post(addRoomToCourseURL, { courseName: course?.name, roomName: newRoomName });
     if (res.data.statusCode === 200) {
       console.log(res.data.data);
       const newRoom: Room = res.data.data;

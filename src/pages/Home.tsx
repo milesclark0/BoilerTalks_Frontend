@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { APP_STYLES } from "../globals/globalStyles";
-import SideBar from "../component/HomePage/components/sideBar";
-import { Box, Paper, Typography } from "@mui/material";
+import { APP_STYLES } from "globals/globalStyles";
+import SideBar from "component/SideBar/containers/sideBar";
+import { Box, Paper, Typography } from "globals/mui";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import useSockets from "../hooks/useSockets";
-import { useCourseUsers } from "../component/HomePage/hooks/useCourseUsers";
-import useUserCourseData from "../component/HomePage/hooks/useUserCourseData";
+import useSockets from "hooks/useSockets";
+import { useCourseUsers } from "component/HomePage/hooks/useCourseUsers";
+import useUserCourseData from "component/HomePage/hooks/useUserCourseData";
 // import UserBar from "../component/HomePage/components/userBar";
-import useUserRoomData from "../component/HomePage/hooks/useUserRoomData";
-import useStore from "../store/store";
+import useUserRoomData from "component/HomePage/hooks/useUserRoomData";
+import useStore from "store/store";
 // import CourseDisplayBar from "../component/ThreadDisplay/CourseDisplayAppBar";
-import TabBar from "../component/HomePage/components/TabBar";
-import CourseDisplayAppBar from "../component/ThreadDisplay/CourseDisplayAppBar";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useAuth } from "../context/context";
-import { getProfileURL } from "../API/ProfileAPI";
-import { Notification } from "../globals/types";
+import TabBar from "component/HomePage/components/TabBar";
+import CourseDisplayAppBar from "component/ThreadDisplay/components/CourseDisplayAppBar";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import { getProfileURL } from "API/ProfileAPI";
+import { Notification } from "globals/types";
 
 const Home = () => {
   const [badgeCount, setBadgeCount] = useState<number>(0);
@@ -61,7 +61,7 @@ const Home = () => {
 };
 
 const RoomBox = ({ isUserCourseListLoading, userCourseListError, badgeCount, setBadgeCount, notifications }) => {
-  const  activeIcon  = useStore((state) => state.activeIcon);
+  const activeIcon = useStore((state) => state.activeIcon);
   return !isUserCourseListLoading && !userCourseListError ? (
     <Box
       sx={{

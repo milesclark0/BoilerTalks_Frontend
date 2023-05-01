@@ -1,7 +1,7 @@
-import { useAuth } from "../context/context";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useState } from "react";
-import { AppBar, Box, Button, Drawer, Paper, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Drawer, Paper, Stack, Toolbar, Typography } from "globals/mui";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PasswordIcon from "@mui/icons-material/Password";

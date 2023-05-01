@@ -1,7 +1,7 @@
 import {Outlet} from 'react-router-dom';
 import {useEffect, useState} from 'react';
-import useRefreshToken from '../hooks/useRefreshToken';
-import { useAuth } from '../context/context';
+import useRefreshToken from 'hooks/useRefreshToken';
+import { useAuth } from 'context/context';
 
 // Allows the user to persist their login session 
 // after page navigation or refresh by verifying the refresh token

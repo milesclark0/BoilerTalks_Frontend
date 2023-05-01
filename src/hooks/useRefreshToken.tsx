@@ -1,5 +1,5 @@
-import axios from "../API/axios";
-import { useAuth } from "../context/context";
+import axios from "API/axios";
+import { useAuth } from "context/context";
 import useLogout from "./useLogout";
 
 const useRefreshToken = () => {

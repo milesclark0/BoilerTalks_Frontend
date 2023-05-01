@@ -1,19 +1,16 @@
-import { Drawer, Box, List, ListItem, ListItemText, Typography, Button, Avatar, Badge, useTheme } from "@mui/material";
+import { Drawer, Box, Typography, Avatar, Badge, useTheme } from "globals/mui";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../../context/context";
-import { Course, Room } from "../../../globals/types";
-import ProfilePage from "./../../../pages/ProfilePage";
-import { Navigate, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "context/context";
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { APP_STYLES } from "../../../globals/globalStyles";
-import useStore from "../../../store/store";
+import { APP_STYLES } from "globals/globalStyles";
+import useStore from "store/store";
 
 const UserBar = () => {
   const { user, profile } = useAuth();
   const [profilePicLastUpdated, setProfilePicLastUpdated] = useState<number>(Date.now());
   const [currentCourse, userRoomsList, courseUsers] = useStore((state) => [state.currentCourse, state.userRoomsList, state.courseUsers]);
-  const {courseId, roomId} = useParams();
+  const { courseId, roomId } = useParams();
   const theme = useTheme();
   useEffect(() => {
     //update profile pic every 5 minutes
@@ -53,7 +50,7 @@ const UserBar = () => {
         users.set(connectedUser.username, { username: connectedUser.username, profilePic: connectedUser.profilePic });
       });
     });
-    
+
     return Array.from(users.values()).sort((a, b) => a.username.localeCompare(b.username));
   };
 
@@ -64,7 +61,7 @@ const UserBar = () => {
   };
 
   const UserDisplay = ({ user, online }) => {
-    const {themeSetting} = useAuth();
+    const { themeSetting } = useAuth();
     const linkColor = themeSetting === "dark" ? "white" : "black";
     const hoverColor = theme.palette.secondary.main;
     return (
@@ -95,7 +92,7 @@ const UserBar = () => {
   return (
     // <Box>
     <Drawer sx={OuterDrawerStyles} anchor="right" variant="permanent">
-      <Box sx={{ display: "block", p:2 , pt: `${APP_STYLES.APP_BAR_HEIGHT + 4 * APP_STYLES.DEFAULT_PADDING}px`}}>
+      <Box sx={{ display: "block", p: 2, pt: `${APP_STYLES.APP_BAR_HEIGHT + 4 * APP_STYLES.DEFAULT_PADDING}px` }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           Online - {getAllConnectedUsers().length}
         </Typography>

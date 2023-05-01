@@ -1,4 +1,4 @@
-// since courses grabs private data, we need to use private axios, which can only be used in a hook
+// since courses grabs private data, we need to use private axios, which can only be used in a hooks
 // thus only the urls are exported
 
 export const getAllCoursesURL = "/courses/getAllCourses";

@@ -11,14 +11,14 @@ import {
   Select,
   MenuItem,
   Typography,
-} from "@mui/material";
-import { addReportURL } from "../../../API/CourseManagementAPI";
-import { useAuth } from "../../../context/context";
-import { Course, Room } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+} from "globals/mui";
+import { addReportURL } from "API/CourseManagementAPI";
+import { useAuth } from "context/context";
+import { Course, Room } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
-import useStore from "../../../store/store";
+import useStore from "store/store";
 
 type SendReportProps = {
   ReportsOpen: boolean;
@@ -28,14 +28,25 @@ type SendReportProps = {
   recipient?: string;
 };
 
+// get the current date and time in the format of YYYY-MM-DD HH:MM:SS
+const getDateTime = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const second = date.getSeconds();
+  //const millisecond = date.getMilliseconds();
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+};
 const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialReason, recipient }: SendReportProps) => {
   const api = useAxiosPrivate();
   const [reportBody, setReportBody] = useState("");
-  const [reportReason, setReportReason] = useState(initialReason || "");
-  const [reportRecipient, setReportRecipient] = useState(recipient || "");
+  const [reportReason, setReportReason] = useState("");
+  const [reportRecipient, setReportRecipient] = useState("");
   const courseUsers = useStore((state) => state.courseUsers);
   const { user } = useAuth();
-
   const handleCloseNewReport = () => {
     setReportBody("");
     setReportReason("");
@@ -47,7 +58,10 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     if (recipient) {
       setReportRecipient(recipient);
     }
-  }, [recipient]);
+    if (initialReason) {
+      setReportReason(initialReason);
+    }
+  }, []);
 
   const validateInput = () => {
     if (reportReason === "") {
@@ -64,18 +78,7 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
     }
     return true;
   };
-  // get the current date and time in the format of YYYY-MM-DD HH:MM:SS
-  const getDateTime = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const second = date.getSeconds();
-    //const millisecond = date.getMilliseconds();
-    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  };
+
   const handleSubmitNewReport = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateInput()) {
@@ -129,7 +132,9 @@ const SendReportModal = ({ setReportsOpen, ReportsOpen, course: course, initialR
                   value={reportRecipient}
                 >
                   {courseUsers.map((user) => (
-                    <MenuItem value={user.username}>{user.username}</MenuItem>
+                    <MenuItem key={user.username} value={user.username}>
+                      {user.username}
+                    </MenuItem>
                   ))}
                 </TextField>
               )}

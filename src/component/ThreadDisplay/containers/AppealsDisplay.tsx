@@ -1,19 +1,19 @@
 // Display for appeals
 import { useState, useEffect } from "react";
-import { Box, Typography, Grid, CardContent, CardActions, TextField } from "@mui/material";
-import { useAuth } from "../../context/context";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Course, Room } from "../../globals/types";
+import { Box, Typography, Grid, CardContent, CardActions, TextField } from "globals/mui";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { Course, Room } from "globals/types";
 import { useParams } from "react-router-dom";
-import UserBar from "../HomePage/components/userBar";
-import { getCourseManagementURL } from "../../API/CourseManagementAPI";
+import UserBar from "component/HomePage/components/userBar";
+import { getCourseManagementURL } from "API/CourseManagementAPI";
 import { LoadingButton } from "@mui/lab";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import { updateAppealURL } from "../../API/CourseManagementAPI";
-import { APP_STYLES } from "../../globals/globalStyles";
-import useStore from "../../store/store";
-import CourseDisplayAppBar from "./CourseDisplayAppBar";
+import { updateAppealURL } from "API/CourseManagementAPI";
+import { APP_STYLES } from "globals/globalStyles";
+import useStore from "store/store";
+import CourseDisplayAppBar from "../components/CourseDisplayAppBar";
 
 type Props = {
   drawerWidth: number;
@@ -38,7 +38,7 @@ const AppealsDisplay = () => {
   const { courseId } = useParams();
   const [stateChange, setStateChange] = useState<boolean>(false);
   const [currentCourse] = useStore((state) => [state.currentCourse]);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchCourseManagement = async () => {
@@ -160,7 +160,7 @@ const AppealsDisplay = () => {
       }}
       className="scrollBar"
     >
-      <CourseDisplayAppBar/>
+      <CourseDisplayAppBar />
       {appeals.length !== 0 ? (
         <Grid container sx={{ display: "flex", justifyContent: "center", mb: 6 }}>
           {appeals.map((appeal, index) => {

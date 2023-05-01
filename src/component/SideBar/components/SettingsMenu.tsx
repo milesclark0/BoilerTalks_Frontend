@@ -1,10 +1,10 @@
-import { ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { ListItemIcon, Menu, MenuItem } from "globals/mui";
 import React from "react";
-import useLogout from "../../../hooks/useLogout";
+import useLogout from "hooks/useLogout";
 import { StyledDivider } from "./StyledDivider";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/context";
-import { Room } from "../../../globals/types";
+import { useAuth } from "context/context";
+import { Room } from "globals/types";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InfoIcon from "@mui/icons-material/Info";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -43,16 +43,8 @@ export const SettingsMenu = ({ anchorEl, setAnchorEl }: Props) => {
   };
 
   return (
-    <Menu
-      open={settingsOpen}
-      anchorEl={anchorEl}
-      onClose={handleSettingsClose}
-      sx={{ pt: 0 }}
-    >
-      <MenuItem
-        onClick={navigateToProfile}
-        sx={{ justifyContent: "center", m: 0 }}
-      >
+    <Menu open={settingsOpen} anchorEl={anchorEl} onClose={handleSettingsClose} sx={{ pt: 0 }}>
+      <MenuItem onClick={navigateToProfile} sx={{ justifyContent: "center", m: 0 }}>
         <ListItemIcon>
           <AccountCircleIcon />
         </ListItemIcon>

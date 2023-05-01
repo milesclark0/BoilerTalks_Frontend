@@ -1,11 +1,11 @@
-import { useAuth } from "../context/context";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "context/context";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import { useState, useEffect } from "react";
-import { AppBar, Avatar, Box, Button, List, ListItem, MenuItem, Select, Toolbar, Typography } from "@mui/material";
-import { User } from "../globals/types";
+import { AppBar, Avatar, Box, Button, List, ListItem, MenuItem, Select, Toolbar, Typography } from "globals/mui";
+import { User } from "globals/types";
 import { useLocation, useParams } from "react-router-dom";
 import React from "react";
-import UnblockUserModal from "../component/Blocklist/UnblockUserModal";
+import UnblockUserModal from "component/Blocklist/UnblockUserModal";
 
 const Blocklist = () => {
   const { user, setUser } = useAuth();

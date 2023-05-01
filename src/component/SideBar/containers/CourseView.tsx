@@ -1,9 +1,9 @@
-import { List, ListItem, Typography } from "@mui/material";
+import { List, ListItem, Typography } from "globals/mui";
 import React, { useEffect, useState } from "react";
-import { Course, Room } from "../../globals/types";
+import { Course, Room } from "globals/types";
 import { CourseNavigation } from "./CourseNavigation";
-import { StyledDivider } from "./components/StyledDivider";
-import useStore from "../../store/store";
+import { StyledDivider } from "../components/StyledDivider";
+import useStore from "store/store";
 
 export const CourseView = () => {
   // if no course is selected, show boilertalks home

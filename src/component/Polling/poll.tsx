@@ -1,29 +1,12 @@
 import React, { useEffect, useState } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import {
-  TextField,
-  Button,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  FormLabel,
-  Card,
-  CardHeader,
-  Paper,
-  Typography,
-} from "@mui/material";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { TextField, Button, Card, Typography } from "globals/mui";
 import { Box } from "@mui/system";
-import {
-  createPollURL,
-  getPollsURL,
-  pollVoteURL,
-} from "../../API/CourseManagementAPI";
-import { useAuth } from "../../context/context";
-import useStore from "./../../store/store";
-import UserBar from "../HomePage/components/userBar";
+import { createPollURL, getPollsURL, pollVoteURL } from "API/CourseManagementAPI";
+import { useAuth } from "context/context";
+import useStore from "store/store";
+import UserBar from "component/HomePage/components/userBar";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import { Label } from "@mui/icons-material";
 
 export const ShowPollList = () => {
   const api = useAxiosPrivate();
@@ -33,7 +16,7 @@ export const ShowPollList = () => {
   const [creatingPoll, setCreatingPoll] = useState<boolean>(false);
 
   const fetchPolls = async () => {
-    const res = await api.get(getPollsURL + currentCourse._id.$oid);
+    const res = await api.get(getPollsURL + currentCourse?._id.$oid);
     console.log(res);
     if (res.status == 200) {
       setPolls(res.data.data);
@@ -47,13 +30,11 @@ export const ShowPollList = () => {
   }, [creatingPoll]);
 
   const { themeSetting } = useAuth();
-  const selectedIconColor =
-    themeSetting === "light" ? "#586fa8d5" : "#bdccf3d5";
-  const borderColorResult =
-    themeSetting === "light" ? "0.5px solid black" : "0.5px solid white";
+  const selectedIconColor = themeSetting === "light" ? "#586fa8d5" : "#bdccf3d5";
+  const borderColorResult = themeSetting === "light" ? "0.5px solid black" : "0.5px solid white";
 
   const handleVote = (option: number, index: number) => async () => {
-    const res = await api.post(pollVoteURL + currentCourse._id.$oid, {
+    const res = await api.post(pollVoteURL + currentCourse?._id.$oid, {
       option: option,
       index: index,
       username: user?.username,
@@ -66,8 +47,7 @@ export const ShowPollList = () => {
   };
 
   function calculateWidth(poll: any, option: number) {
-    const total =
-      poll.one_votes + poll.two_votes + poll.three_votes + poll.four_votes;
+    const total = poll.one_votes + poll.two_votes + poll.three_votes + poll.four_votes;
     if (option == 1) {
       const result = (poll.one_votes / total) * 100;
       const ret = `${result}%`;
@@ -104,9 +84,7 @@ export const ShowPollList = () => {
             height: "90vh",
           }}
         >
-          {polls.length == 0 ? (
-            <Typography variant="h4">No Polls Yet!</Typography>
-          ) : null}
+          {polls.length == 0 ? <Typography variant="h4">No Polls Yet!</Typography> : null}
           {polls.map((poll, index) => (
             <Card
               id="poll-container"
@@ -118,10 +96,7 @@ export const ShowPollList = () => {
                 marginBottom: "20px",
               }}
             >
-              <Box
-                key={index}
-                sx={{ display: "flex", flexDirection: "column" }}
-              >
+              <Box key={index} sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography
                   variant="h5"
                   sx={{
@@ -133,18 +108,13 @@ export const ShowPollList = () => {
                   {poll.question}
                 </Typography>
 
-                {poll.voted_users &&
-                poll.voted_users.includes(user?.username) ? (
-                  <Typography
-                    variant="h6"
-                    sx={{ textDecoration: "underline", marginBottom: "10px" }}
-                  >
+                {poll.voted_users && poll.voted_users.includes(user?.username) ? (
+                  <Typography variant="h6" sx={{ textDecoration: "underline", marginBottom: "10px" }}>
                     Results:
                   </Typography>
                 ) : null}
 
-                {poll.voted_users &&
-                !poll.voted_users.includes(user?.username) ? (
+                {poll.voted_users && !poll.voted_users.includes(user?.username) ? (
                   <Box>
                     <Button
                       variant="contained"
@@ -155,10 +125,7 @@ export const ShowPollList = () => {
                         width: "100%",
                       }}
                       onClick={handleVote(1, poll.index)}
-                      disabled={
-                        poll.voted_users &&
-                        poll.voted_users.includes(user?.username)
-                      }
+                      disabled={poll.voted_users && poll.voted_users.includes(user?.username)}
                     >
                       {poll.option1}
                     </Button>
@@ -166,8 +133,7 @@ export const ShowPollList = () => {
                   </Box>
                 ) : null}
 
-                {poll.voted_users &&
-                !poll.voted_users.includes(user?.username) ? (
+                {poll.voted_users && !poll.voted_users.includes(user?.username) ? (
                   <Box>
                     <Button
                       variant="contained"
@@ -178,10 +144,7 @@ export const ShowPollList = () => {
                         marginBottom: "15px",
                         width: "100%",
                       }}
-                      disabled={
-                        poll.voted_users &&
-                        poll.voted_users.includes(user?.username)
-                      }
+                      disabled={poll.voted_users && poll.voted_users.includes(user?.username)}
                     >
                       {poll.option2}
                     </Button>
@@ -189,9 +152,7 @@ export const ShowPollList = () => {
                   </Box>
                 ) : null}
 
-                {poll.option3 != "" &&
-                poll.voted_users &&
-                !poll.voted_users.includes(user?.username) ? (
+                {poll.option3 != "" && poll.voted_users && !poll.voted_users.includes(user?.username) ? (
                   <Box>
                     <Button
                       variant="contained"
@@ -202,10 +163,7 @@ export const ShowPollList = () => {
                         marginBottom: "15px",
                         width: "100%",
                       }}
-                      disabled={
-                        poll.voted_users &&
-                        poll.voted_users.includes(user?.username)
-                      }
+                      disabled={poll.voted_users && poll.voted_users.includes(user?.username)}
                     >
                       {poll.option3}
                     </Button>
@@ -213,9 +171,7 @@ export const ShowPollList = () => {
                   </Box>
                 ) : null}
 
-                {poll.option4 != "" &&
-                poll.voted_users &&
-                !poll.voted_users.includes(user?.username) ? (
+                {poll.option4 != "" && poll.voted_users && !poll.voted_users.includes(user?.username) ? (
                   <Box>
                     <Button
                       variant="contained"
@@ -226,10 +182,7 @@ export const ShowPollList = () => {
                         marginBottom: "10px",
                         width: "100%",
                       }}
-                      disabled={
-                        poll.voted_users &&
-                        poll.voted_users.includes(user?.username)
-                      }
+                      disabled={poll.voted_users && poll.voted_users.includes(user?.username)}
                     >
                       {poll.option4}
                     </Button>
@@ -237,8 +190,7 @@ export const ShowPollList = () => {
                   </Box>
                 ) : null}
 
-                {poll.voted_users &&
-                poll.voted_users.includes(user?.username) ? (
+                {poll.voted_users && poll.voted_users.includes(user?.username) ? (
                   <React.Fragment>
                     <Box sx={{ display: "inline-flex" }}>
                       <Button
@@ -252,14 +204,8 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography
-                          sx={{ fontSize: "12px", paddingRight: "5px" }}
-                        >
-                          {poll.option1}
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px" }}>
-                          {calculateWidth(poll, 1)}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", paddingRight: "5px" }}>{poll.option1}</Typography>
+                        <Typography sx={{ fontSize: "12px" }}>{calculateWidth(poll, 1)}</Typography>
                       </Button>
                     </Box>
 
@@ -274,14 +220,8 @@ export const ShowPollList = () => {
                         minWidth: "10%",
                       }}
                     >
-                      <Typography
-                        sx={{ fontSize: "12px", paddingRight: "5px" }}
-                      >
-                        {poll.option2}
-                      </Typography>
-                      <Typography sx={{ fontSize: "12px" }}>
-                        {calculateWidth(poll, 2)}
-                      </Typography>
+                      <Typography sx={{ fontSize: "12px", paddingRight: "5px" }}>{poll.option2}</Typography>
+                      <Typography sx={{ fontSize: "12px" }}>{calculateWidth(poll, 2)}</Typography>
                     </Button>
 
                     {poll.option3 != "" ? (
@@ -296,14 +236,8 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography
-                          sx={{ fontSize: "12px", paddingRight: "5px" }}
-                        >
-                          {poll.option3}
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px" }}>
-                          {calculateWidth(poll, 3)}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", paddingRight: "5px" }}>{poll.option3}</Typography>
+                        <Typography sx={{ fontSize: "12px" }}>{calculateWidth(poll, 3)}</Typography>
                       </Button>
                     ) : null}
 
@@ -319,21 +253,14 @@ export const ShowPollList = () => {
                           minWidth: "10%",
                         }}
                       >
-                        <Typography
-                          sx={{ fontSize: "12px", paddingRight: "5px" }}
-                        >
-                          {poll.option4}
-                        </Typography>
-                        <Typography sx={{ fontSize: "12px" }}>
-                          {calculateWidth(poll, 4)}
-                        </Typography>
+                        <Typography sx={{ fontSize: "12px", paddingRight: "5px" }}>{poll.option4}</Typography>
+                        <Typography sx={{ fontSize: "12px" }}>{calculateWidth(poll, 4)}</Typography>
                       </Button>
                     ) : null}
                   </React.Fragment>
                 ) : null}
 
-                {poll.voted_users &&
-                poll.voted_users.includes(user?.username) ? (
+                {poll.voted_users && poll.voted_users.includes(user?.username) ? (
                   <Box
                     sx={{
                       display: "inline-flex",
@@ -386,7 +313,7 @@ export const PollPromptBox = ({ toggleShowPollBox }: PollPromptBoxProps) => {
   const api = useAxiosPrivate();
 
   const fetchPolls = async () => {
-    const res = await api.get(getPollsURL + currentCourse._id.$oid);
+    const res = await api.get(getPollsURL + currentCourse?._id.$oid);
     console.log(res);
     if (res.status == 200) {
       setPollsCount(res.data.data.length);
@@ -399,7 +326,7 @@ export const PollPromptBox = ({ toggleShowPollBox }: PollPromptBoxProps) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const res = await api.post(createPollURL + currentCourse._id.$oid, {
+    const res = await api.post(createPollURL + currentCourse?._id.$oid, {
       question: question,
       option1: option1,
       option2: option2,
@@ -454,54 +381,17 @@ export const PollPromptBox = ({ toggleShowPollBox }: PollPromptBoxProps) => {
     <form onSubmit={handleSubmit}>
       <Box sx={{ paddingLeft: "17px" }}>
         <h2>Enter Poll Question</h2>
-        <TextField
-          label="Question"
-          value={question}
-          onChange={handleQuestionChange}
-          required
-          sx={{ paddingBottom: "20px", width: "95%" }}
-        />
+        <TextField label="Question" value={question} onChange={handleQuestionChange} required sx={{ paddingBottom: "20px", width: "95%" }} />
 
         <h2>Enter Poll Answers</h2>
-        <TextField
-          label="Option 1"
-          value={option1}
-          onChange={handleOption1Change}
-          fullWidth
-          required
-          sx={{ paddingBottom: "10px", width: "95%" }}
-        />
-        <TextField
-          label="Option 2"
-          value={option2}
-          onChange={handleOption2Change}
-          fullWidth
-          required
-          sx={{ paddingBottom: "10px", width: "95%" }}
-        />
-        <TextField
-          label="Option 3"
-          value={option3}
-          onChange={handleOption3Change}
-          fullWidth
-          sx={{ paddingBottom: "10px", width: "95%" }}
-        />
-        <TextField
-          label="Option 4"
-          value={option4}
-          onChange={handleOption4Change}
-          fullWidth
-          sx={{ paddingBottom: "15px", width: "95%" }}
-        />
+        <TextField label="Option 1" value={option1} onChange={handleOption1Change} fullWidth required sx={{ paddingBottom: "10px", width: "95%" }} />
+        <TextField label="Option 2" value={option2} onChange={handleOption2Change} fullWidth required sx={{ paddingBottom: "10px", width: "95%" }} />
+        <TextField label="Option 3" value={option3} onChange={handleOption3Change} fullWidth sx={{ paddingBottom: "10px", width: "95%" }} />
+        <TextField label="Option 4" value={option4} onChange={handleOption4Change} fullWidth sx={{ paddingBottom: "15px", width: "95%" }} />
         <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>
-        <Button
-          sx={{ marginLeft: "10px" }}
-          variant="contained"
-          color="secondary"
-          onClick={handleCancel}
-        >
+        <Button sx={{ marginLeft: "10px" }} variant="contained" color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
       </Box>

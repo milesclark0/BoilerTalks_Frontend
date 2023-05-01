@@ -1,22 +1,17 @@
-import { List, ListItem, Typography, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { Course, Room } from "../../globals/types";
-import AddThreadModal from "./components/addThreadModal";
-import SendReportModal from "./components/SendReportModal";
-import ViewReportModal from "./components/ViewReportModal";
-import { MoreIcon } from "./components/MoreIcon";
-import { PinIcon } from "./components/PinIcon";
-import RulesModal from "./components/RulesModal";
-import { StyledDivider } from "./components/StyledDivider";
-import { width } from "@mui/system";
+import { List, ListItem, Typography, Button } from "globals/mui";
+import React, { useState } from "react";
+import { Course } from "globals/types";
+import AddThreadModal from "../components/addThreadModal";
+import SendReportModal from "../components/SendReportModal";
+import ViewReportModal from "../components/ViewReportModal";
+import { MoreIcon } from "../components/MoreIcon";
+import { PinIcon } from "../components/PinIcon";
+import RulesModal from "../components/RulesModal";
+import { StyledDivider } from "../components/StyledDivider";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../context/context";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { getProfileURL } from "../../API/ProfileAPI";
-import { useQuery } from "react-query";
-import { Profile } from "../../globals/types";
+import { useAuth } from "context/context";
 import { NavLink } from "react-router-dom";
-import useStore from "../../store/store";
+import useStore from "store/store";
 
 type Props = {
   course: Course;
@@ -27,12 +22,11 @@ export const CourseNavigation = ({ course }: Props) => {
   const [RulesList, setRulesList] = useState<string[]>([]); //list of rules
   const [ReportsOpen, setReportsOpen] = useState(false); //whether the reports dialogue is open or not
   const [ViewReportsOpen, setViewReportsOpen] = useState(false);
-  const [ReportsList, setReportsList] =
-    useState<{id: string; timeSent: string; username: string; reason: string; body:string; numBans: number; numWarns: number }[]>([]);
-  const [PrevBanList, setPrevBanList] =
-    useState<{ username: string; reason: string }[]>();
-  const [PrevWarnList, setPrevWarnList] =
-    useState<{ username: string; reason: string }[]>();
+  const [ReportsList, setReportsList] = useState<
+    { id: string; timeSent: string; username: string; reason: string; body: string; numBans: number; numWarns: number }[]
+  >([]);
+  const [PrevBanList, setPrevBanList] = useState<{ username: string; reason: string }[]>();
+  const [PrevWarnList, setPrevWarnList] = useState<{ username: string; reason: string }[]>();
   const [newThreadOpen, setNewThreadOpen] = useState(false); //whether a create new thread dialogue is open or not
   const [newThreadValue, setNewThreadValue] = useState(""); //What the new thread name string is
   const { roomId, courseId } = useParams();
@@ -118,7 +112,7 @@ export const CourseNavigation = ({ course }: Props) => {
     console.log("courseClicked");
     const room = userRoomsList.find((room) => room._id.$oid === course?.rooms[0][1].$oid);
     setCurrentRoom(room);
-    setActiveCourseThread(room.name.replace(course.name, ""));
+    setActiveCourseThread(room.name.replace(course?.name, ""));
     navigate(`/home/courses/${course?._id.$oid}/${course?.rooms[0][1].$oid}`, {
       replace: true,
     });
@@ -188,7 +182,7 @@ export const CourseNavigation = ({ course }: Props) => {
         <List>
           {course?.rooms.map((room) => {
             return (
-              <React.Fragment key={`${course.name}: ${room[0]}`}>
+              <React.Fragment key={`${course?.name}: ${room[0]}`}>
                 <Button
                   sx={{
                     width: "100%",

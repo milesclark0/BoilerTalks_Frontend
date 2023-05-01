@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { initialState, IState } from './initialState';
-import { Course, Message, Room } from '../globals/types';
-import useSockets from '../hooks/useSockets';
+import { Course, Message, Room } from 'globals/types';
+import useSockets from 'hooks/useSockets';
 import { Socket } from 'socket.io-client';
 
 const useStore = create<IState>((set, get) => ({
@@ -80,13 +80,13 @@ const useStore = create<IState>((set, get) => ({
         messages.splice(index, 1);
         set({ messages });
     },
-    addReactionMessage: ( data: any) => {
+    addReactionMessage: (data: any) => {
         let index = data["index"];
         let reaction = data["reaction"];
         let username = data["username"];
         let displayName = data["displayName"];
         let newMessages = [...get().messages];
-          newMessages[index].reactions
+        newMessages[index].reactions
             ? newMessages[index].reactions.push({ username, reaction })
             : (newMessages[index].reactions = [{ username, reaction }]);
         set({ messages: newMessages });

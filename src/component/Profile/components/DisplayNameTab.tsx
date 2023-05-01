@@ -1,9 +1,9 @@
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, TextField, Typography } from "globals/mui";
 import React from "react";
-import { User, Profile } from "../../../globals/types";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { changeDisplayNameURL } from "../../../API/ProfileAPI";
-import { useAuth } from "../../../context/context";
+import { User, Profile } from "globals/types";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { changeDisplayNameURL } from "API/ProfileAPI";
+import { useAuth } from "context/context";
 interface Props {
   viewedUser: User;
   profileInfo: Profile;

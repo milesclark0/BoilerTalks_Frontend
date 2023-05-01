@@ -1,14 +1,14 @@
-import { Tabs, Tab, Box, Typography, Paper, useTheme } from "@mui/material";
+import { Tabs, Tab, Box, Typography, Paper, useTheme } from "globals/mui";
 import React from "react";
-import { useAuth } from "../../../context/context";
-import { User, Profile, Course } from "../../../globals/types";
+import { useAuth } from "context/context";
+import { User, Profile, Course } from "globals/types";
 import CoursesTab from "../components/CoursesTab";
 import { useQuery } from "react-query";
-import { getUserCoursesAndRoomsURL } from "../../../API/CoursesAPI";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { getUserCoursesAndRoomsURL } from "API/CoursesAPI";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import ModCoursesTab from "../components/ModCoursesTab";
 import BlockedUsersTab from "../components/BlockedUsersTab";
-import PasswordReset from "../../Settings/PasswordReset";
+import PasswordReset from "component/Settings/PasswordReset";
 import DisplayNameTab from "../components/DisplayNameTab";
 
 interface TabPanelProps {

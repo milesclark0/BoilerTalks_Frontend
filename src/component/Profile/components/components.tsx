@@ -1,7 +1,7 @@
 import { Close, Check, Edit } from "@mui/icons-material";
-import { IconButton, IconButtonProps } from "@mui/material";
-import { useAuth } from "../../../context/context";
-import { User } from "../../../globals/types";
+import { IconButton, IconButtonProps } from "globals/mui";
+import { useAuth } from "context/context";
+import { User } from "globals/types";
 
 interface ButtonProps extends IconButtonProps {
   isEditMode: boolean;

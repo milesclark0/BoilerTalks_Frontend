@@ -1,6 +1,6 @@
-import { Box, CardContent, CardHeader, Paper, Typography } from "@mui/material";
+import { Box, CardContent, CardHeader, Paper, Typography } from "globals/mui";
 import React from "react";
-import { StyledDivider } from "../SideBar/components/StyledDivider";
+import { StyledDivider } from "component/SideBar/components/StyledDivider";
 
 const ReleaseNotes = () => {
   return (
@@ -12,9 +12,7 @@ const ReleaseNotes = () => {
           v1.0.3
         </Typography>
         <Typography variant="body1">- Added notifications for different coursees.</Typography>
-        <Typography variant="body1">
-          - Added ability to change notification preference within a course.
-        </Typography>
+        <Typography variant="body1">- Added ability to change notification preference within a course.</Typography>
         <Typography variant="body1">- Added ability to edit sent message.</Typography>
         <Typography variant="body1">- Added ability to delete sent message.</Typography>
         <Typography variant="body1">- Users can now send a poll to a room.</Typography>
@@ -25,22 +23,14 @@ const ReleaseNotes = () => {
           v1.0.2
         </Typography>
         <Typography variant="body1">- Added more functionality for mods.</Typography>
-        <Typography variant="body1">
-          &nbsp;&nbsp;&nbsp;&nbsp;- Mods can now warn/ban a user.
-        </Typography>
-        <Typography variant="body1">
-          &nbsp;&nbsp;&nbsp;&nbsp;- Mods can view appeals from banned users.
-        </Typography>
+        <Typography variant="body1">&nbsp;&nbsp;&nbsp;&nbsp;- Mods can now warn/ban a user.</Typography>
+        <Typography variant="body1">&nbsp;&nbsp;&nbsp;&nbsp;- Mods can view appeals from banned users.</Typography>
         <Typography variant="body1">- Added messaging for different threads.</Typography>
         <Typography variant="body1">- Users can now block other users.</Typography>
         <Typography variant="body1">- Added dark and light mode.</Typography>
-        <Typography variant="body1">
-          - Users can now react/reply to other users messages.
-        </Typography>
+        <Typography variant="body1">- Users can now react/reply to other users messages.</Typography>
         <Typography variant="body1">- Added ability to upload profile picture.</Typography>
-        <Typography variant="body1">
-          - Users can report any problems with a thread/inappropriate behavior.
-        </Typography>
+        <Typography variant="body1">- Users can report any problems with a thread/inappropriate behavior.</Typography>
         <Typography variant="body1" sx={{ mt: 2 }}>
           v1.0.1
         </Typography>

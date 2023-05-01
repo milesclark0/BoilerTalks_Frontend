@@ -1,6 +1,4 @@
-import { createTheme } from "@mui/material/styles";
-
-import { ThemeOptions } from "@mui/material/styles";
+import { createTheme , ThemeOptions } from 'globals/mui';
 
 export const dark: ThemeOptions = {
   palette: {

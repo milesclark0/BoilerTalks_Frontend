@@ -1,6 +1,6 @@
-import { Button, Box, Typography, Modal, Paper } from "@mui/material";
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import { blockUserUrl } from "../../../API/BlockingAPI";
+import { Button, Box, Typography, Modal, Paper } from "globals/mui";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import { blockUserUrl } from "API/BlockingAPI";
 
 type Props = {
   requestUsername: string;
